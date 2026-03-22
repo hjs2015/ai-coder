@@ -1,11 +1,9 @@
 # 🦞 OpenClaw 龙虾机器人完全指南
 
-> **来源**: 飞书云文档 - 老男孩 AI 编程实战第一期  
 > **最新修改**: 2026-03-22  
 > **官方文档**: https://docs.openclaw.ai/  
 > **GitHub**: https://github.com/openclaw/openclaw  
-> **Discord**: https://discord.com/invite/clawd  
-> **飞书文档**: https://my.feishu.cn/wiki/AlBuwnaeTidXVOkT96gcuavrn8b
+> **Discord**: https://discord.com/invite/clawd
 
 ---
 
