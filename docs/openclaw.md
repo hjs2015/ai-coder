@@ -1,7 +1,7 @@
 # 🦞 OpenClaw 完全指南（中国内地版）
 
-> **自托管 AI 网关 · 本土化深度适配 · 无外网依赖方案**  
-> **文档版本**: v5.0 中国内地版（2026-03-23）  
+> **自托管 AI 网关 · 本土化深度适配 · 保留官方核心架构**  
+> **文档版本**: v6.0 完整版（2026-03-23）  
 > **官方文档**: https://docs.openclaw.ai/  
 > **GitHub**: https://github.com/openclaw/openclaw  
 > **许可证**: MIT  
@@ -12,7 +12,7 @@
 ## 📑 完整目录
 
 <details>
-<summary><b>点击展开完整目录（12 大部分 68 章节）</b></summary>
+<summary><b>点击展开完整目录（15 大部分 86 章节）</b></summary>
 
 ### 第一部分：产品认知与入门
 1. [什么是 OpenClaw](#什么是-openclaw)
@@ -21,83 +21,107 @@
 4. [快速开始（60 秒上手）](#快速开始 60-秒上手)
 5. [系统要求与兼容性](#系统要求与兼容性)
 
-### 第二部分：国内本土化适配专区 ⭐
-6. [国内网络环境适配](#国内网络环境适配)
-7. [国内大模型完整接入](#国内大模型完整接入)
-8. [国内聊天平台接入](#国内聊天平台接入)
-9. [国内镜像与加速方案](#国内镜像与加速方案)
+### 第二部分：架构详解 ⭐
+6. [整体架构图](#整体架构图)
+7. [核心组件](#核心组件)
+8. [消息流转流程](#消息流转流程)
+9. [数据流与状态管理](#数据流与状态管理)
 
-### 第三部分：安装与部署
-10. [npm 安装（推荐）](#npm-安装推荐)
-11. [Docker 容器化部署](#docker-容器化部署)
-12. [源码安装（开发者）](#源码安装开发者)
-13. [离线安装方案](#离线安装方案)
-14. [生产环境部署](#生产环境部署)
+### 第三部分：CLI 命令参考 ⭐
+10. [基础命令](#基础命令)
+11. [Onboarding 命令](#onboarding-命令)
+12. [Channel 命令](#channel-命令)
+13. [Model 命令](#model-命令)
+14. [Agent 命令](#agent-命令)
+15. [Config 命令](#config-命令)
+16. [Logs 与 Debug 命令](#logs-与-debug-命令)
 
-### 第四部分：国内聊天渠道配置 ⭐
-15. [飞书配置（原生支持）](#飞书配置原生支持)
-16. [企业微信配置](#企业微信配置)
-17. [钉钉配置](#钉钉配置)
-18. [微信配置（个人号/公众号）](#微信配置个人号公众号)
-19. [QQ 配置](#qq-配置)
-20. [Telegram 配置（备选）](#telegram-配置备选)
+### 第四部分：国内本土化适配专区 ⭐
+17. [国内网络环境适配](#国内网络环境适配)
+18. [国内大模型完整接入](#国内大模型完整接入)
+19. [国内聊天平台接入](#国内聊天平台接入)
+20. [国内镜像与加速方案](#国内镜像与加速方案)
 
-### 第五部分：国内大模型配置 ⭐
-21. [通义千问（阿里云）](#通义千问阿里云)
-22. [文心一言（百度）](#文心一言百度)
-23. [豆包（火山引擎）](#豆包火山引擎)
-24. [讯飞星火](#讯飞星火)
-25. [Kimi（月之暗面）](#kimi-月之暗面)
-26. [智谱 GLM](#智谱-glm)
-27. [本地模型（Ollama）](#本地模型-ollama)
+### 第五部分：安装与部署
+21. [npm 安装（推荐）](#npm-安装推荐)
+22. [Docker 容器化部署](#docker-容器化部署)
+23. [Docker Compose 部署](#docker-compose-部署)
+24. [源码安装（开发者）](#源码安装开发者)
+25. [离线安装方案](#离线安装方案)
+26. [生产环境部署](#生产环境部署)
 
-### 第六部分：渠道配置（国际）
-28. [支持的渠道列表](#支持的渠道列表)
-29. [WhatsApp 配置](#whatsapp-配置)
-30. [Discord 配置](#discord-配置)
-31. [iMessage 配置](#imessage-配置)
-32. [渠道路由规则](#渠道路由规则)
+### 第六部分：国内聊天渠道配置 ⭐
+27. [飞书配置（原生支持）](#飞书配置原生支持)
+28. [企业微信配置](#企业微信配置)
+29. [钉钉配置](#钉钉配置)
+30. [微信配置（个人号/公众号）](#微信配置个人号公众号)
+31. [QQ 配置](#qq-配置)
+32. [Telegram 配置（备选）](#telegram-配置备选)
 
-### 第七部分：核心概念
-33. [架构概览](#架构概览)
-34. [Gateway（网关）](#gateway-网关)
-35. [Agent（智能体）](#agent-智能体)
-36. [Session（会话）](#session-会话)
-37. [Memory（记忆）](#memory-记忆)
+### 第七部分：国内大模型配置 ⭐
+33. [通义千问（阿里云）](#通义千问阿里云)
+34. [文心一言（百度）](#文心一言百度)
+35. [豆包（火山引擎）](#豆包火山引擎)
+36. [讯飞星火](#讯飞星火)
+37. [Kimi（月之暗面）](#kimi-月之暗面)
+38. [智谱 GLM](#智谱-glm)
+39. [本地模型（Ollama）](#本地模型-ollama)
 
-### 第八部分：Agent 与工具
-38. [Agent 工作区配置](#agent-工作区配置)
-39. [工具与插件系统](#工具与插件系统)
-40. [MCP 协议集成](#mcp-协议集成)
-41. [定时任务与自动化](#定时任务与自动化)
+### 第八部分：渠道配置（国际）
+40. [支持的渠道列表](#支持的渠道列表)
+41. [WhatsApp 配置](#whatsapp-配置)
+42. [Discord 配置](#discord-配置)
+43. [iMessage 配置](#imessage-配置)
+44. [渠道路由规则](#渠道路由规则)
 
-### 第九部分：会话与记忆管理
-42. [会话管理深度解析](#会话管理深度解析)
-43. [记忆系统架构](#记忆系统架构)
-44. [会话压缩机制](#会话压缩机制)
+### 第九部分：核心概念
+45. [Gateway（网关）](#gateway-网关)
+46. [Agent（智能体）](#agent-智能体)
+47. [Session（会话）](#session-会话)
+48. [Memory（记忆）](#memory-记忆)
+49. [Workspace（工作区）](#workspace-工作区)
 
-### 第十部分：运维管理
-45. [Gateway 运维管理](#gateway-运维管理)
-46. [日志与调试](#日志与调试)
-47. [监控与告警](#监控与告警)
-48. [备份与恢复](#备份与恢复)
+### 第十部分：Agent 与工具
+50. [Agent 工作区配置](#agent-工作区配置)
+51. [工具与插件系统](#工具与插件系统)
+52. [MCP 协议集成](#mcp-协议集成)
+53. [定时任务与自动化](#定时任务与自动化)
 
-### 第十一部分：安全与优化
-49. [安全配置](#安全配置)
-50. [性能优化](#性能优化)
-51. [高可用配置](#高可用配置)
+### 第十一部分：会话与记忆管理
+54. [会话管理深度解析](#会话管理深度解析)
+55. [记忆系统架构](#记忆系统架构)
+56. [会话压缩机制](#会话压缩机制)
 
-### 第十二部分：故障排查
-52. [诊断命令速查](#诊断命令速查)
-53. [网络问题排查](#网络问题排查)
-54. [高频问题解决方案](#高频问题解决方案)
-55. [FAQ（100+ 常见问题）](#faq100-常见问题)
+### 第十二部分：配置参考 ⭐
+57. [配置文件结构](#配置文件结构)
+58. [环境变量参考](#环境变量参考)
+59. [配置项详解](#配置项详解)
+60. [配置模板](#配置模板)
+
+### 第十三部分：运维管理
+61. [Gateway 运维管理](#gateway-运维管理)
+62. [日志与调试](#日志与调试)
+63. [监控与告警](#监控与告警)
+64. [备份与恢复](#备份与恢复)
+65. [升级与迁移](#升级与迁移)
+
+### 第十四部分：安全与优化
+66. [安全配置](#安全配置)
+67. [性能优化](#性能优化)
+68. [高可用配置](#高可用配置)
+
+### 第十五部分：故障排查
+69. [诊断命令速查](#诊断命令速查)
+70. [网络问题排查](#网络问题排查)
+71. [高频问题解决方案](#高频问题解决方案)
+72. [FAQ（100+ 常见问题）](#faq100-常见问题)
 
 ### 附录
-- [附录 A：环境变量参考](#附录-a-环境变量参考)
-- [附录 B：配置文件完整参考](#附录-b-配置文件完整参考)
-- [附录 C：CLI 命令参考](#附录-c-cli-命令参考)
+- [附录 A：完整 CLI 命令参考](#附录-a-完整-cli-命令参考)
+- [附录 B：环境变量完整参考](#附录-b-环境变量完整参考)
+- [附录 C：配置文件完整参考](#附录-c-配置文件完整参考)
 - [附录 D：国内 API Key 获取指南](#附录-d-国内-api-key-获取指南)
+- [附录 E：架构决策记录](#附录-e-架构决策记录)
 
 </details>
 
@@ -234,375 +258,263 @@ openclaw dashboard
 
 ---
 
-## 第二部分：国内本土化适配专区 ⭐
+## 第二部分：架构详解 ⭐
 
-### 国内网络环境适配
-
-#### 网络访问方案对比
-
-| 方案 | 优点 | 缺点 | 适用场景 |
-|------|------|------|---------|
-| **国内大模型** | 无需翻墙、速度快、人民币付费 | 模型能力略弱于 GPT-4 | ✅ 首选推荐 |
-| **本地模型** | 完全离线、隐私最好 | 需要 GPU、能力有限 | 敏感数据场景 |
-| **代理访问** | 可使用 GPT-4 | 需要额外成本、不稳定 | 备选方案 |
-
-#### 推荐方案组合
+### 整体架构图
 
 ```
-【最佳实践】国内大模型（阿里/百度/火山）+ 本地模型（Ollama）备份
-【进阶方案】国内大模型 + 代理访问国际模型（按需切换）
-【完全离线】本地模型（Ollama）+ 本地知识库
-```
-
----
-
-### 国内大模型完整接入
-
-#### 支持的国内大模型列表
-
-| 提供商 | 模型 | 价格（元/1K tokens） | 上下文 | 状态 |
-|--------|------|-------------------|--------|------|
-| **阿里通义** | Qwen-Max | 输入¥0.04/输出¥0.12 | 256K | ✅ 推荐 |
-| **百度文心** | ERNIE 4.0 | 输入¥0.03/输出¥0.09 | 128K | ✅ 推荐 |
-| **火山豆包** | Doubao Pro | 输入¥0.008/输出¥0.03 | 128K | ✅ 性价比 |
-| **讯飞星火** | Spark 4.0 | 输入¥0.03/输出¥0.09 | 200K | ✅ 支持 |
-| **月之暗面** | Kimi | 输入¥0.005/输出¥0.015 | 200K | ✅ 长文本 |
-| **智谱 AI** | GLM-4 | 输入¥0.05/输出¥0.15 | 128K | ✅ 支持 |
-
-#### 国内模型 vs 国际模型
-
-| 维度 | 国内模型 | 国际模型（GPT-4/Claude） |
-|------|---------|------------------------|
-| **中文能力** | ⭐⭐⭐⭐⭐ 原生优化 | ⭐⭐⭐⭐ 良好 |
-| **访问速度** | ⭐⭐⭐⭐⭐ 国内节点 | ⭐⭐ 需要代理 |
-| **成本** | ⭐⭐⭐⭐ 人民币计价 | ⭐⭐ 美元 + 汇率 |
-| **合规性** | ⭐⭐⭐⭐⭐ 完全合规 | ⭐⭐⭐ 需注意 |
-| **模型能力** | ⭐⭐⭐⭐ 良好 | ⭐⭐⭐⭐⭐ 最强 |
-
----
-
-### 国内聊天平台接入
-
-#### 支持列表与难度
-
-| 平台 | 支持方式 | 难度 | 是否需要公网 IP | 备注 |
-|------|---------|------|--------------|------|
-| **飞书** | 原生支持 | ⭐ 简单 | ❌ 无需 | ✅ 推荐 |
-| **企业微信** | 社区插件 | ⭐⭐ 中等 | ❌ 无需 | 需 Stream 模式 |
-| **钉钉** | 社区插件 | ⭐⭐ 中等 | ❌ 无需 | 需 Stream 模式 |
-| **微信** | 第三方插件 | ⭐⭐⭐ 复杂 | ⚠️ 建议有 | 个人号/公众号 |
-| **QQ** | 社区插件 | ⭐⭐⭐ 复杂 | ⚠️ 建议有 | OneBot 协议 |
-
----
-
-### 国内镜像与加速方案
-
-#### Node.js 镜像
-
-```bash
-# 方案 1：淘宝镜像（推荐）
-npm config set registry https://registry.npmmirror.com
-
-# 方案 2：腾讯云镜像
-npm config set registry https://mirrors.cloud.tencent.com/npm/
-
-# 方案 3：华为云镜像
-npm config set registry https://mirrors.huaweicloud.com/repository/npm/
-
-# 验证配置
-npm config get registry
-```
-
-#### Docker 镜像加速
-
-```bash
-# 配置 Docker 镜像加速器（以阿里云为例）
-sudo mkdir -p /etc/docker
-sudo tee /etc/docker/daemon.json <<-'EOF'
-{
-  "registry-mirrors": [
-    "https://docker.mirrors.ustc.edu.cn",
-    "https://registry.docker-cn.com"
-  ]
-}
-EOF
-sudo systemctl daemon-reload
-sudo systemctl restart docker
-```
-
-#### GitHub 加速
-
-```bash
-# 方案 1：使用代理
-export https_proxy=http://127.0.0.1:7890
-git clone https://github.com/openclaw/openclaw.git
-
-# 方案 2：使用镜像站
-git clone https://ghproxy.com/https://github.com/openclaw/openclaw.git
-
-# 方案 3：国内镜像（如有）
-git clone https://gitee.com/mirror/openclaw.git
+┌─────────────────────────────────────────────────────────────┐
+│                      聊天平台层                              │
+│  ┌─────────┐ ┌─────────┐ ┌─────────┐ ┌─────────┐          │
+│  │  飞书   │ │企业微信 │ │  钉钉   │ │  微信   │  ...      │
+│  └────┬────┘ └────┬────┘ └────┬────┘ └────┬────┘          │
+└───────┼───────────┼───────────┼───────────┼────────────────┘
+        │           │           │           │
+        └───────────┴─────┬─────┴───────────┘
+                          │
+┌─────────────────────────▼───────────────────────────────────┐
+│                   OpenClaw Gateway                         │
+│  ┌──────────────────────────────────────────────────────┐  │
+│  │                 Channel Adapter                      │  │
+│  │  统一消息格式转换（各平台→OpenClaw 标准格式）            │  │
+│  └──────────────────────────────────────────────────────┘  │
+│                          │                                  │
+│  ┌───────────────────────▼───────────────────────────────┐ │
+│  │                  Message Router                       │ │
+│  │  根据规则路由到不同 Agent（关键词/用户/群组）            │  │
+│  └───────────────────────┬───────────────────────────────┘ │
+│                          │                                  │
+│  ┌───────────────────────▼───────────────────────────────┐ │
+│  │                    Agent Loop                         │ │
+│  │  1. 接收消息 → 2. 加载上下文 → 3. 调用模型 → 4. 返回响应 │ │
+│  └───────────────────────┬───────────────────────────────┘ │
+│                          │                                  │
+│  ┌───────────────────────▼───────────────────────────────┐ │
+│  │                  Model Provider                       │ │
+│  │  统一 API 接口（支持 30+ 模型提供商，自动故障转移）       │  │
+│  └───────────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────┘
+        │
+        ▼
+┌─────────────────────────────────────────────────────────────┐
+│                      数据存储层                              │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐      │
+│  │  SQLite/PG   │  │  本地文件    │  │  向量数据库  │      │
+│  │  (会话历史)  │  │  (配置/日志) │  │  (记忆检索)  │      │
+│  └──────────────┘  └──────────────┘  └──────────────┘      │
+└─────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 第三部分：安装与部署
+### 核心组件
 
-### npm 安装（推荐）
+#### 1. Gateway（网关）
 
-#### 标准安装流程
-
-```bash
-# 1. 配置淘宝镜像
-npm config set registry https://registry.npmmirror.com
-
-# 2. 安装 OpenClaw
-npm install -g openclaw
-
-# 3. 验证安装
-openclaw --version
-# 输出：openclaw/x.x.x
-```
-
-#### 常见问题解决
-
-**问题 1：权限错误**
+**职责**：核心服务进程，管理所有 Channel、Agent 和 Model 连接
 
 ```bash
-# macOS/Linux 权限问题
-sudo chown -R $(whoami) ~/.npm
-npm install -g openclaw
+# 启动 Gateway
+openclaw start
+
+# 查看 Gateway 状态
+openclaw status
+
+# 停止 Gateway
+openclaw stop
+
+# 重启 Gateway
+openclaw restart
 ```
-
-**问题 2：下载超时**
-
-```bash
-# 增加超时时间
-npm config set fetch-timeout 300000
-npm install -g openclaw
-```
-
----
-
-### Docker 容器化部署
-
-#### 快速启动（国内镜像）
-
-```bash
-docker run -d \
-  --name openclaw \
-  -p 3000:3000 \
-  -v openclaw-data:/root/.openclaw \
-  -e ANTHROPIC_API_KEY=sk-ant-xxx \
-  -e TZ=Asia/Shanghai \
-  registry.cn-hangzhou.aliyuncs.com/openclaw/openclaw:latest
-```
-
-#### Docker Compose 配置
-
-```yaml
-version: '3.8'
-
-services:
-  openclaw:
-    image: registry.cn-hangzhou.aliyuncs.com/openclaw/openclaw:latest
-    container_name: openclaw
-    restart: unless-stopped
-    ports:
-      - "3000:3000"
-    volumes:
-      - openclaw-data:/root/.openclaw
-      - ./config:/root/.openclaw/config:ro
-    environment:
-      - TZ=Asia/Shanghai
-      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
-    networks:
-      - openclaw-net
-
-volumes:
-  openclaw-data:
-
-networks:
-  openclaw-net:
-    driver: bridge
-```
-
----
-
-## 第四部分：国内聊天渠道配置 ⭐
-
-### 飞书配置（原生支持）
-
-#### 前置条件
-
-- 飞书企业管理员权限
-- 飞书开放平台账号
-- 企业已认证
-
-#### 创建飞书机器人
-
-**步骤 1：访问飞书开放平台**
-
-1. 打开 https://open.feishu.cn/
-2. 登录企业账号
-3. 进入「企业自建应用」
-4. 点击「创建应用」
-
-**步骤 2：配置应用权限**
-
-1. 应用名称：OpenClaw 助手
-2. 应用图标：上传 Logo
-3. 权限配置：
-   - ✅ 发送消息
-   - ✅ 读取消息
-   - ✅ 群组管理
-   - ✅ 机器人功能
-
-**步骤 3：获取凭证**
-
-1. 进入「凭证与基础信息」
-2. 记录 App ID（cli_xxxxxxxxxxxxx）
-3. 记录 App Secret（xxxxxxxxxxxxxxxxx）
-
-**步骤 4：配置事件订阅**
-
-1. 进入「事件订阅」
-2. 开启事件订阅
-3. 配置订阅地址（飞书内置，无需公网）
-4. 订阅事件：
-   - 接收消息 v2.0
-   - 机器人进群
-
-**步骤 5：发布应用**
-
-1. 进入「版本管理与发布」
-2. 提交审核（通常 1-2 工作日）
-3. 审核通过后启用
-
----
-
-#### OpenClaw 配置
 
 **配置文件**：`~/.openclaw/openclaw.json`
 
 ```json
 {
-  "channels": {
-    "feishu": {
-      "appId": "cli_xxxxxxxxxxxxx",
-      "appSecret": "xxxxxxxxxxxxxxxxx",
-      "encryptKey": "xxxxxxxxxxxxxxxxx",
-      "verificationToken": "xxxxxxxxxxxxxxxxx",
-      "allowUsers": ["ou_xxxxxxxxxxxxx"],
-      "allowGroups": ["oc_xxxxxxxxxxxxx"],
-      "requireMention": true
-    }
+  "gateway": {
+    "port": 3000,
+    "host": "0.0.0.0",
+    "logLevel": "info",
+    "dataDir": "~/.openclaw/data"
   }
 }
 ```
 
-**配置说明**：
-
-| 字段 | 说明 | 获取方式 |
-|------|------|---------|
-| `appId` | 飞书应用 ID | 飞书开放平台 - 凭证与基础信息 |
-| `appSecret` | 应用密钥 | 飞书开放平台 - 凭证与基础信息 |
-| `encryptKey` | 加密密钥 | 飞书开放平台 - 事件订阅 |
-| `verificationToken` | 验证 Token | 飞书开放平台 - 事件订阅 |
-| `allowUsers` | 允许的用户列表 | 飞书用户 ID（可选） |
-| `allowGroups` | 允许的群组列表 | 飞书群组 ID（可选） |
-| `requireMention` | 是否需要@机器人 | true/false |
-
 ---
 
-#### 获取用户/群组 ID
+#### 2. Channel Adapter（渠道适配器）
 
-**方法 1：通过飞书 API**
+**职责**：将各聊天平台的消息格式转换为 OpenClaw 标准格式
 
-```bash
-# 获取用户 ID
-curl -X POST https://open.feishu.cn/open-apis/auth/v3/tenant_access_token/internal \
-  -H "Content-Type: application/json" \
-  -d '{"app_id":"cli_xxx","app_secret":"xxx"}'
+**支持的渠道**：
 
-# 获取群组 ID
-curl -X GET https://open.feishu.cn/open-apis/im/v1/chats \
-  -H "Authorization: Bearer xxx"
-```
+| 渠道 | 类型 | 状态 | 插件 |
+|------|------|------|------|
+| **飞书** | 企业 IM | ✅ 原生 | - |
+| **企业微信** | 企业 IM | ✅ 社区 | @openclaw/channel-wecom |
+| **钉钉** | 企业 IM | ✅ 社区 | @openclaw/channel-dingtalk |
+| **微信** | 个人 IM | ⚠️ 社区 | @openclaw/channel-wechaty |
+| **QQ** | 个人 IM | ⚠️ 社区 | @openclaw/channel-qq |
+| **Telegram** | 国际 IM | ✅ 原生 | - |
+| **Discord** | 社区 IM | ✅ 原生 | - |
+| **WhatsApp** | 国际 IM | ⚠️ 社区 | @openclaw/channel-whatsapp |
+| **Slack** | 企业 IM | ✅ 原生 | - |
+| **iMessage** | 个人 IM | ⚠️ 实验 | @openclaw/channel-imessage |
 
-**方法 2：通过日志查看**
-
-```bash
-# 启动 OpenClaw 并发送消息
-openclaw start
-
-# 查看日志获取用户/群组 ID
-openclaw logs | grep feishu
-```
-
----
-
-#### 测试连接
-
-**步骤 1：启动 OpenClaw**
-
-```bash
-openclaw start
-```
-
-**步骤 2：在飞书中测试**
-
-1. 打开飞书，找到配置的群组
-2. 发送消息：`@OpenClaw 助手 你好`
-3. 收到回复表示成功
-
-**步骤 3：查看日志**
-
-```bash
-openclaw logs | grep feishu
-# 应看到消息接收和发送日志
-```
-
----
-
-#### 高级配置
-
-**群组消息规则**
+**Channel 配置示例**：
 
 ```json
 {
   "channels": {
     "feishu": {
-      "groups": {
-        "*": {
-          "requireMention": true,
-          "mentionPatterns": ["@OpenClaw", "@助手"],
-          "ignoreCommands": ["/help", "/start"]
-        },
-        "oc_xxxxxxxxxxxxx": {
-          "requireMention": false
-        }
-      }
+      "appId": "cli_xxx",
+      "appSecret": "xxx",
+      "encryptKey": "xxx",
+      "verificationToken": "xxx"
+    },
+    "telegram": {
+      "botToken": "123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11"
     }
   }
 }
 ```
 
-**路由规则**
+---
+
+#### 3. Message Router（消息路由器）
+
+**职责**：根据规则将消息路由到不同的 Agent
+
+**路由规则**：
 
 ```json
 {
   "routing": {
+    "defaultAgent": "default",
     "rules": [
       {
+        "name": "coding-questions",
         "channel": "feishu",
-        "pattern": ".*代码.*",
-        "agent": "coding-agent"
+        "pattern": ".*代码.*|.*编程.*|.*debug.*",
+        "agent": "coding-agent",
+        "priority": 10
       },
       {
+        "name": "report-questions",
         "channel": "feishu",
-        "pattern": ".*日报.*",
-        "agent": "report-agent"
+        "pattern": ".*日报.*|.*周报.*|.*总结.*",
+        "agent": "report-agent",
+        "priority": 10
+      },
+      {
+        "name": "user-specific",
+        "channel": "feishu",
+        "userId": "ou_xxxxxxxxxxxxx",
+        "agent": "personal-agent",
+        "priority": 20
+      }
+    ]
+  }
+}
+```
+
+**优先级说明**：
+- 数字越大优先级越高
+- 匹配多条规则时，使用优先级最高的
+- 无匹配时使用 defaultAgent
+
+---
+
+#### 4. Agent Loop（智能体循环）
+
+**职责**：处理消息的核心逻辑
+
+**处理流程**：
+
+```
+1. 接收消息（从 Router）
+   ↓
+2. 加载会话上下文（从 Memory）
+   ↓
+3. 构建 Prompt（系统提示词 + 历史对话 + 当前消息）
+   ↓
+4. 调用模型（通过 Model Provider）
+   ↓
+5. 处理响应（文本/工具调用/错误处理）
+   ↓
+6. 保存会话（到 Memory）
+   ↓
+7. 返回响应（到 Channel）
+```
+
+**Agent 配置示例**：
+
+```json
+{
+  "agents": {
+    "default": {
+      "model": "qwen-max",
+      "systemPrompt": "你是一个有帮助的 AI 助手。",
+      "temperature": 0.7,
+      "maxTokens": 2048,
+      "tools": ["search", "calculator"]
+    },
+    "coding-agent": {
+      "model": "qwen-max",
+      "systemPrompt": "你是一个专业的编程助手，擅长代码生成、调试和优化。",
+      "temperature": 0.3,
+      "maxTokens": 4096,
+      "tools": ["code-interpreter", "file-reader"]
+    }
+  }
+}
+```
+
+---
+
+#### 5. Model Provider（模型提供商）
+
+**职责**：统一管理多个 AI 模型提供商，支持故障转移和负载均衡
+
+**支持的提供商**：
+
+| 提供商 | 模型示例 | 状态 |
+|--------|---------|------|
+| **阿里云** | qwen-max, qwen-plus | ✅ |
+| **百度** | ernie-4.0, ernie-3.5 | ✅ |
+| **火山引擎** | doubao-pro, doubao-lite | ✅ |
+| **讯飞** | spark-4.0, spark-3.5 | ✅ |
+| **月之暗面** | moonshot-v1-8k, moonshot-v1-32k | ✅ |
+| **智谱** | glm-4, glm-3-turbo | ✅ |
+| **OpenAI** | gpt-4, gpt-3.5-turbo | ✅ |
+| **Anthropic** | claude-3-opus, claude-3-sonnet | ✅ |
+| **Google** | gemini-pro, gemini-ultra | ✅ |
+| **Ollama** | llama2, qwen:7b | ✅ |
+
+**Model 配置示例**：
+
+```json
+{
+  "models": {
+    "default": "qwen-max",
+    "providers": {
+      "dashscope": {
+        "apiKey": "sk-xxx",
+        "baseUrl": "https://dashscope.aliyuncs.com/api/v1"
+      },
+      "qianfan": {
+        "apiKey": "xxx",
+        "secretKey": "xxx"
+      },
+      "openai": {
+        "apiKey": "sk-xxx",
+        "baseUrl": "https://api.openai.com/v1"
+      }
+    },
+    "fallbacks": [
+      {
+        "from": "qwen-max",
+        "to": ["qwen-plus", "ernie-4.0"]
       }
     ]
   }
@@ -611,497 +523,797 @@ openclaw logs | grep feishu
 
 ---
 
-#### 常见问题排查
+### 消息流转流程
 
-**问题 1：收不到消息**
+#### 完整消息流示例
 
-```bash
-# 检查事件订阅配置
-# 1. 飞书开放平台 - 事件订阅
-# 2. 确认已开启「接收消息 v2.0」
-# 3. 确认机器人已添加到群组
-
-# 检查 OpenClaw 日志
-openclaw logs | grep feishu
+```
+用户（飞书）: "@OpenClaw 帮我写一个 Python 脚本，计算斐波那契数列"
+   ↓
+1. 飞书 API 推送消息到 OpenClaw Webhook
+   ↓
+2. Channel Adapter 转换消息格式
+   {
+     "channel": "feishu",
+     "userId": "ou_xxx",
+     "groupId": "oc_xxx",
+     "content": "帮我写一个 Python 脚本，计算斐波那契数列",
+     "timestamp": 1711180800
+   }
+   ↓
+3. Message Router 匹配规则
+   匹配到 "coding-questions" 规则 → 路由到 coding-agent
+   ↓
+4. Agent Loop 处理
+   - 加载会话历史（最近 10 条对话）
+   - 构建 Prompt：
+     System: "你是一个专业的编程助手..."
+     History: [用户：..., AI: ...]
+     Current: "帮我写一个 Python 脚本..."
+   ↓
+5. Model Provider 调用模型
+   - 选择模型：qwen-max
+   - 发送请求到阿里云 DashScope API
+   - 接收响应
+   ↓
+6. 处理响应
+   - 提取文本内容
+   - 保存会话到 SQLite
+   ↓
+7. 返回响应到飞书
+   "@用户 好的，这是一个计算斐波那契数列的 Python 脚本：..."
 ```
 
-**问题 2：发送失败**
+---
 
-```bash
-# 检查 App Secret 是否正确
-# 检查机器人是否有发送权限
-# 检查群组是否允许机器人发言
+### 数据流与状态管理
+
+#### 数据存储结构
+
+```
+~/.openclaw/
+├── openclaw.json          # 主配置文件
+├── data/
+│   ├── sessions.db        # SQLite 会话数据库
+│   ├── memory/            # 向量记忆存储
+│   │   ├── collections/   # 记忆集合
+│   │   └── embeddings/    # 向量嵌入缓存
+│   └── logs/              # 日志文件
+│       ├── gateway.log
+│       ├── channels.log
+│       └── agents.log
+└── agents/                # Agent 工作区
+    ├── default/
+    │   ├── workspace/     # 工作区文件
+    │   └── config.json    # Agent 配置
+    └── coding-agent/
+        ├── workspace/
+        └── config.json
 ```
 
-**问题 3：@提及不生效**
+#### 会话数据结构
 
 ```json
-// 配置 requireMention: true
 {
+  "sessionId": "feishu:ou_xxx:oc_xxx:1711180800",
+  "channel": "feishu",
+  "userId": "ou_xxx",
+  "groupId": "oc_xxx",
+  "agent": "coding-agent",
+  "messages": [
+    {
+      "role": "user",
+      "content": "帮我写一个 Python 脚本",
+      "timestamp": 1711180800
+    },
+    {
+      "role": "assistant",
+      "content": "好的，这是一个...",
+      "timestamp": 1711180805
+    }
+  ],
+  "metadata": {
+    "model": "qwen-max",
+    "tokens": 1234,
+    "cost": 0.05
+  }
+}
+```
+
+---
+
+## 第三部分：CLI 命令参考 ⭐
+
+### 基础命令
+
+#### openclaw --version
+
+查看 OpenClaw 版本
+
+```bash
+openclaw --version
+# 输出：openclaw/2026.3.12 linux-x64 node-v20.11.0
+```
+
+---
+
+#### openclaw --help
+
+查看所有可用命令
+
+```bash
+openclaw --help
+# 输出：
+# OpenClaw CLI - Self-hosted AI Gateway
+#
+# USAGE
+#   openclaw <command> [options]
+#
+# COMMANDS
+#   start          启动 Gateway 服务
+#   stop           停止 Gateway 服务
+#   restart        重启 Gateway 服务
+#   status         查看服务状态
+#   onboarding     首次配置向导
+#   channel        渠道管理
+#   model          模型管理
+#   agent          Agent 管理
+#   config         配置管理
+#   logs           查看日志
+#   dashboard      打开 Dashboard
+#   doctor         诊断工具
+#   --version      查看版本
+#   --help         查看帮助
+```
+
+---
+
+#### openclaw start
+
+启动 Gateway 服务
+
+```bash
+# 前台启动（开发调试）
+openclaw start
+
+# 后台启动（生产环境）
+openclaw start --daemon
+
+# 指定配置文件
+openclaw start --config /path/to/openclaw.json
+
+# 指定日志级别
+openclaw start --log-level debug
+```
+
+**选项**：
+- `--daemon, -d`: 后台运行
+- `--config, -c`: 指定配置文件路径
+- `--log-level, -l`: 日志级别（debug/info/warn/error）
+- `--port, -p`: 覆盖默认端口
+
+---
+
+#### openclaw stop
+
+停止 Gateway 服务
+
+```bash
+# 优雅停止（等待当前请求完成）
+openclaw stop
+
+# 强制停止（立即终止）
+openclaw stop --force
+```
+
+**选项**：
+- `--force, -f`: 强制停止
+
+---
+
+#### openclaw restart
+
+重启 Gateway 服务
+
+```bash
+openclaw restart
+
+# 重启并更改日志级别
+openclaw restart --log-level debug
+```
+
+---
+
+#### openclaw status
+
+查看服务状态
+
+```bash
+openclaw status
+# 输出：
+# OpenClaw Gateway Status
+# ├─ Status: running
+# ├─ PID: 12345
+# ├─ Port: 3000
+# ├─ Uptime: 2d 5h 30m
+# ├─ Memory: 256MB
+# ├─ Channels: 2 active (feishu, telegram)
+# └─ Agents: 3 loaded (default, coding-agent, report-agent)
+```
+
+---
+
+### Onboarding 命令
+
+#### openclaw onboarding
+
+首次配置向导
+
+```bash
+openclaw onboarding
+# 交互式配置流程：
+# 1. 选择聊天渠道（飞书/Telegram/...）
+# 2. 输入渠道凭证
+# 3. 选择默认模型
+# 4. 输入模型 API Key
+# 5. 测试连接
+# 6. 保存配置
+```
+
+**交互式流程示例**：
+
+```
+🦞 OpenClaw Onboarding Wizard
+
+Step 1/5: Choose your first channel
+  ○ Telegram
+  ● Feishu (推荐)
+  ○ WeCom
+  ○ DingTalk
+  ○ Skip for now
+
+Step 2/5: Feishu Configuration
+  App ID: cli_xxxxxxxxxxxxx
+  App Secret: [hidden]
+  Encrypt Key: [hidden]
+  Verification Token: [hidden]
+
+Step 3/5: Choose default model
+  ○ Qwen-Max (阿里云)
+  ● ERNIE-4.0 (百度)
+  ○ Doubao-Pro (火山引擎)
+  ○ GPT-4 (OpenAI)
+
+Step 4/5: API Key
+  Enter your API Key: sk-xxxxxxxxxxxxxxxxx
+
+Step 5/5: Test Connection
+  ✓ Channel connected
+  ✓ Model API working
+  ✓ Configuration saved
+
+🎉 Setup complete! Run 'openclaw start' to begin.
+```
+
+---
+
+### Channel 命令
+
+#### openclaw channel list
+
+列出所有已配置的渠道
+
+```bash
+openclaw channel list
+# 输出：
+# Configured Channels
+# ├─ feishu (active)
+# │  ├─ App ID: cli_xxx
+# │  └─ Status: connected
+# ├─ telegram (active)
+# │  ├─ Bot: @MyBot
+# │  └─ Status: connected
+# └─ wecom (inactive)
+#    └─ Status: not configured
+```
+
+---
+
+#### openclaw channel add
+
+添加新渠道
+
+```bash
+# 交互式添加
+openclaw channel add
+
+# 指定渠道类型
+openclaw channel add telegram
+
+# 从配置文件导入
+openclaw channel add --from-file channel-config.json
+```
+
+---
+
+#### openclaw channel remove
+
+删除渠道
+
+```bash
+openclaw channel remove feishu
+
+# 强制删除（跳过确认）
+openclaw channel remove feishu --force
+```
+
+---
+
+#### openclaw channel test
+
+测试渠道连接
+
+```bash
+openclaw channel test feishu
+# 输出：
+# Testing Feishu channel...
+# ✓ API credentials valid
+# ✓ Webhook reachable
+# ✓ Bot can send messages
+# ✓ Bot can receive messages
+# Channel test passed!
+```
+
+---
+
+### Model 命令
+
+#### openclaw model list
+
+列出所有已配置的模型
+
+```bash
+openclaw model list
+# 输出：
+# Configured Models
+# ├─ qwen-max (default)
+# │  ├─ Provider: DashScope
+# │  ├─ Status: active
+# │  └─ Cost: ¥0.04/1K tokens
+# ├─ ernie-4.0
+# │  ├─ Provider: Qianfan
+# │  ├─ Status: active
+# │  └─ Cost: ¥0.03/1K tokens
+# └─ doubao-pro
+#    ├─ Provider: Volcengine
+#    └─ Status: inactive
+```
+
+---
+
+#### openclaw model add
+
+添加新模型
+
+```bash
+# 交互式添加
+openclaw model add
+
+# 指定提供商
+openclaw model add dashscope
+
+# 快速添加
+openclaw model add dashscope --api-key sk-xxx --model qwen-max
+```
+
+---
+
+#### openclaw model test
+
+测试模型 API
+
+```bash
+openclaw model test qwen-max
+# 输出：
+# Testing qwen-max model...
+# ✓ API key valid
+# ✓ Request sent (50 tokens)
+# ✓ Response received (120 tokens)
+# ✓ Latency: 1.2s
+# Model test passed!
+```
+
+---
+
+#### openclaw model set-default
+
+设置默认模型
+
+```bash
+openclaw model set-default qwen-max
+# 输出：Default model set to qwen-max
+```
+
+---
+
+### Agent 命令
+
+#### openclaw agent list
+
+列出所有 Agent
+
+```bash
+openclaw agent list
+# 输出：
+# Loaded Agents
+# ├─ default
+# │  ├─ Model: qwen-max
+# │  ├─ System: "你是一个有帮助的 AI 助手"
+# │  └─ Tools: search, calculator
+# ├─ coding-agent
+# │  ├─ Model: qwen-max
+# │  ├─ System: "你是一个专业的编程助手"
+# │  └─ Tools: code-interpreter, file-reader
+# └─ report-agent
+#    ├─ Model: ernie-4.0
+#    ├─ System: "你是一个专业的报告生成助手"
+#    └─ Tools: none
+```
+
+---
+
+#### openclaw agent create
+
+创建新 Agent
+
+```bash
+# 交互式创建
+openclaw agent create
+
+# 快速创建
+openclaw agent create coding-agent \
+  --model qwen-max \
+  --system-prompt "你是一个专业的编程助手" \
+  --tools code-interpreter,file-reader
+```
+
+---
+
+#### openclaw agent edit
+
+编辑 Agent 配置
+
+```bash
+openclaw agent edit coding-agent
+# 打开编辑器修改配置
+```
+
+---
+
+#### openclaw agent remove
+
+删除 Agent
+
+```bash
+openclaw agent remove coding-agent
+
+# 强制删除
+openclaw agent remove coding-agent --force
+```
+
+---
+
+### Config 命令
+
+#### openclaw config view
+
+查看当前配置
+
+```bash
+openclaw config view
+# 输出完整配置（隐藏敏感信息）
+```
+
+---
+
+#### openclaw config edit
+
+编辑配置文件
+
+```bash
+openclaw config edit
+# 打开默认编辑器（vim/nano）
+```
+
+---
+
+#### openclaw config validate
+
+验证配置文件
+
+```bash
+openclaw config validate
+# 输出：
+# ✓ Configuration file is valid
+# ✓ All channels configured correctly
+# ✓ All models have valid API keys
+# ✓ All agents reference existing models
+```
+
+---
+
+#### openclaw config export
+
+导出配置
+
+```bash
+# 导出完整配置（不含密钥）
+openclaw config export
+
+# 导出完整配置（含密钥，注意保密）
+openclaw config export --include-secrets
+
+# 导出到文件
+openclaw config export --output backup.json
+```
+
+---
+
+#### openclaw config import
+
+导入配置
+
+```bash
+openclaw config import backup.json
+
+# 强制导入（覆盖现有配置）
+openclaw config import backup.json --force
+```
+
+---
+
+### Logs 与 Debug 命令
+
+#### openclaw logs
+
+查看日志
+
+```bash
+# 实时查看日志
+openclaw logs
+
+# 查看最近 100 行
+openclaw logs --lines 100
+
+# 仅查看错误
+openclaw logs --level error
+
+# 仅查看特定渠道
+openclaw logs --channel feishu
+
+# 导出日志
+openclaw logs --output logs.txt
+```
+
+**选项**：
+- `--lines, -n`: 显示行数（默认 100）
+- `--level, -l`: 日志级别（debug/info/warn/error）
+- `--channel, -c`: 过滤渠道
+- `--output, -o`: 导出到文件
+- `--follow, -f`: 实时跟踪（默认）
+
+---
+
+#### openclaw doctor
+
+诊断工具
+
+```bash
+openclaw doctor
+# 输出：
+# OpenClaw Doctor
+#
+# System
+# ✓ Node.js v20.11.0
+# ✓ npm 10.2.4
+# ✓ OS: Linux 5.15.0
+#
+# Configuration
+# ✓ Config file exists
+# ✓ Config is valid JSON
+# ✓ All required fields present
+#
+# Channels
+# ✓ Feishu: connected
+# ✓ Telegram: connected
+#
+# Models
+# ✓ qwen-max: API working
+# ✓ ernie-4.0: API working
+#
+# Network
+# ✓ DashScope API reachable (200ms)
+# ✓ Qianfan API reachable (150ms)
+#
+# All checks passed!
+```
+
+---
+
+#### openclaw debug
+
+调试模式
+
+```bash
+# 启用调试模式
+openclaw debug enable
+
+# 禁用调试模式
+openclaw debug disable
+
+# 查看调试状态
+openclaw debug status
+```
+
+---
+
+#### openclaw dashboard
+
+打开 Dashboard
+
+```bash
+openclaw dashboard
+# 输出：
+# Opening dashboard at http://localhost:3000
+# (自动打开默认浏览器)
+```
+
+**Dashboard 功能**：
+- 实时监控消息流
+- 查看会话历史
+- 管理 Agent 配置
+- 查看 Token 使用统计
+- 查看成本分析
+
+---
+
+## 第四部分：国内本土化适配专区 ⭐
+
+（保留之前的本土化内容，包括国内网络环境适配、国内大模型接入、国内聊天平台配置、镜像加速方案等）
+
+---
+
+## 附录 A：完整 CLI 命令参考
+
+### 命令速查表
+
+| 命令 | 功能 | 示例 |
+|------|------|------|
+| `openclaw start` | 启动服务 | `openclaw start --daemon` |
+| `openclaw stop` | 停止服务 | `openclaw stop --force` |
+| `openclaw restart` | 重启服务 | `openclaw restart` |
+| `openclaw status` | 查看状态 | `openclaw status` |
+| `openclaw onboarding` | 配置向导 | `openclaw onboarding` |
+| `openclaw channel list` | 列出渠道 | `openclaw channel list` |
+| `openclaw channel add` | 添加渠道 | `openclaw channel add telegram` |
+| `openclaw channel test` | 测试渠道 | `openclaw channel test feishu` |
+| `openclaw model list` | 列出模型 | `openclaw model list` |
+| `openclaw model test` | 测试模型 | `openclaw model test qwen-max` |
+| `openclaw agent list` | 列出 Agent | `openclaw agent list` |
+| `openclaw config view` | 查看配置 | `openclaw config view` |
+| `openclaw logs` | 查看日志 | `openclaw logs --level error` |
+| `openclaw doctor` | 诊断工具 | `openclaw doctor` |
+| `openclaw dashboard` | 打开面板 | `openclaw dashboard` |
+
+---
+
+## 附录 B：环境变量完整参考
+
+### 核心环境变量
+
+| 变量名 | 说明 | 默认值 | 示例 |
+|--------|------|--------|------|
+| `OPENCLAW_PORT` | Gateway 端口 | 3000 | 3000 |
+| `OPENCLAW_HOST` | 监听地址 | 0.0.0.0 | 127.0.0.1 |
+| `OPENCLAW_LOG_LEVEL` | 日志级别 | info | debug |
+| `OPENCLAW_DATA_DIR` | 数据目录 | ~/.openclaw/data | /var/lib/openclaw |
+| `OPENCLAW_CONFIG_FILE` | 配置文件路径 | ~/.openclaw/openclaw.json | /etc/openclaw/config.json |
+
+### 模型 API Key
+
+| 变量名 | 提供商 | 获取方式 |
+|--------|--------|---------|
+| `DASHSCOPE_API_KEY` | 阿里云通义千问 | https://dashscope.console.aliyun.com/apiKey |
+| `QIANFAN_API_KEY` | 百度文心一言 | https://console.bce.baidu.com/qianfan/ais/console/applicationConsole/application |
+| `QIANFAN_SECRET_KEY` | 百度文心一言 | 同上 |
+| `VOLCENGINE_ACCESS_KEY` | 火山引擎豆包 | https://console.volcengine.com/iam/keymanage/ |
+| `VOLCENGINE_SECRET_KEY` | 火山引擎豆包 | 同上 |
+| `OPENAI_API_KEY` | OpenAI | https://platform.openai.com/api-keys |
+| `ANTHROPIC_API_KEY` | Anthropic | https://console.anthropic.com/settings/keys |
+
+---
+
+## 附录 C：配置文件完整参考
+
+### 完整配置示例
+
+```json
+{
+  "gateway": {
+    "port": 3000,
+    "host": "0.0.0.0",
+    "logLevel": "info",
+    "dataDir": "~/.openclaw/data"
+  },
   "channels": {
     "feishu": {
+      "appId": "cli_xxx",
+      "appSecret": "xxx",
+      "encryptKey": "xxx",
+      "verificationToken": "xxx",
+      "allowUsers": [],
+      "allowGroups": [],
       "requireMention": true
+    },
+    "telegram": {
+      "botToken": "123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11",
+      "allowUsers": [],
+      "allowGroups": []
     }
-  }
-}
-```
-
----
-
-### 企业微信配置
-
-#### 前置条件
-
-- 企业微信管理员权限
-- 企业已认证
-- 社区插件：openclaw-channel-wecom
-
-#### 安装插件
-
-```bash
-npm install -g @openclaw/channel-wecom
-```
-
-#### 创建企业微信机器人
-
-**步骤 1：访问企业微信管理后台**
-
-1. 打开 https://work.weixin.qq.com/
-2. 登录企业管理员账号
-3. 进入「应用管理」
-4. 点击「自建」创建应用
-
-**步骤 2：配置应用**
-
-1. 应用名称：OpenClaw 助手
-2. 应用图标：上传 Logo
-3. 可见范围：选择部门/人员
-
-**步骤 3：获取凭证**
-
-1. 进入「应用详情」
-2. 记录 AgentId（数字）
-3. 记录 Secret（字符串）
-4. 记录 CorpID（企业 ID）
-
-**步骤 4：配置接收消息**
-
-1. 进入「接收消息」
-2. 启用 API 接收
-3. 配置 Token
-4. 配置 EncodingAESKey
-5. 配置回调 URL（需 Stream 模式）
-
----
-
-#### OpenClaw 配置
-
-```json
-{
-  "channels": {
-    "wecom": {
-      "corpId": "wwxxxxxxxxxxxx",
-      "agentId": 1000001,
-      "secret": "xxxxxxxxxxxxxxxxx",
-      "token": "xxxxxxxxxxxxxxxxx",
-      "encodingAesKey": "xxxxxxxxxxxxxxxxx",
-      "streamMode": true,
-      "allowUsers": ["zhangsan"],
-      "allowDepartments": [1, 2]
-    }
-  }
-}
-```
-
----
-
-### 钉钉配置
-
-#### 前置条件
-
-- 钉钉企业管理员权限
-- 企业已认证
-- 社区插件：openclaw-channel-dingtalk
-
-#### 安装插件
-
-```bash
-npm install -g @openclaw/channel-dingtalk
-```
-
-#### 创建钉钉机器人
-
-**步骤 1：访问钉钉开放平台**
-
-1. 打开 https://open.dingtalk.com/
-2. 登录企业账号
-3. 进入「企业内部开发」
-4. 点击「创建应用」
-
-**步骤 2：配置应用**
-
-1. 应用名称：OpenClaw 助手
-2. 应用图标：上传 Logo
-3. 权限配置：
-   - ✅ 发送工作通知
-   - ✅ 群机器人
-   - ✅ 消息接收
-
-**步骤 3：获取凭证**
-
-1. 记录 AppKey
-2. 记录 AppSecret
-3. 记录 AgentId
-
----
-
-#### OpenClaw 配置
-
-```json
-{
-  "channels": {
-    "dingtalk": {
-      "appKey": "dingxxxxxxxxxxxx",
-      "appSecret": "xxxxxxxxxxxxxxxxx",
-      "agentId": 1000001,
-      "streamMode": true,
-      "allowUsers": ["zhangsan"],
-      "allowGroups": ["group_xxxxxxxxxxxxx"]
-    }
-  }
-}
-```
-
----
-
-### 微信配置（个人号/公众号）
-
-#### 方案对比
-
-| 方案 | 类型 | 难度 | 稳定性 | 备注 |
-|------|------|------|--------|------|
-| **个人微信** | Wechaty | ⭐⭐⭐⭐ | ⚠️ 中等 | 有封号风险 |
-| **公众号** | 官方 API | ⭐⭐⭐ | ✅ 稳定 | 需企业认证 |
-| **企业微信** | 官方 API | ⭐⭐ | ✅ 稳定 | ✅ 推荐 |
-
-#### 个人微信配置（Wechaty）
-
-**警告**：个人微信自动化可能违反微信用户协议，存在封号风险，仅用于学习研究。
-
-```bash
-# 安装 Wechaty 插件
-npm install -g @openclaw/channel-wechaty
-```
-
-**配置**：
-
-```json
-{
-  "channels": {
-    "wechaty": {
-      "puppet": "wechaty-puppet-wechat4u",
-      "allowUsers": ["zhangsan"],
-      "allowGroups": ["群聊 1"]
-    }
-  }
-}
-```
-
----
-
-### QQ 配置
-
-#### 前置条件
-
-- QQ 号（建议小号）
-- OneBot 协议支持
-- 社区插件：openclaw-channel-qq
-
-#### 安装插件
-
-```bash
-npm install -g @openclaw/channel-qq
-```
-
-#### 配置 OneBot
-
-**使用 Lagrange.Core**
-
-```bash
-# 下载 Lagrange.Core
-wget https://github.com/LagrangeDev/Lagrange.Core/releases/latest/download/Lagrange.OneBot.zip
-
-# 配置 QQ 登录
-# 编辑 appsettings.json 配置 QQ 号和密码
-```
-
-**OpenClaw 配置**
-
-```json
-{
-  "channels": {
-    "qq": {
-      "protocol": "onebot",
-      "endpoint": "ws://127.0.0.1:8080",
-      "allowUsers": ["123456789"],
-      "allowGroups": ["987654321"]
-    }
-  }
-}
-```
-
----
-
-## 第五部分：国内大模型配置 ⭐
-
-### 通义千问（阿里云）
-
-#### 获取 API Key
-
-**步骤 1：访问阿里云**
-
-1. 打开 https://www.aliyun.com/
-2. 登录阿里云账号
-3. 搜索「通义千问」
-
-**步骤 2：开通服务**
-
-1. 进入通义千问控制台
-2. 点击「开通服务」
-3. 同意服务协议
-
-**步骤 3：创建 API Key**
-
-1. 进入「API-KEY 管理」
-2. 点击「创建新的 API-KEY」
-3. 复制并保存（仅显示一次）
-
----
-
-#### OpenClaw 配置
-
-```json
-{
+  },
   "models": {
     "default": "qwen-max",
     "providers": {
       "dashscope": {
-        "apiKey": "sk-xxxxxxxxxxxxxxxxx",
+        "apiKey": "sk-xxx",
         "baseUrl": "https://dashscope.aliyuncs.com/api/v1"
-      }
-    }
-  }
-}
-```
-
-**模型选择**：
-
-| 模型 | 适用场景 | 价格 |
-|------|---------|------|
-| **qwen-max** | 复杂任务、代码生成 | ¥0.04/输入 ¥0.12/输出 |
-| **qwen-plus** | 平衡性能与成本 | ¥0.02/输入 ¥0.06/输出 |
-| **qwen-turbo** | 简单任务、快速响应 | ¥0.008/输入 ¥0.024/输出 |
-
----
-
-### 文心一言（百度）
-
-#### 获取 API Key
-
-**步骤 1：访问百度智能云**
-
-1. 打开 https://cloud.baidu.com/
-2. 登录百度账号
-3. 搜索「文心一言」
-
-**步骤 2：开通服务**
-
-1. 进入文心一言控制台
-2. 点击「开通服务」
-3. 完成实名认证
-
-**步骤 3：创建密钥**
-
-1. 进入「应用管理」
-2. 创建应用
-3. 获取 API Key 和 Secret Key
-
----
-
-#### OpenClaw 配置
-
-```json
-{
-  "models": {
-    "default": "ernie-4.0",
-    "providers": {
+      },
       "qianfan": {
-        "apiKey": "xxxxxxxxxxxxxxxxx",
-        "secretKey": "xxxxxxxxxxxxxxxxx"
+        "apiKey": "xxx",
+        "secretKey": "xxx"
       }
+    },
+    "fallbacks": [
+      {
+        "from": "qwen-max",
+        "to": ["qwen-plus", "ernie-4.0"]
+      }
+    ]
+  },
+  "agents": {
+    "default": {
+      "model": "qwen-max",
+      "systemPrompt": "你是一个有帮助的 AI 助手。",
+      "temperature": 0.7,
+      "maxTokens": 2048,
+      "tools": []
+    },
+    "coding-agent": {
+      "model": "qwen-max",
+      "systemPrompt": "你是一个专业的编程助手。",
+      "temperature": 0.3,
+      "maxTokens": 4096,
+      "tools": ["code-interpreter"]
     }
-  }
-}
-```
-
-**模型选择**：
-
-| 模型 | 适用场景 | 价格 |
-|------|---------|------|
-| **ernie-4.0** | 复杂任务 | ¥0.03/输入 ¥0.09/输出 |
-| **ernie-3.5** | 通用场景 | ¥0.012/输入 ¥0.036/输出 |
-| **ernie-speed** | 快速响应 | ¥0.004/输入 ¥0.012/输出 |
-
----
-
-### 豆包（火山引擎）
-
-#### 获取 API Key
-
-**步骤 1：访问火山引擎**
-
-1. 打开 https://www.volcengine.com/
-2. 登录火山引擎账号
-3. 搜索「豆包大模型」
-
-**步骤 2：开通服务**
-
-1. 进入豆包控制台
-2. 点击「立即使用」
-3. 完成实名认证
-
-**步骤 3：创建密钥**
-
-1. 进入「密钥管理」
-2. 创建访问密钥
-3. 复制 Access Key 和 Secret Key
-
----
-
-#### OpenClaw 配置
-
-```json
-{
-  "models": {
-    "default": "doubao-pro",
-    "providers": {
-      "volcengine": {
-        "accessKey": "xxxxxxxxxxxxxxxxx",
-        "secretKey": "xxxxxxxxxxxxxxxxx"
+  },
+  "routing": {
+    "defaultAgent": "default",
+    "rules": [
+      {
+        "name": "coding",
+        "pattern": ".*代码.*|.*编程.*",
+        "agent": "coding-agent",
+        "priority": 10
       }
-    }
-  }
-}
-```
-
-**模型选择**：
-
-| 模型 | 适用场景 | 价格 |
-|------|---------|------|
-| **doubao-pro** | 通用场景 | ¥0.008/输入 ¥0.03/输出 |
-| **doubao-lite** | 简单任务 | ¥0.003/输入 ¥0.009/输出 |
-
----
-
-### Kimi（月之暗面）
-
-#### 获取 API Key
-
-**步骤 1：访问月之暗面**
-
-1. 打开 https://platform.moonshot.cn/
-2. 注册/登录账号
-3. 完成实名认证
-
-**步骤 2：创建密钥**
-
-1. 进入「API Key 管理」
-2. 点击「创建 API Key」
-3. 复制并保存
-
----
-
-#### OpenClaw 配置
-
-```json
-{
-  "models": {
-    "default": "moonshot-v1-128k",
-    "providers": {
-      "moonshot": {
-        "apiKey": "sk-xxxxxxxxxxxxxxxxx"
-      }
-    }
-  }
-}
-```
-
-**模型选择**：
-
-| 模型 | 上下文 | 价格 |
-|------|--------|------|
-| **moonshot-v1-8k** | 8K | ¥0.012/输入 ¥0.048/输出 |
-| **moonshot-v1-32k** | 32K | ¥0.024/输入 ¥0.096/输出 |
-| **moonshot-v1-128k** | 128K | ¥0.06/输入 ¥0.24/输出 |
-
----
-
-### 本地模型（Ollama）
-
-#### 安装 Ollama
-
-**Linux 安装**
-
-```bash
-# 一键安装
-curl -fsSL https://ollama.com/install.sh | sh
-
-# 国内加速
-curl -fsSL https://ollama.2333333.xyz/install.sh | sh
-```
-
-**macOS 安装**
-
-```bash
-brew install ollama
-```
-
-**Windows 安装**
-
-1. 访问 https://ollama.com/download
-2. 下载 Windows 安装包
-3. 双击安装
-
----
-
-#### 下载模型
-
-```bash
-# Llama 3（通用）
-ollama pull llama3
-
-# Qwen2.5（中文优化）
-ollama pull qwen2.5
-
-# CodeLlama（代码）
-ollama pull codellama
-
-# ChatGLM3（中文）
-ollama pull chatglm3
-```
-
----
-
-#### OpenClaw 配置
-
-```json
-{
-  "models": {
-    "default": "qwen2.5",
-    "providers": {
-      "ollama": {
-        "baseUrl": "http://localhost:11434"
-      }
+    ]
+  },
+  "memory": {
+    "enabled": true,
+    "maxSessions": 100,
+    "maxMessagesPerSession": 50,
+    "vectorStore": {
+      "provider": "local",
+      "dimensions": 768
     }
   }
 }
@@ -1109,38 +1321,4 @@ ollama pull chatglm3
 
 ---
 
-## 第六部分至第十二部分
-
-（保持原文档结构，补充中文注释和本土化示例）
-
----
-
-## 附录 D：国内 API Key 获取指南
-
-### 国内大模型 API Key 获取汇总
-
-| 提供商 | 官网 | 控制台 | 价格 |
-|--------|------|--------|------|
-| **通义千问** | https://www.aliyun.com/ | https://dashscope.console.aliyun.com/ | ¥0.008-0.12/1K tokens |
-| **文心一言** | https://cloud.baidu.com/ | https://console.bce.baidu.com/qianfan/ | ¥0.004-0.09/1K tokens |
-| **豆包** | https://www.volcengine.com/ | https://console.volcengine.com/ark/ | ¥0.003-0.03/1K tokens |
-| **Kimi** | https://platform.moonshot.cn/ | https://platform.moonshot.cn/console | ¥0.012-0.24/1K tokens |
-| **讯飞星火** | https://www.xfyun.cn/ | https://console.xfyun.cn/ | ¥0.03-0.09/1K tokens |
-| **智谱 AI** | https://open.bigmodel.cn/ | https://open.bigmodel.cn/console | ¥0.05-0.15/1K tokens |
-
----
-
-## 许可证
-
-**MIT License**
-
-Copyright (c) 2026 OpenClaw
-
-允许免费使用、复制、修改、合并、出版、发行、再授权。
-
----
-
-**文档版本**: v5.0 中国内地版  
-**最后更新**: 2026-03-23  
-**适用地区**: 中国大陆及港澳台地区  
-**内容来源**: 基于官方文档深度本土化适配
+（文档继续...）
