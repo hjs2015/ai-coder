@@ -1,0 +1,1047 @@
+# 🦞 OpenClaw 龙虾机器人完全指南
+
+> 来源：飞书云文档 - 老男孩 AI 编程实战第一期  
+> 最新修改：2026-03-22  
+> 官方文档：https://docs.openclaw.ai/zh-CN
+
+---
+
+## 📑 目录
+
+- [1. OpenClaw 概述](#1-openclaw-概述)
+- [2. 核心定位](#2-核心定位)
+- [3. 功能特性](#3-功能特性)
+- [4. 架构组成](#4-架构组成)
+- [5. 部署方式](#5-部署方式)
+- [6. 本地部署教程](#6-本地部署教程)
+- [7. 云端部署教程](#7-云端部署教程)
+- [8. 渠道配置](#8-渠道配置)
+- [9. 模型配置](#9-模型配置)
+- [10. 联网搜索配置](#10-联网搜索配置)
+- [11. 配置文件详解](#11-配置文件详解)
+- [12. 常见问题](#12-常见问题)
+
+---
+
+## 1. OpenClaw 概述
+
+### 1.1 什么是 OpenClaw
+
+**OpenClaw（龙虾机器人）** 是一款开源的 AI 自动化助手，旨在简化内容创作与运营中的机械性工作。
+
+**官方网址**: https://docs.openclaw.ai/zh-CN
+
+**核心定位**: 简化创作与运营机械工作
+
+### 1.2 开源协议
+
+- **许可证**: MIT License
+- **费用**: OpenClaw 本身免费开源
+- **大模型**: 使用大模型服务需要付费（按 Token 计费）
+
+### 1.3 适用人群
+
+| 用户类型 | 核心价值 | 典型场景 |
+|---------|---------|---------|
+| **普通人** | 零门槛私人数字管家 | 日常任务管理、信息查询、日程安排 |
+| **IT 从业者** | 技术流程效率工具 | 代码生成、自动化脚本、技术文档 |
+| **企业用户** | 轻量化办公自动化助手 | 工作流程自动化、数据报表、客服响应 |
+| **自媒体** | 内容运营提速工具 | 选题素材、内容排版、运营分发、数据复盘 |
+
+---
+
+## 2. 核心定位
+
+### 2.1 解决什么问题
+
+OpenClaw 专注于解决内容创作与运营中的**机械性重复工作**：
+
+- ✅ 自动收集选题素材
+- ✅ 智能内容排版
+- ✅ 多平台运营分发
+- ✅ 数据自动复盘
+
+### 2.2 不做什么
+
+- ❌ 不替代人类创意
+- ❌ 不做决策判断
+- ❌ 不处理复杂逻辑
+
+### 2.3 设计理念
+
+**简单、高效、可扩展**
+
+- 开箱即用，无需复杂配置
+- 模块化设计，支持自定义扩展
+- 支持多种聊天渠道接入
+- 支持多种大模型对接
+
+---
+
+## 3. 功能特性
+
+### 3.1 核心功能
+
+| 功能模块 | 描述 | 适用场景 |
+|---------|------|---------|
+| **选题素材** | 自动收集热点、关键词、竞品分析 | 内容策划、市场调研 |
+| **内容排版** | 自动格式化、美化、适配多平台 | 公众号、知乎、小红书 |
+| **运营分发** | 一键发布到多个平台 | 多平台同步运营 |
+| **数据复盘** | 自动收集阅读、点赞、评论数据 | 效果分析、优化策略 |
+
+### 3.2 扩展功能
+
+- **Skills 系统**: 支持自定义技能扩展
+- **MCP 协议**: 模型上下文协议，支持复杂对话
+- **联网搜索**: 实时获取最新信息
+- **定时任务**: 自动化执行计划任务
+
+---
+
+## 4. 架构组成
+
+### 4.1 整体架构
+
+```
+┌─────────────────────────────────────────────────┐
+│              用户交互层（聊天渠道）               │
+│   飞书 │ 钉钉 │ 企业微信 │ 电报 │ QQ │ 微信     │
+└─────────────────────────────────────────────────┘
+                        ↓
+┌─────────────────────────────────────────────────┐
+│              OpenClaw 核心引擎                    │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐      │
+│  │ 消息处理 │  │ 技能管理 │  │ 上下文管理│      │
+│  └──────────┘  └──────────┘  └──────────┘      │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐      │
+│  │ 配置管理 │  │ 日志系统 │  │ 定时任务 │      │
+│  └──────────┘  └──────────┘  └──────────┘      │
+└─────────────────────────────────────────────────┘
+                        ↓
+┌─────────────────────────────────────────────────┐
+│              大模型服务层                         │
+│  GPT-4 │ Claude │ Gemini │ 通义千问 │ 文心一言  │
+└─────────────────────────────────────────────────┘
+                        ↓
+┌─────────────────────────────────────────────────┐
+│              外部服务层                           │
+│  联网搜索 │ 数据库 │ API 接口 │ 文件存储        │
+└─────────────────────────────────────────────────┘
+```
+
+### 4.2 核心组件
+
+| 组件 | 说明 | 作用 |
+|------|------|------|
+| **Core** | 核心引擎 | 消息路由、技能调度、上下文管理 |
+| **Skills** | 技能系统 | 扩展功能模块，支持自定义 |
+| **Channels** | 渠道适配器 | 对接飞书、钉钉、企业微信等 |
+| **Models** | 模型适配器 | 对接 GPT、Claude、Gemini 等 |
+| **Config** | 配置管理 | YAML 配置文件解析 |
+| **Logger** | 日志系统 | 运行日志记录与查询 |
+
+---
+
+## 5. 部署方式
+
+### 5.1 部署方式对比
+
+| 部署方式 | 优点 | 缺点 | 适用场景 |
+|---------|------|------|---------|
+| **本地部署** | 数据私密、完全控制、免费 | 需要服务器资源、自行维护 | 个人使用、小企业 |
+| **云端部署** | 免维护、高可用、弹性扩展 | 需要付费、数据在云端 | 企业用户、大规模使用 |
+| **Docker 部署** | 环境隔离、一键部署、易迁移 | 需要 Docker 基础 | 推荐方案 |
+
+### 5.2 系统要求
+
+**最低配置**:
+- CPU: 2 核
+- 内存：4GB
+- 磁盘：20GB
+- 系统：Linux/macOS/Windows
+
+**推荐配置**:
+- CPU: 4 核+
+- 内存：8GB+
+- 磁盘：50GB+
+- 系统：Ubuntu 20.04+/CentOS 8+
+
+---
+
+## 6. 本地部署教程
+
+### 6.1 环境准备
+
+#### 6.1.1 安装 Python
+
+```bash
+# Ubuntu/Debian
+sudo apt update
+sudo apt install python3 python3-pip python3-venv
+
+# CentOS/RHEL
+sudo yum install python3 python3-pip
+
+# macOS
+brew install python3
+```
+
+#### 6.1.2 安装 Git
+
+```bash
+# Ubuntu/Debian
+sudo apt install git
+
+# CentOS/RHEL
+sudo yum install git
+
+# macOS
+brew install git
+```
+
+### 6.2 安装 OpenClaw
+
+#### 6.2.1 克隆仓库
+
+```bash
+# 克隆 OpenClaw 仓库
+git clone https://github.com/cmdop/openclaw.git
+cd openclaw
+```
+
+#### 6.2.2 创建虚拟环境
+
+```bash
+# 创建虚拟环境
+python3 -m venv venv
+
+# 激活虚拟环境
+source venv/bin/activate  # Linux/macOS
+# 或
+venv\Scripts\activate     # Windows
+```
+
+#### 6.2.3 安装依赖
+
+```bash
+# 安装依赖包
+pip install -r requirements.txt
+```
+
+### 6.3 配置 OpenClaw
+
+#### 6.3.1 复制配置文件
+
+```bash
+# 复制示例配置
+cp config.example.yaml config.yaml
+```
+
+#### 6.3.2 编辑配置文件
+
+```yaml
+# config.yaml
+app:
+  name: "OpenClaw"
+  version: "1.0.0"
+
+# 模型配置
+model:
+  provider: "openai"  # 或 claude/gemini/qwen
+  api_key: "your-api-key"
+  model_name: "gpt-4"
+
+# 渠道配置
+channel:
+  feishu:
+    enabled: true
+    app_id: "cli_xxxxxxxxx"
+    app_secret: "xxxxxxxxx"
+    verification_token: "xxxxxxxxx"
+```
+
+### 6.4 启动 OpenClaw
+
+#### 6.4.1 测试运行
+
+```bash
+# 测试配置
+python3 -m openclaw --test
+
+# 启动服务
+python3 -m openclaw
+```
+
+#### 6.4.2 后台运行
+
+```bash
+# 使用 nohup 后台运行
+nohup python3 -m openclaw > openclaw.log 2>&1 &
+
+# 查看日志
+tail -f openclaw.log
+```
+
+#### 6.4.3 使用 systemd 管理（推荐）
+
+```bash
+# 创建 systemd 服务文件
+sudo vim /etc/systemd/system/openclaw.service
+```
+
+**服务文件内容**:
+```ini
+[Unit]
+Description=OpenClaw AI Assistant
+After=network.target
+
+[Service]
+Type=simple
+User=your-user
+WorkingDirectory=/path/to/openclaw
+Environment="PATH=/path/to/openclaw/venv/bin"
+ExecStart=/path/to/openclaw/venv/bin/python3 -m openclaw
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
+```
+
+**启动服务**:
+```bash
+# 重载 systemd
+sudo systemctl daemon-reload
+
+# 启用服务
+sudo systemctl enable openclaw
+
+# 启动服务
+sudo systemctl start openclaw
+
+# 查看状态
+sudo systemctl status openclaw
+
+# 查看日志
+sudo journalctl -u openclaw -f
+```
+
+---
+
+## 7. 云端部署教程
+
+### 7.1 选择云服务商
+
+| 云服务商 | 优点 | 缺点 | 推荐指数 |
+|---------|------|------|---------|
+| **阿里云** | 国内访问快、生态完善 | 价格中等 | ⭐⭐⭐⭐ |
+| **腾讯云** | 性价比高、服务好 | 生态略逊 | ⭐⭐⭐⭐ |
+| **华为云** | 安全可靠、政企首选 | 价格略高 | ⭐⭐⭐ |
+| **AWS** | 全球覆盖、功能强大 | 国内访问慢 | ⭐⭐⭐ |
+
+### 7.2 云服务器配置
+
+**推荐配置**（适合中小企业）:
+- 实例：2 核 4G
+- 系统：Ubuntu 20.04 LTS
+- 带宽：3-5Mbps
+- 存储：50GB SSD
+
+**预估费用**:
+- 阿里云：约 ¥200-300/月
+- 腾讯云：约 ¥180-280/月
+- 华为云：约 ¥220-320/月
+
+### 7.3 部署步骤
+
+#### 7.3.1 购买云服务器
+
+1. 注册云服务商账号
+2. 实名认证
+3. 选择配置并购买
+4. 设置 root 密码
+
+#### 7.3.2 连接服务器
+
+```bash
+# SSH 连接
+ssh root@your-server-ip
+
+# 输入密码登录
+```
+
+#### 7.3.3 安装环境
+
+```bash
+# 更新系统
+sudo apt update && sudo apt upgrade -y
+
+# 安装 Python 和 Git
+sudo apt install -y python3 python3-pip python3-venv git
+
+# 安装防火墙
+sudo apt install -y ufw
+sudo ufw allow 22/tcp
+sudo ufw enable
+```
+
+#### 7.3.4 部署 OpenClaw
+
+参考 [6.2 安装 OpenClaw](#62-安装-openclaw) 步骤
+
+### 7.4 域名与 HTTPS
+
+#### 7.4.1 绑定域名
+
+1. 在云服务商控制台绑定域名
+2. 配置 DNS 解析（A 记录指向服务器 IP）
+3. 等待 DNS 生效（通常 10 分钟）
+
+#### 7.4.2 配置 HTTPS
+
+```bash
+# 安装 Certbot
+sudo apt install -y certbot python3-certbot-nginx
+
+# 获取证书
+sudo certbot --nginx -d your-domain.com
+
+# 自动续期
+sudo certbot renew --dry-run
+```
+
+---
+
+## 8. 渠道配置
+
+### 8.1 支持的聊天渠道
+
+| 渠道 | 状态 | 配置难度 | 适用场景 |
+|------|------|---------|---------|
+| **飞书** | ✅ 已支持 | ⭐⭐ | 企业办公 |
+| **钉钉** | ✅ 已支持 | ⭐⭐ | 企业办公 |
+| **企业微信** | ✅ 已支持 | ⭐⭐⭐ | 企业办公 |
+| **电报 (Telegram)** | ✅ 已支持 | ⭐ | 个人使用 |
+| **QQ** | ✅ 已支持 | ⭐⭐⭐ | 个人使用 |
+| **微信** | ⚠️ 有限支持 | ⭐⭐⭐⭐ | 个人使用 |
+
+### 8.2 飞书渠道配置
+
+#### 8.2.1 创建飞书应用
+
+1. 访问 [飞书开放平台](https://open.feishu.cn/)
+2. 登录飞书账号
+3. 点击"创建应用"
+4. 填写应用信息（名称、图标、描述）
+5. 获取 `App ID` 和 `App Secret`
+
+#### 8.2.2 配置机器人
+
+1. 进入应用管理后台
+2. 添加"机器人"功能
+3. 获取 `Verification Token`
+4. 配置事件订阅（接收消息）
+5. 配置权限（发送消息、读取消息等）
+
+#### 8.2.3 发布应用
+
+1. 提交应用审核
+2. 审核通过后发布
+3. 将机器人添加到群聊
+
+#### 8.2.4 配置文件
+
+```yaml
+# config.yaml
+channel:
+  feishu:
+    enabled: true
+    app_id: "cli_xxxxxxxxxxxxx"
+    app_secret: "xxxxxxxxxxxxxxxxxxxxxxxx"
+    verification_token: "xxxxxxxxxxxxxxxxxxxxxxxx"
+```
+
+### 8.3 钉钉渠道配置
+
+#### 8.3.1 创建钉钉应用
+
+1. 访问 [钉钉开放平台](https://open.dingtalk.com/)
+2. 登录钉钉账号
+3. 创建企业内部应用
+4. 获取 `AppKey` 和 `AppSecret`
+
+#### 8.3.2 配置机器人
+
+1. 添加"机器人"功能
+2. 获取 `Webhook` 地址
+3. 配置安全设置（加签密钥）
+
+#### 8.3.3 配置文件
+
+```yaml
+channel:
+  dingtalk:
+    enabled: true
+    app_key: "xxxxxxxxxxx"
+    app_secret: "xxxxxxxxxxxxxxxxxxxxxxxx"
+    webhook: "https://oapi.dingtalk.com/robot/send?access_token=xxx"
+    secret: "xxxxxxxxxxxxxxxxxxxxxxxx"
+```
+
+### 8.4 企业微信渠道配置
+
+#### 8.4.1 创建企业微信应用
+
+1. 访问 [企业微信管理后台](https://work.weixin.qq.com/)
+2. 登录企业微信
+3. 创建自建应用
+4. 获取 `CorpID`、`AgentID`、`Secret`
+
+#### 8.4.2 配置文件
+
+```yaml
+channel:
+  wecom:
+    enabled: true
+    corp_id: "wwxxxxxxxxxxxx"
+    agent_id: 1000001
+    secret: "xxxxxxxxxxxxxxxxxxxxxxxx"
+    token: "xxxxxxxxxxxxxxxx"
+    encoding_aes_key: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+```
+
+### 8.5 电报（Telegram）渠道配置
+
+#### 8.5.1 创建 Telegram 机器人
+
+1. 在 Telegram 搜索 `@BotFather`
+2. 发送 `/newbot` 创建机器人
+3. 设置机器人名称和用户名
+4. 获取 `Bot Token`
+
+#### 8.5.2 配置文件
+
+```yaml
+channel:
+  telegram:
+    enabled: true
+    bot_token: "xxxxxxxxx:xxxxxxxxxxxxxxxxxxxxxxxxxxx"
+```
+
+### 8.6 QQ 渠道配置
+
+#### 8.6.1 使用 OneBot 协议
+
+1. 安装 OneBot 适配器（如 go-cqhttp）
+2. 配置 QQ 账号登录
+3. 获取 WebSocket 连接地址
+
+#### 8.6.2 配置文件
+
+```yaml
+channel:
+  qq:
+    enabled: true
+    protocol: "onebot"
+    ws_url: "ws://127.0.0.1:8080/ws"
+    access_token: "your-token"
+```
+
+---
+
+## 9. 模型配置
+
+### 9.1 支持的大模型
+
+| 厂商 | 模型 | 状态 | 配置难度 |
+|------|------|------|---------|
+| **OpenAI** | GPT-4/GPT-3.5 | ✅ 已支持 | ⭐ |
+| **Anthropic** | Claude 3/2 | ✅ 已支持 | ⭐ |
+| **Google** | Gemini Pro | ✅ 已支持 | ⭐⭐ |
+| **阿里** | 通义千问 Qwen | ✅ 已支持 | ⭐⭐ |
+| **百度** | 文心一言 | ✅ 已支持 | ⭐⭐ |
+| **腾讯** | 混元大模型 | ✅ 已支持 | ⭐⭐ |
+| **智谱** | ChatGLM | ✅ 已支持 | ⭐⭐ |
+
+### 9.2 OpenAI GPT 配置
+
+#### 9.2.1 获取 API Key
+
+1. 访问 [OpenAI 平台](https://platform.openai.com/)
+2. 注册/登录账号
+3. 进入 API Keys 页面
+4. 创建新的 API Key
+
+#### 9.2.2 配置文件
+
+```yaml
+model:
+  provider: "openai"
+  api_key: "sk-xxxxxxxxxxxxxxxxxxxxxxxx"
+  model_name: "gpt-4"  # 或 gpt-3.5-turbo
+  base_url: "https://api.openai.com/v1"  # 可选，使用代理时配置
+  temperature: 0.7
+  max_tokens: 2048
+```
+
+### 9.3 Anthropic Claude 配置
+
+#### 9.3.1 获取 API Key
+
+1. 访问 [Anthropic 控制台](https://console.anthropic.com/)
+2. 注册/登录账号
+3. 获取 API Key
+
+#### 9.3.2 配置文件
+
+```yaml
+model:
+  provider: "anthropic"
+  api_key: "sk-ant-xxxxxxxxxxxxxxxxxxxxxxxx"
+  model_name: "claude-3-opus-20240229"  # 或 claude-3-sonnet
+  max_tokens: 2048
+```
+
+### 9.4 Google Gemini 配置
+
+#### 9.4.1 获取 API Key
+
+1. 访问 [Google AI Studio](https://makersuite.google.com/app/apikey)
+2. 登录 Google 账号
+3. 创建 API Key
+
+#### 9.4.2 配置文件
+
+```yaml
+model:
+  provider: "google"
+  api_key: "xxxxxxxxxxxxxxxxxxxxxxxx"
+  model_name: "gemini-pro"
+```
+
+### 9.5 阿里通义千问配置
+
+#### 9.5.1 获取 API Key
+
+1. 访问 [阿里云百炼](https://bailian.console.aliyun.com/)
+2. 登录阿里云账号
+3. 开通 DashScope 服务
+4. 创建 API Key
+
+#### 9.5.2 配置文件
+
+```yaml
+model:
+  provider: "dashscope"
+  api_key: "sk-xxxxxxxxxxxxxxxxxxxxxxxx"
+  model_name: "qwen-max"  # 或 qwen-plus, qwen-turbo
+```
+
+### 9.6 百度文心一言配置
+
+#### 9.6.1 获取 API Key
+
+1. 访问 [百度智能云](https://cloud.baidu.com/)
+2. 注册/登录账号
+3. 开通文心一言服务
+4. 获取 API Key 和 Secret Key
+
+#### 9.6.2 配置文件
+
+```yaml
+model:
+  provider: "wenxin"
+  api_key: "xxxxxxxxxxxxxxxxxxxxxxxx"
+  secret_key: "xxxxxxxxxxxxxxxxxxxxxxxx"
+  model_name: "ernie-bot-4"
+```
+
+### 9.7 模型选择建议
+
+| 使用场景 | 推荐模型 | 理由 |
+|---------|---------|------|
+| **代码生成** | GPT-4 / Claude 3 | 代码能力强，逻辑清晰 |
+| **中文内容** | 通义千问 / 文心一言 | 中文理解好，本地化佳 |
+| **性价比** | GPT-3.5 / Qwen-Turbo | 价格低，速度快 |
+| **复杂任务** | GPT-4 / Claude 3 Opus | 能力强，准确率高 |
+| **创意写作** | Claude 3 | 文笔流畅，创意丰富 |
+
+---
+
+## 10. 联网搜索配置
+
+### 10.1 支持的搜索引擎
+
+| 搜索引擎 | 状态 | 配置难度 | 免费额度 |
+|---------|------|---------|---------|
+| **Google** | ✅ 已支持 | ⭐⭐⭐ | 100 次/天 |
+| **Bing** | ✅ 已支持 | ⭐⭐ | 1000 次/月 |
+| **百度** | ✅ 已支持 | ⭐⭐ | 有限 |
+| **Tavily** | ✅ 已支持 | ⭐ | 1000 次/月 |
+
+### 10.2 Google Custom Search 配置
+
+#### 10.2.1 获取 API Key
+
+1. 访问 [Google Cloud Console](https://console.cloud.google.com/)
+2. 创建项目
+3. 启用 Custom Search API
+4. 创建 API Key
+
+#### 10.2.2 创建搜索引擎
+
+1. 访问 [Programmable Search Engine](https://programmablesearchengine.google.com/)
+2. 创建新搜索引擎
+3. 获取 `Search Engine ID` (cx)
+
+#### 10.2.3 配置文件
+
+```yaml
+search:
+  enabled: true
+  provider: "google"
+  api_key: "xxxxxxxxxxxxxxxxxxxxxxxx"
+  search_engine_id: "xxxxxxxxxxxxx"
+```
+
+### 10.3 Bing Search 配置
+
+#### 10.3.1 获取 API Key
+
+1. 访问 [Azure Portal](https://portal.azure.com/)
+2. 创建 Bing Search 资源
+3. 获取 API Key
+
+#### 10.3.2 配置文件
+
+```yaml
+search:
+  enabled: true
+  provider: "bing"
+  api_key: "xxxxxxxxxxxxxxxxxxxxxxxx"
+  endpoint: "https://api.bing.microsoft.com/v7.0/search"
+```
+
+### 10.4 Tavily Search 配置
+
+#### 10.4.1 获取 API Key
+
+1. 访问 [Tavily](https://tavily.com/)
+2. 注册账号
+3. 获取 API Key
+
+#### 10.4.2 配置文件
+
+```yaml
+search:
+  enabled: true
+  provider: "tavily"
+  api_key: "tvly-xxxxxxxxxxxxxxxxxxxxxxxx"
+```
+
+---
+
+## 11. 配置文件详解
+
+### 11.1 完整配置示例
+
+```yaml
+# OpenClaw 完整配置文件
+
+# 应用配置
+app:
+  name: "OpenClaw"
+  version: "1.0.0"
+  debug: false
+  log_level: "INFO"
+  log_file: "logs/openclaw.log"
+
+# 模型配置
+model:
+  provider: "openai"
+  api_key: "sk-xxxxxxxxxxxxxxxxxxxxxxxx"
+  model_name: "gpt-4"
+  base_url: "https://api.openai.com/v1"
+  temperature: 0.7
+  max_tokens: 2048
+  timeout: 30
+
+# 渠道配置
+channel:
+  # 飞书
+  feishu:
+    enabled: true
+    app_id: "cli_xxxxxxxxxxxxx"
+    app_secret: "xxxxxxxxxxxxxxxxxxxxxxxx"
+    verification_token: "xxxxxxxxxxxxxxxxxxxxxxxx"
+  
+  # 钉钉
+  dingtalk:
+    enabled: false
+    app_key: "xxxxxxxxxxx"
+    app_secret: "xxxxxxxxxxxxxxxxxxxxxxxx"
+    webhook: "https://oapi.dingtalk.com/robot/send?access_token=xxx"
+  
+  # 企业微信
+  wecom:
+    enabled: false
+    corp_id: "wwxxxxxxxxxxxx"
+    agent_id: 1000001
+    secret: "xxxxxxxxxxxxxxxxxxxxxxxx"
+  
+  # Telegram
+  telegram:
+    enabled: false
+    bot_token: "xxxxxxxxx:xxxxxxxxxxxxxxxxxxxxxxxxxxx"
+
+# 搜索配置
+search:
+  enabled: true
+  provider: "google"
+  api_key: "xxxxxxxxxxxxxxxxxxxxxxxx"
+  search_engine_id: "xxxxxxxxxxxxx"
+
+# 数据库配置
+database:
+  type: "sqlite"
+  path: "data/openclaw.db"
+  # 或使用 MySQL
+  # type: "mysql"
+  # host: "localhost"
+  # port: 3306
+  # user: "openclaw"
+  # password: "your-password"
+  # database: "openclaw"
+
+# 定时任务配置
+scheduler:
+  enabled: true
+  timezone: "Asia/Shanghai"
+  tasks:
+    - name: "daily_report"
+      cron: "0 8 * * *"
+      handler: "report.daily"
+    - name: "weekly_summary"
+      cron: "0 9 * * 1"
+      handler: "report.weekly"
+
+# Skills 配置
+skills:
+  enabled: true
+  paths:
+    - "skills/builtin"
+    - "skills/custom"
+  
+  # 自定义技能配置
+  custom_skill_name:
+    enabled: true
+    config_key: "config_value"
+
+# 安全配置
+security:
+  api_tokens:
+    - "your-api-token-1"
+    - "your-api-token-2"
+  
+  ip_whitelist:
+    - "127.0.0.1"
+    - "192.168.1.0/24"
+
+# 性能配置
+performance:
+  max_concurrent_tasks: 10
+  task_timeout: 300
+  cache_enabled: true
+  cache_ttl: 3600
+```
+
+### 11.2 环境变量配置
+
+也可以使用环境变量覆盖配置文件：
+
+```bash
+# .env 文件
+OPENCLAW_MODEL_PROVIDER=openai
+OPENCLAW_MODEL_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxx
+OPENCLAW_MODEL_MODEL_NAME=gpt-4
+OPENCLAW_CHANNEL_FEISHU_APP_ID=cli_xxxxxxxxxxxxx
+OPENCLAW_CHANNEL_FEISHU_APP_SECRET=xxxxxxxxxxxxxxxxxxxxxxxx
+```
+
+### 11.3 配置优先级
+
+**优先级从高到低**:
+1. 命令行参数
+2. 环境变量
+3. config.yaml 配置文件
+4. 默认值
+
+---
+
+## 12. 常见问题
+
+### 12.1 安装问题
+
+#### Q1: pip install 报错
+
+**问题**: `ERROR: Could not install packages due to an EnvironmentError`
+
+**解决**:
+```bash
+# 使用国内镜像
+pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
+
+# 或使用 --user 参数
+pip install --user -r requirements.txt
+```
+
+#### Q2: Python 版本不兼容
+
+**问题**: `SyntaxError: invalid syntax`
+
+**解决**:
+```bash
+# 检查 Python 版本
+python3 --version
+
+# OpenClaw 需要 Python 3.8+
+# 如果版本过低，请升级 Python
+```
+
+### 12.2 配置问题
+
+#### Q3: 配置文件找不到
+
+**问题**: `FileNotFoundError: config.yaml not found`
+
+**解决**:
+```bash
+# 复制示例配置
+cp config.example.yaml config.yaml
+
+# 或指定配置文件路径
+python3 -m openclaw --config /path/to/config.yaml
+```
+
+#### Q4: API Key 无效
+
+**问题**: `Invalid API Key` 或 `401 Unauthorized`
+
+**解决**:
+1. 检查 API Key 是否正确复制（无多余空格）
+2. 确认 API Key 未过期
+3. 确认账号有足够的额度
+4. 检查网络是否需要代理
+
+### 12.3 渠道问题
+
+#### Q5: 飞书机器人收不到消息
+
+**问题**: 消息发送到飞书群，机器人无响应
+
+**解决**:
+1. 检查机器人是否已添加到群聊
+2. 检查事件订阅配置是否正确
+3. 检查 Verification Token 是否匹配
+4. 查看日志确认是否收到回调
+
+#### Q6: 钉钉机器人推送失败
+
+**问题**: `400 invalid signature`
+
+**解决**:
+```yaml
+# 检查加签密钥是否正确
+channel:
+  dingtalk:
+    secret: "SECxxxxxxxxxxxxxxxxxxxxxxxx"  # 包含 SEC 前缀
+```
+
+### 12.4 模型问题
+
+#### Q7: GPT-4 调用失败
+
+**问题**: `Rate limit exceeded` 或 `Quota exceeded`
+
+**解决**:
+1. 检查 API Key 是否有 GPT-4 权限
+2. 检查是否超过速率限制
+3. 检查账户余额是否充足
+4. 考虑降级使用 GPT-3.5
+
+#### Q8: 响应速度太慢
+
+**问题**: 模型响应时间超过 30 秒
+
+**解决**:
+```yaml
+# 降低 max_tokens
+model:
+  max_tokens: 1024  # 从 2048 降低
+
+# 或使用更快的模型
+model:
+  model_name: "gpt-3.5-turbo"  # 从 gpt-4 降级
+```
+
+### 12.5 性能问题
+
+#### Q9: 内存占用过高
+
+**问题**: 服务运行一段时间后内存超过 2GB
+
+**解决**:
+```yaml
+# 限制并发任务数
+performance:
+  max_concurrent_tasks: 5
+
+# 启用缓存
+performance:
+  cache_enabled: true
+  cache_ttl: 1800
+```
+
+#### Q10: 日志文件过大
+
+**问题**: logs/openclaw.log 超过 1GB
+
+**解决**:
+```yaml
+# 配置日志轮转
+app:
+  log_level: "WARNING"  # 降低日志级别
+  log_max_bytes: 10485760  # 10MB
+  log_backup_count: 5  # 保留 5 个备份
+```
+
+---
+
+## 📚 参考资源
+
+### 官方链接
+
+- **OpenClaw 官方文档**: https://docs.openclaw.ai/zh-CN
+- **GitHub 仓库**: https://github.com/cmdop/openclaw
+- **CmdOp 官网**: https://cmdop.com/
+
+### 学习资源
+
+- **飞书开放平台**: https://open.feishu.cn/
+- **钉钉开放平台**: https://open.dingtalk.com/
+- **企业微信文档**: https://developer.work.weixin.qq.com/
+- **OpenAI 文档**: https://platform.openai.com/docs
+- **Anthropic 文档**: https://docs.anthropic.com/
+
+### 社区支持
+
+- **GitHub Issues**: 提交 Bug 和功能建议
+- **Discord 社区**: 加入用户交流群
+- **微信公众号**: 关注最新动态
+
+---
+
+**文档整理时间**: 2026-03-22  
+**来源**: 飞书云文档 - 老男孩 AI 编程实战第一期  
+**整理者**: hjs2015  
+**版本**: v1.0
