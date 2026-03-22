@@ -2,24 +2,24 @@
 
 > **来源**: 飞书云文档 - 老男孩 AI 编程实战第一期  
 > **最新修改**: 2026-03-22  
-> **官方文档**: https://docs.openclaw.ai/zh-CN  
+> **官方文档**: https://docs.openclaw.ai/  
+> **GitHub**: https://github.com/openclaw/openclaw  
+> **Discord**: https://discord.com/invite/clawd  
 > **飞书文档**: https://my.feishu.cn/wiki/AlBuwnaeTidXVOkT96gcuavrn8b
 
 ---
 
 ## 📑 目录
 
-### 第 0 部分 AI 编程基础
-- [0.1 AI 编程产品分类](#01-ai-编程产品分类)
-- [0.2 AI 编程主流模型](#02-ai-编程主流模型)
-- [0.3 AI 编程必知术语](#03-ai-编程必知术语)
+### 第 0 部分 快速开始
+- [0.1 什么是 OpenClaw](#01-什么是-openclaw)
+- [0.2 核心特性](#02-核心特性)
+- [0.3 快速安装](#03-快速安装)
 
-### 第 1 部分 OpenClaw 概述
-- [1.1 什么是 OpenClaw](#11-什么是-openclaw)
-- [1.2 龙虾的由来](#12-龙虾的由来)
-- [1.3 为什么这么火](#13-为什么这么火)
-- [1.4 开源协议](#14-开源协议)
-- [1.5 适用人群](#15-适用人群)
+### 第 1 部分 AI 编程基础
+- [1.1 AI 编程产品分类](#11-ai-编程产品分类)
+- [1.2 AI 编程主流模型](#12-ai-编程主流模型)
+- [1.3 AI 编程必知术语](#13-ai-编程必知术语)
 
 ### 第 2 部分 核心定位
 - [2.1 解决什么问题](#21-解决什么问题)
@@ -92,7 +92,101 @@
 
 ---
 
-## 第 0 部分 AI 编程基础
+## 第 0 部分 快速开始
+
+### 0.1 什么是 OpenClaw
+
+**OpenClaw（龙虾机器人）** 是一款开源的 AI 自动化助手，旨在简化内容创作与运营中的机械性工作。
+
+**核心定位**: 基于大模型的自动化工具，帮你完成重复性工作
+
+**官方网站**: 
+- 文档：https://docs.openclaw.ai/
+- GitHub: https://github.com/openclaw/openclaw
+- Discord: https://discord.com/invite/clawd
+
+**开源协议**: MIT License（免费开源）
+
+**大模型费用**: 使用大模型服务需要付费（按 Token 计费）
+
+### 0.2 核心特性
+
+| 特性 | 说明 | 优势 |
+|------|------|------|
+| **多渠道支持** | 飞书、钉钉、企业微信、Telegram、QQ | 随时随地访问 |
+| **多模型支持** | GPT-4、Claude、Gemini、通义千问、文心一言 | 灵活选择，成本可控 |
+| **Skills 系统** | 可扩展的技能插件 | 自定义功能，无限可能 |
+| **MCP 协议** | 模型上下文协议 | 连接外部工具，突破局限 |
+| **联网搜索** | Google、Bing、Tavily | 实时获取最新信息 |
+| **定时任务** | Cron 表达式配置 | 自动化执行计划任务 |
+| **本地部署** | 完全控制，数据私密 | 安全可靠，免费使用 |
+
+### 0.3 快速安装
+
+#### 方式一：npm 安装（推荐）
+
+```bash
+# 安装 Node.js (v18+)
+# https://nodejs.org/
+
+# 全局安装 OpenClaw
+npm install -g @openclaw/core
+
+# 验证安装
+openclaw --version
+
+# 初始化配置
+openclaw init
+
+# 启动服务
+openclaw start
+```
+
+#### 方式二：Docker 安装
+
+```bash
+# 拉取镜像
+docker pull openclaw/core:latest
+
+# 运行容器
+docker run -d \
+  --name openclaw \
+  -p 3000:3000 \
+  -v ./config:/app/config \
+  -v ./data:/app/data \
+  openclaw/core:latest
+```
+
+#### 方式三：源码安装
+
+```bash
+# 克隆仓库
+git clone https://github.com/openclaw/openclaw.git
+cd openclaw
+
+# 安装依赖
+npm install
+
+# 编译构建
+npm run build
+
+# 启动服务
+npm start
+```
+
+### 0.4 适用人群
+
+| 用户类型 | 核心价值 | 典型场景 |
+|---------|---------|---------|
+| **普通人** | 零门槛私人数字管家 | 日常任务管理、信息查询、日程安排 |
+| **IT 从业者** | 技术流程效率工具 | 代码生成、自动化脚本、技术文档 |
+| **企业用户** | 轻量化办公自动化助手 | 工作流程自动化、数据报表、客服响应 |
+| **自媒体** | 内容运营提速工具 | 选题素材、内容排版、运营分发、数据复盘 |
+| **开发者** | 可扩展的 AI 平台 | Skills 开发、插件定制、二次开发 |
+
+---
+
+## 第 1 部分 AI 编程基础
 
 ### 0.1 AI 编程产品分类
 
@@ -382,15 +476,17 @@ OpenClaw 专注于解决内容创作与运营中的**机械性重复工作**：
 
 ---
 
-## 5. 部署方式
+## 第 5 部分 部署方式
 
 ### 5.1 部署方式对比
 
-| 部署方式 | 优点 | 缺点 | 适用场景 |
-|---------|------|------|---------|
-| **本地部署** | 数据私密、完全控制、免费 | 需要服务器资源、自行维护 | 个人使用、小企业 |
-| **云端部署** | 免维护、高可用、弹性扩展 | 需要付费、数据在云端 | 企业用户、大规模使用 |
-| **Docker 部署** | 环境隔离、一键部署、易迁移 | 需要 Docker 基础 | 推荐方案 |
+| 部署方式 | 优点 | 缺点 | 适用场景 | 推荐指数 |
+|---------|------|------|---------|---------|
+| **npm 安装** | 官方推荐、更新及时、跨平台 | 需要 Node.js 环境 | ⭐⭐⭐⭐⭐ 强烈推荐 |
+| **Docker 部署** | 环境隔离、一键部署、易迁移 | 需要 Docker 基础 | ⭐⭐⭐⭐⭐ 强烈推荐 |
+| **源码安装** | 完全控制、可定制、最新代码 | 需要编译构建 | ⭐⭐⭐⭐ 开发者推荐 |
+| **本地部署** | 数据私密、完全控制、免费 | 需要服务器资源、自行维护 | ⭐⭐⭐ 个人使用 |
+| **云端部署** | 免维护、高可用、弹性扩展 | 需要付费、数据在云端 | ⭐⭐⭐⭐ 企业用户 |
 
 ### 5.2 系统要求
 
@@ -399,130 +495,253 @@ OpenClaw 专注于解决内容创作与运营中的**机械性重复工作**：
 - 内存：4GB
 - 磁盘：20GB
 - 系统：Linux/macOS/Windows
+- Node.js: v18+ (npm 安装)
+- 或 Docker: 20.10+ (Docker 安装)
 
 **推荐配置**:
 - CPU: 4 核+
 - 内存：8GB+
 - 磁盘：50GB+
-- 系统：Ubuntu 20.04+/CentOS 8+
+- 系统：Ubuntu 20.04+/CentOS 8+/macOS 12+
+- Node.js: v20 LTS
+- Docker: 最新版
 
 ---
 
-## 6. 本地部署教程
+## 第 6 部分 本地部署教程
 
 ### 6.1 环境准备
 
-#### 6.1.1 安装 Python
+#### 6.1.1 安装 Node.js
+
+**方式一：使用官方安装包**
+
+访问 https://nodejs.org/ 下载并安装 LTS 版本（推荐 v20）
+
+**方式二：使用包管理器**
 
 ```bash
 # Ubuntu/Debian
-sudo apt update
-sudo apt install python3 python3-pip python3-venv
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+sudo apt-get install -y nodejs
 
 # CentOS/RHEL
-sudo yum install python3 python3-pip
+curl -fsSL https://rpm.nodesource.com/setup_20.x | sudo bash -
+sudo yum install -y nodejs
 
-# macOS
-brew install python3
+# macOS (Homebrew)
+brew install node@20
+
+# Windows
+# 下载安装包：https://nodejs.org/
 ```
 
-#### 6.1.2 安装 Git
+#### 6.1.2 验证安装
 
 ```bash
-# Ubuntu/Debian
-sudo apt install git
+# 检查 Node.js 版本
+node --version
+# 应显示：v20.x.x
 
-# CentOS/RHEL
-sudo yum install git
-
-# macOS
-brew install git
+# 检查 npm 版本
+npm --version
+# 应显示：10.x.x
 ```
 
 ### 6.2 安装 OpenClaw
 
-#### 6.2.1 克隆仓库
+#### 6.2.1 全局安装（推荐）
 
 ```bash
-# 克隆 OpenClaw 仓库
-git clone https://github.com/cmdop/openclaw.git
+# 全局安装 OpenClaw
+npm install -g @openclaw/core
+
+# 验证安装
+openclaw --version
+
+# 查看帮助
+openclaw --help
+```
+
+#### 6.2.2 本地安装（开发用）
+
+```bash
+# 创建项目目录
+mkdir my-openclaw
+cd my-openclaw
+
+# 初始化 npm 项目
+npm init -y
+
+# 安装 OpenClaw
+npm install @openclaw/core
+
+# 添加到 package.json
+npm install --save @openclaw/core
+```
+
+#### 6.2.3 Docker 安装
+
+```bash
+# 拉取最新镜像
+docker pull openclaw/core:latest
+
+# 运行容器
+docker run -d \
+  --name openclaw \
+  -p 3000:3000 \
+  -v $(pwd)/config:/app/config \
+  -v $(pwd)/data:/app/data \
+  -e OPENCLAW_MODEL_API_KEY=your-api-key \
+  openclaw/core:latest
+
+# 查看日志
+docker logs -f openclaw
+
+# 停止容器
+docker stop openclaw
+
+# 启动容器
+docker start openclaw
+```
+
+#### 6.2.4 源码安装
+
+```bash
+# 克隆仓库
+git clone https://github.com/openclaw/openclaw.git
 cd openclaw
-```
 
-#### 6.2.2 创建虚拟环境
+# 安装依赖
+npm install
 
-```bash
-# 创建虚拟环境
-python3 -m venv venv
+# 编译构建
+npm run build
 
-# 激活虚拟环境
-source venv/bin/activate  # Linux/macOS
-# 或
-venv\Scripts\activate     # Windows
-```
+# 测试运行
+npm test
 
-#### 6.2.3 安装依赖
-
-```bash
-# 安装依赖包
-pip install -r requirements.txt
+# 启动服务
+npm start
 ```
 
 ### 6.3 配置 OpenClaw
 
-#### 6.3.1 复制配置文件
+#### 6.3.1 初始化配置
 
 ```bash
-# 复制示例配置
-cp config.example.yaml config.yaml
+# 初始化配置（交互式）
+openclaw init
+
+# 或手动创建配置文件
+mkdir -p ~/.openclaw
+vim ~/.openclaw/config.yaml
 ```
 
-#### 6.3.2 编辑配置文件
+#### 6.3.2 配置文件示例
 
 ```yaml
-# config.yaml
+# ~/.openclaw/config.yaml
+
+# 应用配置
 app:
   name: "OpenClaw"
   version: "1.0.0"
+  debug: false
+  log_level: "INFO"
 
 # 模型配置
 model:
-  provider: "openai"  # 或 claude/gemini/qwen
-  api_key: "your-api-key"
+  provider: "openai"  # 或 claude/gemini/qwen/wenxin
+  api_key: "sk-xxxxxxxxxxxxxxxxxxxxxxxx"
   model_name: "gpt-4"
+  temperature: 0.7
+  max_tokens: 2048
 
 # 渠道配置
 channel:
+  # 飞书
   feishu:
     enabled: true
-    app_id: "cli_xxxxxxxxx"
-    app_secret: "xxxxxxxxx"
-    verification_token: "xxxxxxxxx"
+    app_id: "cli_xxxxxxxxxxxxx"
+    app_secret: "xxxxxxxxxxxxxxxxxxxxxxxx"
+    verification_token: "xxxxxxxxxxxxxxxxxxxxxxxx"
+  
+  # 钉钉
+  dingtalk:
+    enabled: false
+    app_key: "xxxxxxxxxxx"
+    app_secret: "xxxxxxxxxxxxxxxxxxxxxxxx"
+  
+  # Telegram
+  telegram:
+    enabled: false
+    bot_token: "xxxxxxxxx:xxxxxxxxxxxxxxxxxxxxxxxxxxx"
+
+# 搜索配置
+search:
+  enabled: true
+  provider: "google"
+  api_key: "xxxxxxxxxxxxxxxxxxxxxxxx"
+  search_engine_id: "xxxxxxxxxxxxx"
+
+# 数据库配置
+database:
+  type: "sqlite"
+  path: "~/.openclaw/data/openclaw.db"
+
+# 定时任务
+scheduler:
+  enabled: true
+  timezone: "Asia/Shanghai"
+```
+
+#### 6.3.3 使用环境变量
+
+```bash
+# .env 文件
+OPENCLAW_MODEL_PROVIDER=openai
+OPENCLAW_MODEL_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxx
+OPENCLAW_MODEL_MODEL_NAME=gpt-4
+OPENCLAW_CHANNEL_FEISHU_APP_ID=cli_xxxxxxxxxxxxx
+OPENCLAW_CHANNEL_FEISHU_APP_SECRET=xxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
 ### 6.4 启动 OpenClaw
 
-#### 6.4.1 测试运行
+#### 6.4.1 命令行启动
 
 ```bash
-# 测试配置
-python3 -m openclaw --test
-
 # 启动服务
-python3 -m openclaw
+openclaw start
+
+# 前台运行（查看日志）
+openclaw run
+
+# 指定配置文件
+openclaw start --config /path/to/config.yaml
+
+# 测试配置
+openclaw test
 ```
 
 #### 6.4.2 后台运行
 
 ```bash
 # 使用 nohup 后台运行
-nohup python3 -m openclaw > openclaw.log 2>&1 &
+nohup openclaw run > openclaw.log 2>&1 &
 
 # 查看日志
 tail -f openclaw.log
+
+# 查看进程
+ps aux | grep openclaw
+
+# 停止服务
+pkill -f openclaw
 ```
 
-#### 6.4.3 使用 systemd 管理（推荐）
+#### 6.4.3 使用 systemd 管理（Linux 推荐）
 
 ```bash
 # 创建 systemd 服务文件
@@ -538,11 +757,14 @@ After=network.target
 [Service]
 Type=simple
 User=your-user
-WorkingDirectory=/path/to/openclaw
-Environment="PATH=/path/to/openclaw/venv/bin"
-ExecStart=/path/to/openclaw/venv/bin/python3 -m openclaw
+WorkingDirectory=/home/your-user
+Environment="PATH=/usr/bin"
+Environment="OPENCLAW_CONFIG=/home/your-user/.openclaw/config.yaml"
+ExecStart=/usr/bin/openclaw run
 Restart=always
 RestartSec=10
+StandardOutput=journal
+StandardError=journal
 
 [Install]
 WantedBy=multi-user.target
@@ -564,6 +786,53 @@ sudo systemctl status openclaw
 
 # 查看日志
 sudo journalctl -u openclaw -f
+
+# 重启服务
+sudo systemctl restart openclaw
+
+# 停止服务
+sudo systemctl stop openclaw
+```
+
+#### 6.4.4 Docker 运行
+
+```bash
+# 使用 docker-compose（推荐）
+cat > docker-compose.yml <<EOF
+version: '3.8'
+services:
+  openclaw:
+    image: openclaw/core:latest
+    container_name: openclaw
+    restart: always
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./config:/app/config
+      - ./data:/app/data
+    environment:
+      - OPENCLAW_MODEL_API_KEY=your-api-key
+      - OPENCLAW_MODEL_PROVIDER=openai
+EOF
+
+# 启动服务
+docker-compose up -d
+
+# 查看日志
+docker-compose logs -f
+
+# 停止服务
+docker-compose down
+```
+
+#### 6.4.5 验证运行
+
+```bash
+# 检查服务状态
+curl http://localhost:3000/health
+
+# 应返回
+# {"status": "ok", "version": "1.0.0"}
 ```
 
 ---
