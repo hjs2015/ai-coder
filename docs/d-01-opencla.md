@@ -328,7 +328,204 @@
 | **云端部署** | 免维护、高可用、弹性扩展 | 需要付费、数据在云端 | 企业用户、大规模使用 |
 | **Docker 部署** | 环境隔离、一键部署、易迁移 | 需要 Docker 基础 | 推荐方案 |
 
-### 2. 本地部署
+### 2. Windows 本地部署（重点）⭐
+
+#### 2.1 环境准备
+
+**系统要求**:
+- 操作系统：Windows 10/11（64 位）
+- 内存：4GB+（推荐 8GB+）
+- 磁盘：20GB+ 可用空间
+- Python: 3.8 或更高版本
+- Git: 最新版本
+
+**步骤 1: 安装 Python**
+
+1. 访问 Python 官网：https://www.python.org/downloads/
+2. 下载 Python 3.8+ 安装包（选择 Windows x86-64 executable installer）
+3. **重要**: 安装时勾选 "Add Python to PATH"
+4. 点击 "Install Now" 完成安装
+
+**验证 Python 安装**:
+```cmd
+# 打开命令提示符（CMD）或 PowerShell
+python --version
+# 应显示：Python 3.x.x
+
+pip --version
+# 应显示：pip x.x.x
+```
+
+**步骤 2: 安装 Git**
+
+1. 访问 Git 官网：https://git-scm.com/download/win
+2. 下载 Windows 版 Git 安装包
+3. 双击运行安装程序
+4. 一路点击 "Next" 使用默认设置即可
+
+**验证 Git 安装**:
+```cmd
+git --version
+# 应显示：git version 2.x.x
+```
+
+#### 2.2 克隆 OpenClaw 仓库
+
+**方式一：使用 Git 克隆**
+```cmd
+# 创建项目目录
+cd C:\Users\你的用户名\Documents
+
+# 克隆仓库
+git clone https://github.com/cmdop/openclaw.git
+
+# 进入项目目录
+cd openclaw
+```
+
+**方式二：手动下载 ZIP**
+1. 访问 https://github.com/cmdop/openclaw
+2. 点击 "Code" → "Download ZIP"
+3. 下载到本地并解压
+4. 在解压目录打开命令提示符
+
+#### 2.3 创建 Python 虚拟环境
+
+```cmd
+# 在项目目录下执行
+# 创建虚拟环境
+python -m venv venv
+
+# 激活虚拟环境
+venv\Scripts\activate
+
+# 激活成功后，命令行前面会显示 (venv)
+```
+
+**常见激活问题**:
+- 如果提示"无法加载脚本"，需要修改 PowerShell 执行策略：
+  ```powershell
+  Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+  ```
+- 然后重新激活：`venv\Scripts\activate`
+
+#### 2.4 安装依赖
+
+```cmd
+# 确保已激活虚拟环境（命令行前有 (venv)）
+# 升级 pip
+python -m pip install --upgrade pip
+
+# 安装依赖
+pip install -r requirements.txt
+
+# 安装可能需要几分钟，等待完成
+```
+
+**常见问题**:
+- 如果安装失败，可能是网络问题，可以使用国内镜像：
+  ```cmd
+  pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
+  ```
+
+#### 2.5 配置 OpenClaw
+
+```cmd
+# 复制配置文件
+copy config.example.yaml config.yaml
+
+# 编辑配置文件（使用记事本或 VS Code）
+notepad config.yaml
+```
+
+**配置文件示例** (config.yaml):
+```yaml
+# 应用配置
+app:
+  name: "OpenClaw"
+  version: "1.0.0"
+  debug: false
+
+# 模型配置（以 OpenAI 为例）
+model:
+  provider: "openai"
+  api_key: "sk-你的 API Key"
+  model_name: "gpt-4"
+  base_url: "https://api.openai.com/v1"
+
+# 渠道配置（以飞书为例）
+channel:
+  feishu:
+    enabled: true
+    app_id: "cli_xxxxxxxxxxxxx"
+    app_secret: "xxxxxxxxxxxxxxxxxxxxxxxx"
+    verification_token: "xxxxxxxxxxxxxxxxxxxxxxxx"
+```
+
+**获取 API Key**:
+- OpenAI: https://platform.openai.com/api-keys
+- 通义千问：https://dashscope.console.aliyun.com/
+- DeepSeek: https://platform.deepseek.com/
+
+#### 2.6 启动 OpenClaw
+
+```cmd
+# 确保已激活虚拟环境
+# 启动 OpenClaw
+python -m openclaw
+
+# 或使用 python 直接运行
+python openclaw/main.py
+```
+
+**启动成功标志**:
+```
+[INFO] OpenClaw is starting...
+[INFO] Loading configuration...
+[INFO] Connecting to Feishu...
+[INFO] Server started on http://localhost:8080
+[INFO] OpenClaw is ready!
+```
+
+#### 2.7 后台运行（可选）
+
+**方式一：使用 start 命令**
+```cmd
+start python -m openclaw
+# 会打开新窗口运行
+```
+
+**方式二：使用 VBScript 后台运行**
+1. 创建 `run_openclaw.vbs` 文件：
+   ```vbs
+   Set objShell = CreateObject("WScript.Shell")
+   objShell.Run "python -m openclaw", 0, False
+   ```
+2. 双击运行 `run_openclaw.vbs`
+
+**方式三：使用 NSSM 注册为 Windows 服务**
+1. 下载 NSSM: https://nssm.cc/download
+2. 解压后打开命令提示符（管理员）
+3. 运行：`nssm install OpenClaw`
+4. 配置:
+   - Path: `C:\Python39\python.exe`
+   - Startup directory: `C:\Users\你的用户名\Documents\openclaw`
+   - Arguments: `-m openclaw`
+5. 点击 "Install service"
+6. 启动服务：`nssm start OpenClaw`
+
+#### 2.8 停止 OpenClaw
+
+```cmd
+# 在运行窗口按 Ctrl+C 停止
+# 或强制结束进程
+taskkill /F /IM python.exe
+
+# 如果使用 NSSM 服务
+nssm stop OpenClaw
+```
+
+### 3. Linux/Mac 本地部署
 
 **环境要求**:
 - Python 3.8+
@@ -344,7 +541,7 @@ cd openclaw
 
 # 2. 创建虚拟环境
 python3 -m venv venv
-source venv/bin/activate
+source venv/bin/activate  # Linux/Mac
 
 # 3. 安装依赖
 pip install -r requirements.txt
@@ -357,7 +554,7 @@ vim config.yaml
 python3 -m openclaw
 ```
 
-### 3. 云端部署
+### 4. 云端部署
 
 **部署平台**:
 - 阿里云
