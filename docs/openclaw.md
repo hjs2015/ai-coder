@@ -759,18 +759,29 @@ openclaw status
 **预期输出**：
 ```
 🦞 OpenClaw Gateway v1.0.0
-Starting on http://0.0.0.0:3000
 ✓ Configuration loaded from ~/.openclaw/openclaw.json
 ✓ Channel 'feishu' connected
 ✓ Model 'qwen-max' ready
-✓ Ready to accept messages
+✓ Gateway running (internal port: 3000)
+✓ Ready to accept messages from chat channels
+
+# 注意：OpenClaw 是后台服务，通过聊天渠道交互
+# 启动后在飞书/钉钉中发送消息测试
 ```
 
 **访问 Dashboard（如果支持）**：
 ```bash
-# 打开 Dashboard
-openclaw dashboard
-# 或手动访问：http://localhost:3000
+# 查看状态
+openclaw status
+
+# 查看日志
+openclaw logs --follow
+
+# 测试消息
+openclaw dev test-message "你好"
+
+# 注意：OpenClaw 是后台服务，通过聊天渠道（飞书/钉钉等）交互
+# 没有 Web 界面，不需要访问 localhost:3000
 ```
 
 **测试消息**：
@@ -903,44 +914,47 @@ openclaw onboarding --force
 
 ---
 
-**问题 6：启动后无法访问**
-```
-openclaw start
-# 显示启动成功，但浏览器访问 http://localhost:3000 失败
-```
+**问题 6：如何测试 OpenClaw 是否正常工作？**
 
-**排查步骤**：
+**解答**：
+
+OpenClaw 是后台服务，通过聊天渠道交互，不是 Web 服务
+
+**测试方法**：
+
 ```bash
-# 1. 检查端口占用
-lsof -i :3000
-# 或
-netstat -tlnp | grep 3000
+# 1. 查看服务状态
+openclaw status
+
+# 预期输出：
+# Status: running
+# Channels: 1 active (feishu)
 
 # 2. 查看日志
-openclaw logs --lines 50
+openclaw logs --follow
 
-# 3. 检查防火墙
-sudo ufw status  # Ubuntu/Debian
-sudo firewall-cmd --list-all  # CentOS/RHEL
+# 预期输出：
+# ✓ Gateway running
+# ✓ Channel connected
 
-# 4. 检查配置文件
-cat ~/.openclaw/openclaw.json
+# 3. 在聊天软件中测试
+# 打飞书/钉钉，发送消息给配置的机器人
+# 例如："你好"
 
-# 5. 尝试其他端口
-openclaw start --port 3001
+# 4. 查看日志确认消息处理
+openclaw logs --lines 20
+
+# 预期看到消息处理日志
 ```
 
----
+**常见误解**：
+- ❌ 错误：尝试访问 http://localhost:3000
+- ✅ 正确：在飞书/钉钉中发送消息测试
 
-#### 📊 安装时间对比
-
-| 网络环境 | 淘宝镜像 | 官方镜像 |
-|----------|----------|----------|
-| **中国大陆** | 30 秒 -2 分钟 | 5-20 分钟（可能超时） |
-| **海外** | 1-3 分钟 | 30 秒 -2 分钟 |
-| **慢速网络** | 2-5 分钟 | 可能失败 |
-
----
+**原因**：
+- OpenClaw 是**消息网关**，不是 Web 服务器
+- 它监听聊天平台的消息回调（Webhook）
+- 用户通过聊天软件与 AI 交互，不是通过浏览器---
 
 #### 🔒 安全建议
 
@@ -1070,12 +1084,19 @@ openclaw restart
 ```json
 {
   "gateway": {
-    "port": 3000,
+    "port": 3000,  // 内部端口，通常不需要修改
     "host": "0.0.0.0",
     "logLevel": "info",
     "dataDir": "~/.openclaw/data"
   }
 }
+```
+
+**端口说明**：
+- `gateway.port`: 内部服务端口（默认 3000）
+- 此端口用于 OpenClaw 内部通信，**不需要对外开放**
+- 用户通过聊天渠道（飞书/钉钉等）与 OpenClaw 交互
+- 无需访问 localhost:3000
 ```
 
 ---
