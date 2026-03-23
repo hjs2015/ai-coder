@@ -37,6 +37,8 @@
 16. [Logs 与 Debug 命令](#logs-与-debug-命令)
 
 
+</details>
+
 ---
 
 ## 第一部分：产品认知与入门
