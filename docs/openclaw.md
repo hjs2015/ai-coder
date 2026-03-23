@@ -594,29 +594,381 @@ nvm alias default 20
 ---
 
 
-#### 三步安装（国内镜像加速）
+#### 三步安装（国内镜像加速）⭐⭐⭐⭐⭐
+
+**适用场景**：中国大陆用户，追求快速安装
+
+**前置检查**：
+```bash
+# 1. 检查 Node.js 版本（需要 v18+，推荐 v20+）
+node --version
+# 应该输出：v20.x.x 或更高
+
+# 2. 检查 npm
+npm --version
+# 应该输出：9.x.x 或更高
+
+# 如果未安装或版本过低，请先安装 Node.js（参考上方安装指南）
+```
+
+---
+
+**步骤 1：配置淘宝镜像（加速下载）**
 
 ```bash
-# 1. 配置淘宝镜像（加速下载）
+# 配置 npm 使用淘宝镜像（永久生效）
 npm config set registry https://registry.npmmirror.com
 
-# 2. 全局安装 OpenClaw
+# 验证配置
+npm config get registry
+# 输出：https://registry.npmmirror.com/
+
+# 查看完整 npm 配置
+npm config list
+```
+
+**说明**：
+- 淘宝镜像速度比官方快 10-50 倍
+- 配置一次永久生效，后续所有 npm 安装都会加速
+- 如需恢复官方镜像：`npm config set registry https://registry.npmjs.org`
+
+---
+
+**步骤 2：全局安装 OpenClaw**
+
+```bash
+# 全局安装（推荐方式，无需 sudo）
 npm install -g openclaw
 
-# 3. 启动 Onboarding（首次配置向导）
+# 如果提示权限错误，使用以下方案：
+
+# 方案 A：配置 npm 用户全局目录（推荐⭐⭐⭐⭐⭐）
+mkdir -p ~/.npm-global
+npm config set prefix '~/.npm-global'
+echo 'export PATH=~/.npm-global/bin:$PATH' >> ~/.bashrc
+source ~/.bashrc
+npm install -g openclaw
+
+# 方案 B：使用 sudo（简单但不推荐）
+sudo npm install -g openclaw
+```
+
+**安装时间参考**：
+- 淘宝镜像：30 秒 -2 分钟
+- 官方镜像：5-20 分钟（可能超时）
+
+**验证安装成功**：
+```bash
+# 查看 OpenClaw 版本
+openclaw --version
+# 输出：openclaw/x.x.x linux-x64 node-v20.x.x
+
+# 查看帮助信息
+openclaw --help
+```
+
+---
+
+**步骤 3：启动 Onboarding（首次配置向导）**
+
+```bash
+# 启动交互式配置向导
 openclaw onboarding
 ```
 
+**Onboarding 流程**（约 3-5 分钟）：
+
+1. **选择聊天渠道**
+   ```
+   ? 选择要配置的聊天渠道 (Use arrow keys)
+   ❯ 飞书 (Feishu)
+     企业微信 (WeCom)
+     钉钉 (DingTalk)
+     Telegram
+     跳过 (稍后配置)
+   ```
+
+2. **输入渠道凭证**
+   - 飞书：App ID 和 App Secret
+   - 企业微信：CorpID 和 Secret
+   - 钉钉：AppKey 和 AppSecret
+   
+   **获取方式**：参考各平台的开发者文档
+
+3. **选择默认模型**
+   ```
+   ? 选择默认使用的 AI 模型 (Use arrow keys)
+   ❯ 通义千问 - qwen-max (阿里云)
+     文心一言 - ernie-4.0 (百度)
+     豆包 - doubao-pro (火山引擎)
+     Kimi - moonshot-v1 (月之暗面)
+     自定义配置
+   ```
+
+4. **输入模型 API Key**
+   - 通义千问：https://dashscope.console.aliyun.com/
+   - 文心一言：https://cloud.baidu.com/product/wenxinworkshop
+   - 豆包：https://www.volcengine.com/product/doubao
+   - Kimi：https://platform.moonshot.cn/
+
+5. **测试连接**
+   ```
+   ✓ 渠道连接测试成功
+   ✓ 模型 API 测试成功
+   ✓ 配置文件已保存：~/.openclaw/openclaw.json
+   ```
+
+6. **完成配置**
+   ```
+   🎉 OpenClaw 配置完成！
+   
+   下一步：
+   - 启动服务：openclaw start
+   - 查看状态：openclaw status
+   - 查看帮助：openclaw help
+   ```
+
+---
+
 #### 验证安装
 
+**基础验证**：
 ```bash
-# 查看状态
-openclaw status
+# 1. 查看版本
+openclaw --version
 
+# 2. 查看帮助
+openclaw --help
+
+# 3. 查看状态
+openclaw status
+```
+
+**启动服务验证**：
+```bash
+# 启动 OpenClaw 服务
+openclaw start
+
+# 查看日志（实时）
+openclaw logs --follow
+
+# 查看服务状态
+openclaw status
+```
+
+**预期输出**：
+```
+🦞 OpenClaw Gateway v1.0.0
+Starting on http://0.0.0.0:3000
+✓ Configuration loaded from ~/.openclaw/openclaw.json
+✓ Channel 'feishu' connected
+✓ Model 'qwen-max' ready
+✓ Ready to accept messages
+```
+
+**访问 Dashboard（如果支持）**：
+```bash
 # 打开 Dashboard
 openclaw dashboard
-# 浏览器访问：http://localhost:3000
+# 或手动访问：http://localhost:3000
 ```
+
+**测试消息**：
+```bash
+# 发送测试消息
+openclaw dev test-message "你好"
+
+# 预期输出：
+# ✓ Message sent
+# ✓ Agent response: 你好！有什么我可以帮助你的吗？
+```
+
+---
+
+#### ⚠️ 常见问题与解决方案
+
+**问题 1：权限错误（EACCES）**
+```
+npm ERR! Error: EACCES: permission denied, mkdir '/usr/local/lib/node_modules/openclaw'
+```
+
+**解决方案**：
+```bash
+# 方案 A：配置 npm 用户全局目录（推荐）
+mkdir -p ~/.npm-global
+npm config set prefix '~/.npm-global'
+echo 'export PATH=~/.npm-global/bin:$PATH' >> ~/.bashrc
+source ~/.bashrc
+npm install -g openclaw
+
+# 方案 B：使用 sudo（不推荐）
+sudo npm install -g openclaw
+```
+
+---
+
+**问题 2：下载速度慢或超时**
+```
+npm ERR! code ETIMEDOUT
+npm ERR! syscall connect
+npm ERR! errno ETIMEDOUT
+```
+
+**解决方案**：
+```bash
+# 1. 确认已配置淘宝镜像
+npm config get registry
+# 应该是：https://registry.npmmirror.com/
+
+# 2. 如果未配置，重新配置
+npm config set registry https://registry.npmmirror.com
+
+# 3. 清除 npm 缓存
+npm cache clean --force
+
+# 4. 重新安装
+npm install -g openclaw
+```
+
+---
+
+**问题 3：command not found: openclaw**
+```
+bash: openclaw: command not found
+```
+
+**原因**：npm 全局 bin 目录未添加到 PATH
+
+**解决方案**：
+```bash
+# 1. 查找 npm 全局 bin 目录
+npm config get prefix
+# 输出：/Users/username/.npm-global 或 /usr/local
+
+# 2. 添加 bin 目录到 PATH
+echo 'export PATH=$(npm config get prefix)/bin:$PATH' >> ~/.bashrc
+source ~/.bashrc
+
+# 3. 验证
+openclaw --version
+```
+
+**常见 bin 目录路径**：
+- Linux: `~/.npm-global/bin` 或 `/usr/local/bin`
+- macOS: `/opt/homebrew/bin` 或 `/usr/local/bin`
+- Windows: `%APPDATA%\npm`
+
+---
+
+**问题 4：Node.js 版本过低**
+```
+Error: OpenClaw requires Node.js v18 or higher
+Current version: v16.14.0
+```
+
+**解决方案**：
+```bash
+# 方案 A：使用 nvm 升级（推荐）
+nvm install 20
+nvm use 20
+nvm alias default 20
+
+# 方案 B：使用 n 升级
+npm install -g n
+n 20
+
+# 方案 C：使用 Homebrew（macOS）
+brew install node@20
+```
+
+---
+
+**问题 5：Onboarding 卡住或失败**
+```
+? 选择要配置的聊天渠道 (Use arrow keys)
+[卡住不动]
+```
+
+**解决方案**：
+```bash
+# 1. 检查终端是否支持交互式输入
+# 使用 bash 或 zsh，不要用 sh
+
+# 2. 跳过 Onboarding，手动配置
+openclaw config edit
+
+# 3. 重新执行 Onboarding
+openclaw onboarding --force
+```
+
+---
+
+**问题 6：启动后无法访问**
+```
+openclaw start
+# 显示启动成功，但浏览器访问 http://localhost:3000 失败
+```
+
+**排查步骤**：
+```bash
+# 1. 检查端口占用
+lsof -i :3000
+# 或
+netstat -tlnp | grep 3000
+
+# 2. 查看日志
+openclaw logs --lines 50
+
+# 3. 检查防火墙
+sudo ufw status  # Ubuntu/Debian
+sudo firewall-cmd --list-all  # CentOS/RHEL
+
+# 4. 检查配置文件
+cat ~/.openclaw/openclaw.json
+
+# 5. 尝试其他端口
+openclaw start --port 3001
+```
+
+---
+
+#### 📊 安装时间对比
+
+| 网络环境 | 淘宝镜像 | 官方镜像 |
+|----------|----------|----------|
+| **中国大陆** | 30 秒 -2 分钟 | 5-20 分钟（可能超时） |
+| **海外** | 1-3 分钟 | 30 秒 -2 分钟 |
+| **慢速网络** | 2-5 分钟 | 可能失败 |
+
+---
+
+#### 🔒 安全建议
+
+1. **API Key 安全**
+   - 不要将 API Key 提交到 Git 仓库
+   - 定期更换 API Key
+   - 使用环境变量存储敏感信息
+
+2. **避免使用 sudo**
+   - 配置 npm 用户全局目录
+   - 避免系统权限混乱
+
+3. **验证安装包**
+   - 从官方渠道安装
+   - 检查 npm 包签名
+
+---
+
+#### 📝 下一步
+
+安装完成后，建议：
+
+1. **配置聊天渠道**：参考 [第 5 部分：国内聊天渠道配置](#第 5 部分国内聊天渠道配置)
+2. **配置 AI 模型**：参考 [第 7 部分：国内大模型配置](#第 7 部分国内大模型配置)
+3. **学习 CLI 命令**：参考 [第 3 部分：CLI 命令参考](#第 3 部分 CLI 命令参考)
+4. **配置记忆系统**：参考 [第 11 部分：会话与记忆管理](#第 11 部分会话与记忆管理)
+
+---
 
 ---
 
