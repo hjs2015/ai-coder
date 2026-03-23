@@ -36,7 +36,6 @@
 15. [Config 命令](#config-命令)
 16. [Logs 与 Debug 命令](#logs-与-debug-命令)
 
-#
 
 ---
 
@@ -1524,7 +1523,7 @@ pip config set global.index-url https://mirrors.aliyun.com/pypi/simple/
 ---
 ---
 
-## 高级 CLI 命令 ⭐⭐⭐
+### 高级 CLI 命令 ⭐⭐⭐
 
 ### 会话管理命令
 
@@ -2342,7 +2341,7 @@ openclaw help session list --verbose
 
 ---
 
-## CLI 命令速查表 ⭐⭐⭐
+### CLI 命令速查表 ⭐⭐⭐
 
 ### 基础命令（10 个）
 
@@ -2642,7 +2641,7 @@ openclaw help session list --verbose
 
 ---
 
-## 高级部署 ⭐⭐
+### 高级部署 ⭐⭐
 
 ### Docker 容器化部署
 
@@ -3539,7 +3538,7 @@ ollama list
 
 ---
 
-## 多通道详细配置 ⭐⭐⭐
+### 多通道详细配置 ⭐⭐⭐
 
 ### Telegram 配置
 
@@ -3802,7 +3801,7 @@ npm install -g @openclaw/channel-imessage
 
 ---
 
-## 技能系统开发 ⭐⭐⭐
+### 技能系统开发 ⭐⭐⭐
 
 ### SKILL.md 规范
 
@@ -4175,7 +4174,7 @@ docker run -d --name openclaw ...
 
 ---
 
-## 安全与权限详解 ⭐⭐⭐
+### 安全与权限详解 ⭐⭐⭐
 
 ### 沙箱模式
 
@@ -4331,7 +4330,7 @@ nslookup dashscope.aliyuncs.com
 
 ---
 
-## 故障排查详解 ⭐⭐⭐
+### 故障排查详解 ⭐⭐⭐
 
 ### 日志分析
 
