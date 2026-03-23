@@ -2424,25 +2424,1418 @@ openclaw help session list --verbose
 
 ## 附录 A：完整 CLI 命令参考
 
-### 命令速查表
+本附录提供 OpenClaw 所有 CLI 命令的完整参考，包含详细说明、常用参数和输出示例。
 
-| 命令 | 功能 | 示例 |
+---
+
+### 基础命令（10 个）
+
+#### openclaw start
+
+启动 OpenClaw 服务
+
+```bash
+# 前台启动
+openclaw start
+
+# 后台启动
+openclaw start --daemon
+
+# 指定配置文件
+openclaw start --config /path/to/config.json
+
+# 指定端口
+openclaw start --port 3001
+```
+
+**常用参数**：
+- `--daemon`: 后台运行
+- `--config`: 指定配置文件路径
+- `--port`: 指定端口号
+- `--log-level`: 日志级别（debug/info/warn/error）
+
+**输出示例**：
+```
+🦞 OpenClaw Gateway v1.0.0
+Starting on http://0.0.0.0:3000
+✓ Configuration loaded
+✓ 2 channels active (feishu, telegram)
+✓ 3 agents loaded (default, coding-agent, report-agent)
+✓ Ready to accept messages
+```
+
+---
+
+#### openclaw stop
+
+停止 OpenClaw 服务
+
+```bash
+# 正常停止
+openclaw stop
+
+# 强制停止
+openclaw stop --force
+
+# 优雅停止（等待当前请求完成）
+openclaw stop --graceful
+```
+
+**常用参数**：
+- `--force`: 强制停止，不等待当前请求
+- `--graceful`: 优雅停止，等待当前请求完成
+- `--timeout`: 超时时间（秒），默认 30
+
+---
+
+#### openclaw restart
+
+重启 OpenClaw 服务
+
+```bash
+# 正常重启
+openclaw restart
+
+# 优雅重启
+openclaw restart --graceful
+
+# 重启并重新加载配置
+openclaw restart --reload-config
+```
+
+---
+
+#### openclaw status
+
+查看服务状态
+
+```bash
+openclaw status
+```
+
+**输出示例**：
+```
+OpenClaw Gateway Status
+├─ Status: running
+├─ PID: 12345
+├─ Port: 3000
+├─ Uptime: 2d 5h 30m
+├─ Memory: 256MB
+├─ CPU: 2.3%
+├─ Channels: 2 active (feishu, telegram)
+├─ Agents: 3 loaded
+├─ Sessions: 23 active
+└─ Messages (24h): 1,234
+```
+
+---
+
+#### openclaw version
+
+显示版本信息
+
+```bash
+openclaw version
+```
+
+**输出示例**：
+```
+OpenClaw v1.0.0
+Node.js: v20.11.0
+npm: 10.2.4
+OS: Linux 5.15.0-ubuntu
+Arch: x64
+Build: 2026-03-23
+```
+
+---
+
+#### openclaw info
+
+显示系统信息
+
+```bash
+openclaw info
+```
+
+**输出示例**：
+```
+OpenClaw System Info
+├─ Version: 1.0.0
+├─ Node.js: v20.11.0
+├─ npm: 10.2.4
+├─ OS: Linux 5.15.0-ubuntu
+├─ Arch: x64
+├─ Memory: 8GB (4.2GB free)
+├─ Disk: 500GB (234GB free)
+├─ CPU: 4 cores
+└─ Uptime: 2d 5h 30m
+```
+
+---
+
+#### openclaw help
+
+显示帮助信息
+
+```bash
+# 查看所有命令
+openclaw help
+
+# 查看特定命令帮助
+openclaw help session
+
+# 查看详细帮助
+openclaw help session list --verbose
+```
+
+---
+
+#### openclaw doctor
+
+诊断工具
+
+```bash
+# 完整诊断
+openclaw doctor
+
+# 检查网络
+openclaw doctor --check network
+
+# 检查配置
+openclaw doctor --check config
+
+# 检查渠道
+openclaw doctor --check channels
+
+# 检查模型
+openclaw doctor --check models
+```
+
+**输出示例**：
+```
+OpenClaw Doctor
+├─ Configuration: ✓ Valid
+├─ Network: ✓ All connections OK
+├─ Channels: 
+│  ├─ feishu: ✓ Connected
+│  └─ telegram: ✓ Connected
+├─ Models:
+│  ├─ qwen-max: ✓ API OK
+│  └─ ernie-4.0: ✓ API OK
+└─ Database: ✓ SQLite OK
+
+All checks passed! ✓
+```
+
+---
+
+#### openclaw logs
+
+查看日志
+
+```bash
+# 实时查看
+openclaw logs --follow
+
+# 查看错误日志
+openclaw logs --level error
+
+# 查看最近 100 行
+openclaw logs --lines 100
+
+# 查看特定时间的日志
+openclaw logs --since "2026-03-23 10:00:00"
+
+# 导出日志
+openclaw logs --output logs.txt
+```
+
+**常用参数**：
+- `--follow, -f`: 实时跟踪
+- `--level`: 日志级别（debug/info/warn/error）
+- `--lines, -n`: 显示行数
+- `--since`: 起始时间
+- `--output`: 输出文件
+
+---
+
+#### openclaw onboarding
+
+首次配置向导
+
+```bash
+openclaw onboarding
+```
+
+**交互式流程**：
+1. 选择聊天渠道（飞书/Telegram/...）
+2. 输入渠道凭证
+3. 选择默认模型
+4. 输入模型 API Key
+5. 测试连接
+6. 保存配置
+
+---
+
+### 渠道管理命令（5 个）
+
+#### openclaw channel list
+
+列出所有渠道
+
+```bash
+# 列出所有渠道
+openclaw channel list
+
+# 显示详细信息
+openclaw channel list --verbose
+
+# 按状态过滤
+openclaw channel list --status active
+```
+
+**输出示例**：
+```
+Active Channels
+├─ feishu
+│  ├─ Status: connected
+│  ├─ Messages (24h): 567
+│  └─ Last Message: 2 min ago
+├─ telegram
+│  ├─ Status: connected
+│  ├─ Messages (24h): 234
+│  └─ Last Message: 5 min ago
+└─ wecom
+   ├─ Status: disconnected
+   ├─ Error: Invalid token
+   └─ Last Attempt: 10 min ago
+```
+
+---
+
+#### openclaw channel add
+
+添加新渠道
+
+```bash
+# 添加 Telegram
+openclaw channel add telegram
+
+# 添加飞书
+openclaw channel add feishu
+
+# 添加企业微信
+openclaw channel add wecom
+```
+
+**交互式配置**：
+```
+Adding Telegram Channel
+1. Enter Bot Token: 123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11
+2. Enter Bot Username: my_openclaw_bot
+3. Test Connection: ✓ Success
+4. Save Configuration: ✓ Saved
+```
+
+---
+
+#### openclaw channel test
+
+测试渠道连接
+
+```bash
+# 测试所有渠道
+openclaw channel test
+
+# 测试特定渠道
+openclaw channel test telegram
+
+# 详细测试
+openclaw channel test telegram --verbose
+```
+
+---
+
+#### openclaw channel update
+
+更新渠道配置
+
+```bash
+# 更新渠道 Token
+openclaw channel update telegram --token NEW_TOKEN
+
+# 更新渠道名称
+openclaw channel update telegram --name "My Bot"
+
+# 重新加载渠道配置
+openclaw channel update telegram --reload
+```
+
+---
+
+#### openclaw channel remove
+
+删除渠道
+
+```bash
+# 删除渠道
+openclaw channel remove telegram
+
+# 强制删除
+openclaw channel remove telegram --force
+```
+
+---
+
+### 模型管理命令（4 个）
+
+#### openclaw model list
+
+列出所有模型
+
+```bash
+# 列出所有模型
+openclaw model list
+
+# 按提供商过滤
+openclaw model list --provider dashscope
+
+# 显示详细信息
+openclaw model list --verbose
+```
+
+**输出示例**：
+```
+Configured Models
+├─ qwen-max (dashscope)
+│  ├─ Status: ✓ Active
+│  ├─ Context: 32k
+│  ├─ Price: ¥0.02/1k tokens
+│  └─ Usage (24h): 12,345 tokens
+├─ ernie-4.0 (baidu)
+│  ├─ Status: ✓ Active
+│  ├─ Context: 128k
+│  ├─ Price: ¥0.012/1k tokens
+│  └─ Usage (24h): 8,765 tokens
+└─ doubao-pro (volcengine)
+   ├─ Status: ✓ Active
+   ├─ Context: 128k
+   ├─ Price: ¥0.0008/1k tokens
+   └─ Usage (24h): 23,456 tokens
+```
+
+---
+
+#### openclaw model add
+
+添加新模型
+
+```bash
+# 添加通义千问
+openclaw model add dashscope
+
+# 添加文心一言
+openclaw model add baidu
+
+# 添加豆包
+openclaw model add volcengine
+```
+
+---
+
+#### openclaw model test
+
+测试模型连接
+
+```bash
+# 测试所有模型
+openclaw model test
+
+# 测试特定模型
+openclaw model test qwen-max
+
+# 发送测试消息
+openclaw model test qwen-max --message "Hello"
+```
+
+---
+
+#### openclaw model set-default
+
+设置默认模型
+
+```bash
+# 设置默认模型
+openclaw model set-default qwen-max
+
+# 查看当前默认模型
+openclaw model list --default
+```
+
+---
+
+### Agent 管理命令（4 个）
+
+#### openclaw agent list
+
+列出所有 Agent
+
+```bash
+openclaw agent list
+```
+
+**输出示例**：
+```
+Loaded Agents
+├─ default
+│  ├─ Model: qwen-max
+│  ├─ Prompt: "你是一个有用的助手"
+│  └─ Sessions: 15
+├─ coding-agent
+│  ├─ Model: qwen-max
+│  ├─ Prompt: "你是一个专业的编程助手"
+│  └─ Sessions: 8
+└─ report-agent
+   ├─ Model: ernie-4.0
+   ├─ Prompt: "你是一个数据分析专家"
+   └─ Sessions: 3
+```
+
+---
+
+#### openclaw agent create
+
+创建新 Agent
+
+```bash
+# 创建 Agent
+openclaw agent create coding-assistant
+
+# 指定模型
+openclaw agent create coding-assistant --model qwen-max
+
+# 指定系统提示词
+openclaw agent create coding-assistant --system "你是一个专业的编程助手"
+```
+
+---
+
+#### openclaw agent edit
+
+编辑 Agent 配置
+
+```bash
+# 编辑提示词
+openclaw agent edit coding-assistant --system "新的提示词"
+
+# 更改模型
+openclaw agent edit coding-assistant --model ernie-4.0
+```
+
+---
+
+#### openclaw agent remove
+
+删除 Agent
+
+```bash
+openclaw agent remove coding-assistant
+```
+
+---
+
+### 会话管理命令（5 个）
+
+#### openclaw session list
+
+列出所有会话
+
+```bash
+# 列出所有会话
+openclaw session list
+
+# 按渠道过滤
+openclaw session list --channel feishu
+
+# 按用户过滤
+openclaw session list --user ou_xxx
+
+# 显示最近活跃时间
+openclaw session list --sort-by last_active
+
+# 限制数量
+openclaw session list --limit 20
+```
+
+**输出示例**：
+```
+Active Sessions
+├─ sess_abc123
+│  ├─ User: ou_xxx
+│  ├─ Channel: feishu
+│  ├─ Messages: 45
+│  ├─ Created: 2026-03-20 09:30
+│  └─ Last Active: 2026-03-23 14:25
+├─ sess_def456
+│  ├─ User: tg_user123
+│  ├─ Channel: telegram
+│  ├─ Messages: 12
+│  ├─ Created: 2026-03-22 16:45
+│  └─ Last Active: 2026-03-23 14:20
+└─ sess_ghi789
+   ├─ User: wx_user456
+   ├─ Channel: wechat
+   ├─ Messages: 89
+   ├─ Created: 2026-03-18 10:00
+   └─ Last Active: 2026-03-23 14:15
+```
+
+---
+
+#### openclaw session show
+
+查看会话详情
+
+```bash
+# 查看会话详情
+openclaw session show sess_abc123
+
+# 显示消息历史
+openclaw session show sess_abc123 --with-messages
+
+# 限制消息数量
+openclaw session show sess_abc123 --with-messages --limit 10
+```
+
+**输出示例**：
+```
+Session Details
+───────────────────────────────────────
+Session ID: sess_abc123
+User ID: ou_xxx
+Channel: feishu
+Agent: default
+Model: qwen-max
+Messages: 45
+Tokens Used: 12,345
+Created: 2026-03-20 09:30:15
+Last Active: 2026-03-23 14:25:30
+───────────────────────────────────────
+
+Recent Messages:
+[09:30] 用户：你好
+[09:30] AI: 你好！有什么我可以帮助你的吗？
+[09:31] 用户：帮我写一个 Python 脚本
+[09:31] AI: 好的，请问你需要什么功能的脚本？
+...
+```
+
+---
+
+#### openclaw session clear
+
+清空会话历史
+
+```bash
+# 清空指定会话
+openclaw session clear sess_abc123
+
+# 清空所有会话（需要确认）
+openclaw session clear --all
+
+# 强制清空（跳过确认）
+openclaw session clear --all --force
+
+# 清空特定渠道的会话
+openclaw session clear --channel feishu
+```
+
+---
+
+#### openclaw session export
+
+导出会话
+
+```bash
+# 导出为 JSON
+openclaw session export sess_abc123
+
+# 导出为文本
+openclaw session export sess_abc123 --format txt
+
+# 导出为 Markdown
+openclaw session export sess_abc123 --format md
+
+# 导出到文件
+openclaw session export sess_abc123 --output conversation.md
+```
+
+---
+
+#### openclaw session delete
+
+删除会话
+
+```bash
+# 删除指定会话
+openclaw session delete sess_abc123
+
+# 删除所有会话（危险操作）
+openclaw session delete --all
+
+# 删除 7 天前的会话
+openclaw session delete --older-than 7d
+
+# 删除特定渠道的会话
+openclaw session delete --channel telegram
+```
+
+---
+
+### 记忆管理命令（4 个）
+
+#### openclaw memory add
+
+添加记忆
+
+```bash
+# 添加文本记忆
+openclaw memory add "用户偏好使用 Python 进行数据分析"
+
+# 添加文件记忆
+openclaw memory add --file document.pdf
+
+# 添加 URL 记忆
+openclaw memory add --url https://example.com/article
+
+# 指定集合
+openclaw memory add "重要信息" --collection personal
+```
+
+---
+
+#### openclaw memory search
+
+搜索记忆
+
+```bash
+# 语义搜索
+openclaw memory search "Python 数据分析"
+
+# 限制结果数量
+openclaw memory search "Python" --limit 5
+
+# 指定集合
+openclaw memory search "Python" --collection personal
+
+# 显示相似度
+openclaw memory search "Python" --show-score
+
+# 最小相似度阈值
+openclaw memory search "Python" --min-score 0.7
+```
+
+**输出示例**：
+```
+Memory Search Results: "Python 数据分析"
+────────────────────────────────────────────
+[0.92] 用户偏好使用 Python 进行数据分析
+       Collection: personal | Added: 2026-03-20
+
+[0.85] Python pandas 库适合处理表格数据
+       Collection: knowledge | Added: 2026-03-21
+
+[0.78] 推荐使用 Jupyter Notebook 进行探索性分析
+       Collection: knowledge | Added: 2026-03-22
+```
+
+---
+
+#### openclaw memory list
+
+列出记忆集合
+
+```bash
+# 列出所有集合
+openclaw memory list
+
+# 查看集合详情
+openclaw memory list --collection personal
+
+# 显示统计信息
+openclaw memory list --stats
+```
+
+**输出示例**：
+```
+Memory Collections
+├─ default
+│  ├─ Items: 156
+│  ├─ Size: 2.3MB
+│  └─ Last Updated: 2026-03-23 14:00
+├─ personal
+│  ├─ Items: 23
+│  ├─ Size: 0.5MB
+│  └─ Last Updated: 2026-03-22 18:30
+└─ knowledge
+   ├─ Items: 89
+   ├─ Size: 1.8MB
+   └─ Last Updated: 2026-03-23 12:15
+```
+
+---
+
+#### openclaw memory clear
+
+清空记忆
+
+```bash
+# 清空指定集合
+openclaw memory clear --collection personal
+
+# 清空所有记忆（危险）
+openclaw memory clear --all
+
+# 强制清空
+openclaw memory clear --all --force
+```
+
+---
+
+### 配置管理命令（4 个）
+
+#### openclaw config view
+
+查看配置
+
+```bash
+# 查看完整配置
+openclaw config view
+
+# 查看特定配置项
+openclaw config view --key gateway.port
+
+# 以 JSON 格式输出
+openclaw config view --json
+```
+
+---
+
+#### openclaw config edit
+
+编辑配置
+
+```bash
+# 交互式编辑
+openclaw config edit
+
+# 编辑特定配置项
+openclaw config edit --key gateway.port --value 3001
+```
+
+---
+
+#### openclaw config validate
+
+验证配置
+
+```bash
+openclaw config validate
+```
+
+**输出示例**：
+```
+Configuration Validation
+├─ gateway: ✓ Valid
+├─ channels: ✓ Valid (2 configured)
+├─ models: ✓ Valid (3 configured)
+├─ agents: ✓ Valid (3 loaded)
+└─ security: ✓ Valid
+
+All configurations are valid! ✓
+```
+
+---
+
+#### openclaw config export
+
+导出配置
+
+```bash
+# 导出配置
+openclaw config export
+
+# 导出到文件
+openclaw config export --output backup.json
+
+# 仅导出特定部分
+openclaw config export --section channels
+```
+
+---
+
+### 性能监控命令（3 个）
+
+#### openclaw stats
+
+查看统计信息
+
+```bash
+# 查看总体统计
+openclaw stats
+
+# 查看今日统计
+openclaw stats --today
+
+# 查看最近 7 天统计
+openclaw stats --days 7
+
+# 查看实时统计
+openclaw stats --live
+```
+
+**输出示例**：
+```
+OpenClaw Statistics (Last 7 Days)
+────────────────────────────────────────────
+Messages Processed: 1,234
+Tokens Used: 456,789
+  ├─ Input: 234,567
+  └─ Output: 222,222
+
+Active Users: 45
+Active Sessions: 23
+Active Channels: 3
+
+Top Models:
+  ├─ qwen-max: 678 messages (55%)
+  ├─ ernie-4.0: 345 messages (28%)
+  └─ doubao-pro: 211 messages (17%)
+
+Cost Estimate: ¥18.45
+Avg Response Time: 1.2s
+────────────────────────────────────────────
+```
+
+---
+
+#### openclaw top
+
+查看 TOP 排行榜
+
+```bash
+# 查看最活跃用户
+openclaw top users
+
+# 查看最活跃会话
+openclaw top sessions
+
+# 查看最常用模型
+openclaw top models
+
+# 查看最活跃渠道
+openclaw top channels
+
+# 限制数量
+openclaw top users --limit 10
+```
+
+**输出示例**：
+```
+Top Users (Last 7 Days)
+├─ 1. ou_xxx (Feishu) - 234 messages
+├─ 2. tg_user123 (Telegram) - 189 messages
+├─ 3. wx_user456 (WeChat) - 156 messages
+├─ 4. ou_yyy (Feishu) - 134 messages
+└─ 5. tg_user789 (Telegram) - 98 messages
+```
+
+---
+
+#### openclaw benchmark
+
+性能基准测试
+
+```bash
+# 运行基准测试
+openclaw benchmark
+
+# 测试特定模型
+openclaw benchmark --model qwen-max
+
+# 测试所有模型
+openclaw benchmark --all-models
+
+# 输出详细报告
+openclaw benchmark --verbose
+```
+
+**输出示例**：
+```
+Model Benchmark Results
+────────────────────────────────────────────
+Model: qwen-max
+  ├─ First Token: 0.3s
+  ├─ Total Time: 1.2s
+  ├─ Tokens/sec: 45
+  └─ Cost/1K: ¥0.04
+
+Model: ernie-4.0
+  ├─ First Token: 0.4s
+  ├─ Total Time: 1.5s
+  ├─ Tokens/sec: 38
+  └─ Cost/1K: ¥0.03
+
+Model: doubao-pro
+  ├─ First Token: 0.2s
+  ├─ Total Time: 0.9s
+  ├─ Tokens/sec: 52
+  └─ Cost/1K: ¥0.02
+────────────────────────────────────────────
+```
+
+---
+
+### 备份恢复命令（3 个）
+
+#### openclaw backup
+
+备份数据
+
+```bash
+# 创建备份
+openclaw backup
+
+# 备份到指定目录
+openclaw backup --output /backup/openclaw
+
+# 仅备份配置
+openclaw backup --config-only
+
+# 仅备份会话
+openclaw backup --sessions-only
+
+# 压缩备份
+openclaw backup --compress
+```
+
+**输出示例**：
+```
+Creating backup...
+✓ Configuration backed up
+✓ Sessions backed up (23 sessions, 2.3MB)
+✓ Memory backed up (268 items, 4.6MB)
+✓ Logs backed up (7 days, 15MB)
+
+Backup saved to: /backup/openclaw/backup_2026-03-23_14-30-00.tar.gz
+Total size: 22.1MB
+```
+
+---
+
+#### openclaw restore
+
+恢复数据
+
+```bash
+# 从备份恢复
+openclaw restore /backup/openclaw/backup_2026-03-23_14-30-00.tar.gz
+
+# 仅恢复配置
+openclaw restore backup.tar.gz --config-only
+
+# 仅恢复会话
+openclaw restore backup.tar.gz --sessions-only
+
+# 强制恢复（覆盖现有数据）
+openclaw restore backup.tar.gz --force
+```
+
+---
+
+#### openclaw backup list
+
+列出备份
+
+```bash
+openclaw backup list
+
+# 显示详细信息
+openclaw backup list --verbose
+
+# 按时间排序
+openclaw backup list --sort-by time
+```
+
+**输出示例**：
+```
+Available Backups
+├─ backup_2026-03-23_14-30-00.tar.gz
+│  ├─ Size: 22.1MB
+│  ├─ Sessions: 23
+│  └─ Memory Items: 268
+├─ backup_2026-03-22_08-00-00.tar.gz
+│  ├─ Size: 21.8MB
+│  ├─ Sessions: 21
+│  └─ Memory Items: 245
+└─ backup_2026-03-21_08-00-00.tar.gz
+   ├─ Size: 20.5MB
+   ├─ Sessions: 19
+   └─ Memory Items: 230
+```
+
+---
+
+### 安全权限命令（3 个）
+
+#### openclaw user list
+
+列出用户
+
+```bash
+openclaw user list
+
+# 显示详细信息
+openclaw user list --verbose
+
+# 按渠道过滤
+openclaw user list --channel feishu
+```
+
+---
+
+#### openclaw user grant
+
+授予用户权限
+
+```bash
+# 授予管理员权限
+openclaw user grant ou_xxx admin
+
+# 授予开发者权限
+openclaw user grant ou_xxx developer
+
+# 授予特定权限
+openclaw user grant ou_xxx --permissions session.delete,memory.clear
+```
+
+---
+
+#### openclaw audit
+
+查看审计日志
+
+```bash
+# 查看所有审计日志
+openclaw audit
+
+# 查看特定用户的操作
+openclaw audit --user ou_xxx
+
+# 查看特定操作类型
+openclaw audit --action config.change
+
+# 查看最近 N 条记录
+openclaw audit --limit 50
+```
+
+**输出示例**：
+```
+Audit Log
+────────────────────────────────────────────
+[2026-03-23 14:25:30] ou_xxx (admin)
+  Action: config.change
+  Details: Changed default model from ernie-4.0 to qwen-max
+  IP: 192.168.1.100
+
+[2026-03-23 13:45:12] ou_yyy (developer)
+  Action: agent.create
+  Details: Created new agent "coding-assistant"
+  IP: 192.168.1.101
+────────────────────────────────────────────
+```
+
+---
+
+### 插件管理命令（4 个）
+
+#### openclaw plugin list
+
+列出已安装插件
+
+```bash
+openclaw plugin list
+
+# 显示详细信息
+openclaw plugin list --verbose
+```
+
+**输出示例**：
+```
+Installed Plugins
+├─ @openclaw/channel-wecom
+│  ├─ Version: 1.2.0
+│  ├─ Status: active
+│  └─ Type: channel
+├─ @openclaw/channel-dingtalk
+│  ├─ Version: 1.1.5
+│  ├─ Status: active
+│  └─ Type: channel
+└─ @openclaw/tool-search
+   ├─ Version: 2.0.1
+   ├─ Status: active
+   └─ Type: tool
+```
+
+---
+
+#### openclaw plugin install
+
+安装插件
+
+```bash
+# 安装插件
+openclaw plugin install @openclaw/channel-wecom
+
+# 安装指定版本
+openclaw plugin install @openclaw/channel-wecom@1.2.0
+
+# 从本地安装
+openclaw plugin install ./my-plugin
+```
+
+---
+
+#### openclaw plugin update
+
+更新插件
+
+```bash
+# 更新所有插件
+openclaw plugin update
+
+# 更新指定插件
+openclaw plugin update @openclaw/channel-wecom
+
+# 检查可更新的插件
+openclaw plugin update --check
+```
+
+---
+
+#### openclaw plugin uninstall
+
+卸载插件
+
+```bash
+openclaw plugin uninstall @openclaw/channel-wecom
+
+# 强制卸载
+openclaw plugin uninstall @openclaw/channel-wecom --force
+```
+
+---
+
+### 开发调试命令（4 个）
+
+#### openclaw dev mode
+
+开发模式
+
+```bash
+# 启动开发模式（热重载）
+openclaw dev mode
+
+# 指定端口
+openclaw dev mode --port 3001
+
+# 启用详细日志
+openclaw dev mode --verbose
+```
+
+---
+
+#### openclaw dev test-message
+
+测试消息处理
+
+```bash
+# 发送测试消息
+openclaw dev test-message "你好"
+
+# 指定渠道
+openclaw dev test-message "你好" --channel feishu
+
+# 指定用户
+openclaw dev test-message "你好" --user ou_xxx
+
+# 指定 Agent
+openclaw dev test-message "写个 Python 脚本" --agent coding-agent
+```
+
+---
+
+#### openclaw dev prompt
+
+测试 Prompt
+
+```bash
+# 测试系统提示词
+openclaw dev prompt --system "你是一个编程助手"
+
+# 测试完整对话
+openclaw dev prompt \
+  --system "你是一个编程助手" \
+  --user "写个 Hello World" \
+  --model qwen-max
+```
+
+---
+
+#### openclaw dev trace
+
+消息追踪
+
+```bash
+# 追踪消息处理流程
+openclaw dev trace sess_abc123
+
+# 显示详细调用链
+openclaw dev trace sess_abc123 --verbose
+
+# 导出追踪报告
+openclaw dev trace sess_abc123 --output trace.json
+```
+
+---
+
+### 系统维护命令（3 个）
+
+#### openclaw cleanup
+
+清理垃圾数据
+
+```bash
+# 清理临时文件
+openclaw cleanup
+
+# 清理旧日志（7 天前）
+openclaw cleanup --logs --older-than 7d
+
+# 清理无用会话（30 天前）
+openclaw cleanup --sessions --older-than 30d
+
+# 清理缓存
+openclaw cleanup --cache
+
+# 预览清理内容（不实际删除）
+openclaw cleanup --dry-run
+```
+
+---
+
+#### openclaw optimize
+
+优化性能
+
+```bash
+# 优化数据库
+openclaw optimize --database
+
+# 优化向量索引
+openclaw optimize --memory
+
+# 优化所有
+openclaw optimize --all
+```
+
+---
+
+#### openclaw migrate
+
+数据迁移
+
+```bash
+# 执行迁移
+openclaw migrate
+
+# 查看迁移状态
+openclaw migrate status
+
+# 回滚迁移
+openclaw migrate rollback
+```
+
+---
+
+## 命令索引
+
+按字母顺序排列的所有命令：
+
+| 命令 | 分类 | 说明 |
 |------|------|------|
-| `openclaw start` | 启动服务 | `openclaw start --daemon` |
-| `openclaw stop` | 停止服务 | `openclaw stop --force` |
-| `openclaw restart` | 重启服务 | `openclaw restart` |
-| `openclaw status` | 查看状态 | `openclaw status` |
-| `openclaw onboarding` | 配置向导 | `openclaw onboarding` |
-| `openclaw channel list` | 列出渠道 | `openclaw channel list` |
-| `openclaw channel add` | 添加渠道 | `openclaw channel add telegram` |
-| `openclaw channel test` | 测试渠道 | `openclaw channel test feishu` |
-| `openclaw model list` | 列出模型 | `openclaw model list` |
-| `openclaw model test` | 测试模型 | `openclaw model test qwen-max` |
-| `openclaw agent list` | 列出 Agent | `openclaw agent list` |
-| `openclaw config view` | 查看配置 | `openclaw config view` |
-| `openclaw logs` | 查看日志 | `openclaw logs --level error` |
-| `openclaw doctor` | 诊断工具 | `openclaw doctor` |
-| `openclaw dashboard` | 打开面板 | `openclaw dashboard` |
+| `openclaw agent create` | Agent 管理 | 创建新 Agent |
+| `openclaw agent edit` | Agent 管理 | 编辑 Agent 配置 |
+| `openclaw agent list` | Agent 管理 | 列出所有 Agent |
+| `openclaw agent remove` | Agent 管理 | 删除 Agent |
+| `openclaw audit` | 安全权限 | 查看审计日志 |
+| `openclaw backup` | 备份恢复 | 备份数据 |
+| `openclaw backup list` | 备份恢复 | 列出备份 |
+| `openclaw benchmark` | 性能监控 | 性能基准测试 |
+| `openclaw channel add` | 渠道管理 | 添加新渠道 |
+| `openclaw channel list` | 渠道管理 | 列出所有渠道 |
+| `openclaw channel remove` | 渠道管理 | 删除渠道 |
+| `openclaw channel test` | 渠道管理 | 测试渠道连接 |
+| `openclaw channel update` | 渠道管理 | 更新渠道配置 |
+| `openclaw cleanup` | 系统维护 | 清理垃圾数据 |
+| `openclaw config edit` | 配置管理 | 编辑配置 |
+| `openclaw config export` | 配置管理 | 导出配置 |
+| `openclaw config validate` | 配置管理 | 验证配置 |
+| `openclaw config view` | 配置管理 | 查看配置 |
+| `openclaw dashboard` | 基础命令 | 打开控制面板 |
+| `openclaw dev mode` | 开发调试 | 开发模式 |
+| `openclaw dev prompt` | 开发调试 | 测试 Prompt |
+| `openclaw dev test-message` | 开发调试 | 测试消息处理 |
+| `openclaw dev trace` | 开发调试 | 消息追踪 |
+| `openclaw doctor` | 基础命令 | 诊断工具 |
+| `openclaw help` | 基础命令 | 显示帮助信息 |
+| `openclaw info` | 基础命令 | 显示系统信息 |
+| `openclaw logs` | 基础命令 | 查看日志 |
+| `openclaw memory add` | 记忆管理 | 添加记忆 |
+| `openclaw memory clear` | 记忆管理 | 清空记忆 |
+| `openclaw memory list` | 记忆管理 | 列出记忆集合 |
+| `openclaw memory search` | 记忆管理 | 搜索记忆 |
+| `openclaw migrate` | 系统维护 | 数据迁移 |
+| `openclaw model add` | 模型管理 | 添加新模型 |
+| `openclaw model list` | 模型管理 | 列出所有模型 |
+| `openclaw model set-default` | 模型管理 | 设置默认模型 |
+| `openclaw model test` | 模型管理 | 测试模型连接 |
+| `openclaw onboarding` | 基础命令 | 首次配置向导 |
+| `openclaw optimize` | 系统维护 | 优化性能 |
+| `openclaw plugin install` | 插件管理 | 安装插件 |
+| `openclaw plugin list` | 插件管理 | 列出已安装插件 |
+| `openclaw plugin uninstall` | 插件管理 | 卸载插件 |
+| `openclaw plugin update` | 插件管理 | 更新插件 |
+| `openclaw restart` | 基础命令 | 重启服务 |
+| `openclaw restore` | 备份恢复 | 恢复数据 |
+| `openclaw session clear` | 会话管理 | 清空会话历史 |
+| `openclaw session delete` | 会话管理 | 删除会话 |
+| `openclaw session export` | 会话管理 | 导出会话 |
+| `openclaw session list` | 会话管理 | 列出所有会话 |
+| `openclaw session show` | 会话管理 | 查看会话详情 |
+| `openclaw start` | 基础命令 | 启动服务 |
+| `openclaw stats` | 性能监控 | 查看统计信息 |
+| `openclaw stop` | 基础命令 | 停止服务 |
+| `openclaw top` | 性能监控 | 查看 TOP 排行榜 |
+| `openclaw user grant` | 安全权限 | 授予用户权限 |
+| `openclaw user list` | 安全权限 | 列出用户 |
+| `openclaw user revoke` | 安全权限 | 撤销用户权限 |
+| `openclaw version` | 基础命令 | 显示版本信息 |
+
+---
+
+**总计**: **50+ 个 CLI 命令**，覆盖 12 大类功能场景！
 
 ---
 
