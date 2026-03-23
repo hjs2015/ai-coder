@@ -1,5 +1,9 @@
 # 🦞 OpenClaw 完全指南（中国内地版）
 
+> **重要说明**：本文档基于 OpenClaw 官方文档整理，所有配置以官网为准  
+> **官方文档**: https://docs.openclaw.ai/  
+> **端口配置**: 使用 `--gateway-port <port>` 参数设置网关端口（默认 8080）
+
 > **自托管 AI 网关 · 本土化深度适配 · 保留官方核心架构**  
 > **文档版本**: v6.0 完整版（2026-03-23）  
 > **官方文档**: https://docs.openclaw.ai/  
@@ -781,7 +785,7 @@ openclaw logs --follow
 openclaw dev test-message "你好"
 
 # 注意：OpenClaw 是后台服务，通过聊天渠道（飞书/钉钉等）交互
-# 没有 Web 界面，不需要访问 localhost:3000
+# 没有 Web 界面，不需要访问 网关端口
 ```
 
 **测试消息**：
@@ -918,7 +922,7 @@ openclaw onboarding --force
 
 **解答**：
 
-OpenClaw 是后台服务，通过聊天渠道交互，不是 Web 服务
+OpenClaw 是后台服务，通过聊天渠道交互
 
 **测试方法**：
 
@@ -926,32 +930,17 @@ OpenClaw 是后台服务，通过聊天渠道交互，不是 Web 服务
 # 1. 查看服务状态
 openclaw status
 
-# 预期输出：
-# Status: running
-# Channels: 1 active (feishu)
-
 # 2. 查看日志
 openclaw logs --follow
 
-# 预期输出：
-# ✓ Gateway running
-# ✓ Channel connected
-
 # 3. 在聊天软件中测试
-# 打飞书/钉钉，发送消息给配置的机器人
-# 例如："你好"
+# 打开飞书/钉钉，发送消息给配置的机器人
 
 # 4. 查看日志确认消息处理
 openclaw logs --lines 20
-
-# 预期看到消息处理日志
 ```
 
-**常见误解**：
-- ❌ 错误：尝试访问 http://localhost:3000
-- ✅ 正确：在飞书/钉钉中发送消息测试
-
-**原因**：
+**注意**：
 - OpenClaw 是**消息网关**，不是 Web 服务器
 - 它监听聊天平台的消息回调（Webhook）
 - 用户通过聊天软件与 AI 交互，不是通过浏览器---
@@ -1084,7 +1073,7 @@ openclaw restart
 ```json
 {
   "gateway": {
-    "port": 3000,  // 内部端口，通常不需要修改
+    "port": 8080  // 网关端口，可通过 --gateway-port 修改
     "host": "0.0.0.0",
     "logLevel": "info",
     "dataDir": "~/.openclaw/data"
@@ -1096,7 +1085,7 @@ openclaw restart
 - `gateway.port`: 内部服务端口（默认 3000）
 - 此端口用于 OpenClaw 内部通信，**不需要对外开放**
 - 用户通过聊天渠道（飞书/钉钉等）与 OpenClaw 交互
-- 无需访问 localhost:3000
+- 无需访问 网关端口
 ```
 
 ---
@@ -1923,7 +1912,7 @@ openclaw debug status
 ```bash
 openclaw dashboard
 # 输出：
-# Opening dashboard at http://localhost:3000
+# Opening dashboard at `--gateway-port` 配置的端口
 # (自动打开默认浏览器)
 ```
 
@@ -2582,7 +2571,7 @@ openclaw plugin uninstall @openclaw/channel-wecom --force
 openclaw dev mode
 
 # 指定端口
-openclaw dev mode --port 3001
+openclaw dev mode --gateway-port 8081  # 自定义端口
 
 # 启用详细日志
 openclaw dev mode --verbose
@@ -2931,7 +2920,7 @@ openclaw start --daemon
 openclaw start --config /path/to/config.json
 
 # 指定端口
-openclaw start --port 3001
+openclaw start --gateway-port 8081  # 自定义端口
 ```
 
 **常用参数**：
@@ -2943,7 +2932,6 @@ openclaw start --port 3001
 **输出示例**：
 ```
 🦞 OpenClaw Gateway v1.0.0
-Starting on http://0.0.0.0:3000
 ✓ Configuration loaded
 ✓ 2 channels active (feishu, telegram)
 ✓ 3 agents loaded (default, coding-agent, report-agent)
@@ -3717,7 +3705,7 @@ openclaw config view --json
 openclaw config edit
 
 # 编辑特定配置项
-openclaw config edit --key gateway.port --value 3001
+openclaw config edit --key gateway.port --value 8081  # 自定义端口
 ```
 
 ---
@@ -4134,7 +4122,7 @@ openclaw plugin uninstall @openclaw/channel-wecom --force
 openclaw dev mode
 
 # 指定端口
-openclaw dev mode --port 3001
+openclaw dev mode --gateway-port 8081  # 自定义端口
 
 # 启用详细日志
 openclaw dev mode --verbose
@@ -4358,7 +4346,7 @@ openclaw migrate rollback
 ```json
 {
   "gateway": {
-    "port": 3000,
+    "port": 8080,  // 默认网关端口
     "host": "0.0.0.0",
     "logLevel": "info",
     "dataDir": "~/.openclaw/data"
@@ -4789,7 +4777,7 @@ vim openclaw.json
 # 4. 启动容器
 docker run -d \
   --name openclaw \
-  -p 3000:3000 \
+  -p 8080:8080  # 映射网关端口 \
   -v ~/.openclaw:/root/.openclaw \
   -e DASHSCOPE_API_KEY=sk-xxx \
   openclaw/openclaw:latest
@@ -4830,7 +4818,7 @@ services:
     container_name: openclaw
     restart: unless-stopped
     ports:
-      - "3000:3000"
+      - "8080:8080"  # 网关端口
     volumes:
       - ./config:/root/.openclaw
       - ./data:/root/.openclaw/data
@@ -6035,7 +6023,7 @@ module.exports = {
 ```json
 {
   "gateway": {
-    "port": 3000,
+    "port": 8080,  // 默认网关端口
     "host": "0.0.0.0",
     "logLevel": "info",
     "dataDir": "~/.openclaw/data",
@@ -6083,7 +6071,7 @@ module.exports = {
 
 ```bash
 # HTTP 健康检查
-curl http://localhost:3000/health
+curl `--gateway-port` 配置的端口/health
 
 # 输出：{"status":"ok","uptime":86400}
 ```
@@ -6109,7 +6097,7 @@ curl http://localhost:3000/health
 
 ```bash
 # 暴露指标端点
-curl http://localhost:3000/metrics
+curl `--gateway-port` 配置的端口/metrics
 ```
 
 ---
