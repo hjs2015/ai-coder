@@ -1,6 +1,5 @@
 # 🦞 OpenClaw 龙虾机器人 - 飞书文档原文完整内容
 
-> **来源**: 老男孩 AI 编程实战第一期  
 > **飞书文档**: https://my.feishu.cn/wiki/AlBuwnaeTidXVOkT96gcuavrn8b  
 > **提取日期**: 2026-03-22  
 > **文档版本**: 原文提取版（严格基于飞书文档）
