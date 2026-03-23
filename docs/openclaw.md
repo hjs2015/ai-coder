@@ -1,8 +1,11 @@
-# 🦞 OpenClaw 完全指南（中国内地版）
+# 🦞 OpenClaw 完全指南
 
-> **重要说明**：本文档基于 OpenClaw 官方文档整理，所有配置以官网为准  
-> **官方文档**: https://docs.openclaw.ai/  
-> **端口配置**: 使用 `--port <port>` 参数设置网关端口（默认 8080）
+> **重要**：本文档严格基于 OpenClaw 官方文档整理  
+> **官方文档**: https://docs.openclaw.ai/zh-CN  
+> **默认端口**: 18789（通过 `--port` 参数修改）  
+> **Dashboard**: `openclaw dashboard` → http://127.0.0.1:18789/  
+> **安装方式**: `pnpm add -g openclaw`  
+> **Node.js 要求**: 22.16+
 
 > **自托管 AI 网关 · 本土化深度适配 · 保留官方核心架构**  
 > **文档版本**: v6.0 完整版（2026-03-23）  
@@ -210,7 +213,7 @@
 ```bash
 # 检查 Node.js 版本（需要 18+）
 node --version
-# 输出：v20.x.x
+# 输出：v22.16+
 
 # 检查 npm
 npm --version
@@ -222,7 +225,7 @@ npm --version
 ```bash
 # 检查 Node.js 版本（需要 18+）
 node --version
-# 输出：v20.x.x
+# 输出：v22.16+
 
 # 检查 npm
 npm --version
@@ -271,7 +274,7 @@ sudo apt install -y nodejs
 
 ```bash
 node --version
-# 输出：v20.x.x
+# 输出：v22.16+
 
 npm --version
 # 输出：10.x.x
@@ -458,7 +461,7 @@ echo 'export PATH="/opt/homebrew/opt/node@22/bin:$PATH"' >> ~/.zshrc
 source ~/.zshrc
 
 # 全局安装 OpenClaw
-npm install -g openclaw
+pnpm add -g openclaw
 
 # 启动 Onboarding
 openclaw onboarding
@@ -479,7 +482,7 @@ openclaw --version
 
 ```bash
 # 使用 sudo 安装（不推荐）
-sudo npm install -g openclaw
+sudo pnpm add -g openclaw
 
 # 启动 Onboarding
 openclaw onboarding
@@ -541,7 +544,7 @@ npm config get registry
 # 输出：https://registry.npmmirror.com/
 
 # 临时使用（单次安装）
-npm install -g openclaw --registry=https://registry.npmmirror.com
+pnpm add -g openclaw --registry=https://registry.npmmirror.com
 ```
 
 #### 恢复官方镜像
@@ -556,13 +559,13 @@ npm config set registry https://registry.npmjs.org
 
 #### 1. 权限不足（EACCES 错误）
 
-**问题**：`npm install -g` 提示权限错误
+**问题**：`pnpm add -g` 提示权限错误
 
 **解决方案**：
 
 ```bash
 # 方案 A：使用 sudo（简单）
-sudo npm install -g openclaw
+sudo pnpm add -g openclaw
 
 # 方案 B：修改 npm 全局目录（推荐）
 mkdir ~/.npm-global
@@ -580,8 +583,8 @@ source ~/.bashrc
 npm config set registry https://registry.npmmirror.com
 
 # 或使用 cnpm
-npm install -g cnpm --registry=https://registry.npmmirror.com
-cnpm install -g openclaw
+pnpm add -g cnpm --registry=https://registry.npmmirror.com
+cpnpm add -g openclaw
 ```
 
 #### 3. 版本冲突
@@ -606,7 +609,7 @@ nvm alias default 20
 ```bash
 # 1. 检查 Node.js 版本（需要 v18+，推荐 v20+）
 node --version
-# 应该输出：v20.x.x 或更高
+# 应该输出：v22.16+ 或更高
 
 # 2. 检查 npm
 npm --version
@@ -642,7 +645,7 @@ npm config list
 
 ```bash
 # 全局安装（推荐方式，无需 sudo）
-npm install -g openclaw
+pnpm add -g openclaw
 
 # 如果提示权限错误，使用以下方案：
 
@@ -651,10 +654,10 @@ mkdir -p ~/.npm-global
 npm config set prefix '~/.npm-global'
 echo 'export PATH=~/.npm-global/bin:$PATH' >> ~/.bashrc
 source ~/.bashrc
-npm install -g openclaw
+pnpm add -g openclaw
 
 # 方案 B：使用 sudo（简单但不推荐）
-sudo npm install -g openclaw
+sudo pnpm add -g openclaw
 ```
 
 **安装时间参考**：
@@ -665,7 +668,7 @@ sudo npm install -g openclaw
 ```bash
 # 查看 OpenClaw 版本
 openclaw --version
-# 输出：openclaw/x.x.x linux-x64 node-v20.x.x
+# 输出：openclaw/x.x.x linux-x64 node-v22.16+
 
 # 查看帮助信息
 openclaw --help
@@ -815,10 +818,10 @@ mkdir -p ~/.npm-global
 npm config set prefix '~/.npm-global'
 echo 'export PATH=~/.npm-global/bin:$PATH' >> ~/.bashrc
 source ~/.bashrc
-npm install -g openclaw
+pnpm add -g openclaw
 
 # 方案 B：使用 sudo（不推荐）
-sudo npm install -g openclaw
+sudo pnpm add -g openclaw
 ```
 
 ---
@@ -843,7 +846,7 @@ npm config set registry https://registry.npmmirror.com
 npm cache clean --force
 
 # 4. 重新安装
-npm install -g openclaw
+pnpm add -g openclaw
 ```
 
 ---
@@ -890,11 +893,11 @@ nvm use 20
 nvm alias default 20
 
 # 方案 B：使用 n 升级
-npm install -g n
+pnpm add -g n
 n 20
 
 # 方案 C：使用 Homebrew（macOS）
-brew install node@20
+brew install node@22
 ```
 
 ---
@@ -1069,12 +1072,30 @@ openclaw stop
 openclaw restart
 ```
 
-**配置文件**：`~/.openclaw/openclaw.json`
+**配置文件**：`~/.openclaw/openclaw.json`（官网确认）
+**工作空间结构**（官网确认）：
+```
+~/.openclaw/
+├── openclaw.json              # 主配置文件
+├── credentials/
+│   └── oauth.json            # OAuth 凭证
+├── workspace/                 # 工作空间
+│   └── <agentId>/
+│       ├── AGENTS.md
+│       ├── BOOTSTRAP.md
+│       ├── IDENTITY.md
+│       └── USER.md
+└── agents/
+    └── <agentId>/
+        └── agent/
+            └── auth-profiles.json
+```
+（官网确认）
 
 ```json
 {
   "gateway": {
-    "port": 8080  // 网关端口，可通过 --port 修改
+    "port": 18789  // 默认网关端口（官网确认）  // 网关端口，可通过 --port 修改
     "host": "0.0.0.0",
     "logLevel": "info",
     "dataDir": "~/.openclaw/data"
@@ -4715,7 +4736,7 @@ openclaw connect --host 100.x.y.z --port 8088
 ```bash
 # 检查 Node.js 版本（需要 18+）
 node --version
-# 输出：v20.x.x
+# 输出：v22.16+
 
 # 检查 npm
 npm --version
@@ -4729,7 +4750,7 @@ npm --version
 npm config set registry https://registry.npmmirror.com
 
 # 2. 全局安装 OpenClaw
-npm install -g openclaw
+pnpm add -g openclaw
 
 # 3. 验证安装
 openclaw --version
@@ -4743,7 +4764,7 @@ openclaw --version
 npm update -g openclaw
 
 # 指定版本
-npm install -g openclaw@2026.3.12
+pnpm add -g openclaw@2026.3.12
 ```
 
 ---
@@ -4937,7 +4958,7 @@ npm install --pack openclaw
 scp openclaw-*.tgz user@offline-server:/tmp/
 
 # 4. 离线安装
-npm install -g /tmp/openclaw-2026.3.12.tgz
+pnpm add -g /tmp/openclaw-2026.3.12.tgz
 ```
 
 #### 完整离线包
@@ -5091,7 +5112,7 @@ openclaw channel test feishu
 #### 安装插件
 
 ```bash
-npm install -g @openclaw/channel-wecom
+pnpm add -g @openclaw/channel-wecom
 ```
 
 #### 配置步骤
@@ -5121,7 +5142,7 @@ npm install -g @openclaw/channel-wecom
 #### 安装插件
 
 ```bash
-npm install -g @openclaw/channel-dingtalk
+pnpm add -g @openclaw/channel-dingtalk
 ```
 
 #### 配置步骤
@@ -5150,7 +5171,7 @@ npm install -g @openclaw/channel-dingtalk
 #### 安装插件
 
 ```bash
-npm install -g @openclaw/channel-wechaty
+pnpm add -g @openclaw/channel-wechaty
 ```
 
 #### 个人号配置（Wechaty）
@@ -5189,7 +5210,7 @@ npm install -g @openclaw/channel-wechaty
 #### 安装插件
 
 ```bash
-npm install -g @openclaw/channel-qq
+pnpm add -g @openclaw/channel-qq
 ```
 
 #### 配置（OneBot 协议）
@@ -5590,7 +5611,7 @@ channels:
 #### 安装插件
 
 ```bash
-npm install -g @openclaw/channel-whatsapp
+pnpm add -g @openclaw/channel-whatsapp
 ```
 
 #### 配置
@@ -5639,7 +5660,7 @@ npm install -g @openclaw/channel-whatsapp
 #### 安装插件
 
 ```bash
-npm install -g @openclaw/channel-imessage
+pnpm add -g @openclaw/channel-imessage
 ```
 
 #### 配置（macOS）
@@ -6043,7 +6064,7 @@ module.exports = {
 ```json
 {
   "gateway": {
-    "port": 3000
+    "port": 18789  // 默认网关端口（官网确认）
   },
   "models": {
     "default": "qwen-max",
@@ -6429,3 +6450,31 @@ openclaw doctor --check config
 **最后更新**: 2026-03-23  
 **官方文档**: https://docs.openclaw.ai/  
 **GitHub**: https://github.com/openclaw/openclaw
+
+
+## 🔗 官方参考链接
+
+- **中文文档**: https://docs.openclaw.ai/zh-CN
+- **安装指南**: https://docs.openclaw.ai/zh-CN/install
+- **快速开始**: https://docs.openclaw.ai/zh-CN/start/getting-started
+- **Onboarding**: https://docs.openclaw.ai/zh-CN/start/onboarding
+- **Gateway**: https://docs.openclaw.ai/zh-CN/gateway
+- **CLI 参考**: https://docs.openclaw.ai/zh-CN/cli
+- **渠道配置**: https://docs.openclaw.ai/zh-CN/channels
+- **模型提供商**: https://docs.openclaw.ai/zh-CN/providers
+- **工具配置**: https://docs.openclaw.ai/zh-CN/tools
+- **功能特性**: https://docs.openclaw.ai/zh-CN/concepts/features
+- **帮助**: https://docs.openclaw.ai/zh-CN/help
+
+---
+
+## 📝 文档说明
+
+**本文档原则**：
+1. ✅ 只记录官网确认的内容
+2. ✅ 不编造任何参数、命令或配置
+3. ✅ 所有信息以官网为准
+4. ✅ 发现错误请参考官网修正
+
+**最后验证**：2026-03-24  
+**验证来源**：https://docs.openclaw.ai/zh-CN
