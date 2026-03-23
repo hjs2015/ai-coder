@@ -1321,4 +1321,1556 @@ openclaw dashboard
 
 ---
 
-（文档继续...）
+## 第五部分：安装与部署
+
+### npm 安装（推荐）
+
+#### 前置要求
+
+```bash
+# 检查 Node.js 版本（需要 18+）
+node --version
+# 输出：v20.x.x
+
+# 检查 npm
+npm --version
+# 输出：10.x.x
+```
+
+#### 安装步骤
+
+```bash
+# 1. 配置淘宝镜像（加速下载）
+npm config set registry https://registry.npmmirror.com
+
+# 2. 全局安装 OpenClaw
+npm install -g openclaw
+
+# 3. 验证安装
+openclaw --version
+# 输出：openclaw/2026.3.12 linux-x64 node-v20.11.0
+```
+
+#### 升级
+
+```bash
+# 升级到最新版本
+npm update -g openclaw
+
+# 指定版本
+npm install -g openclaw@2026.3.12
+```
+
+---
+
+### Docker 容器化部署
+
+#### 前置要求
+
+```bash
+# 检查 Docker 版本
+docker --version
+# 输出：Docker version 24.x.x
+
+# 检查 Docker Compose
+docker compose version
+# 输出：Docker Compose version v2.x.x
+```
+
+#### 快速启动
+
+```bash
+# 1. 创建配置目录
+mkdir -p ~/.openclaw
+cd ~/.openclaw
+
+# 2. 下载配置文件模板
+curl -O https://raw.githubusercontent.com/openclaw/openclaw/main/examples/openclaw.json
+
+# 3. 编辑配置文件
+vim openclaw.json
+
+# 4. 启动容器
+docker run -d \
+  --name openclaw \
+  -p 3000:3000 \
+  -v ~/.openclaw:/root/.openclaw \
+  -e DASHSCOPE_API_KEY=sk-xxx \
+  openclaw/openclaw:latest
+```
+
+#### 查看日志
+
+```bash
+# 实时日志
+docker logs -f openclaw
+
+# 最近 100 行
+docker logs --tail 100 openclaw
+```
+
+#### 停止和删除
+
+```bash
+# 停止
+docker stop openclaw
+
+# 删除
+docker rm openclaw
+```
+
+---
+
+### Docker Compose 部署
+
+#### 创建 docker-compose.yml
+
+```yaml
+version: '3.8'
+
+services:
+  openclaw:
+    image: openclaw/openclaw:latest
+    container_name: openclaw
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./config:/root/.openclaw
+      - ./data:/root/.openclaw/data
+      - ./logs:/var/log/openclaw
+    environment:
+      - OPENCLAW_LOG_LEVEL=info
+      - DASHSCOPE_API_KEY=sk-xxx
+      - QIANFAN_API_KEY=xxx
+      - QIANFAN_SECRET_KEY=xxx
+    networks:
+      - openclaw-net
+
+networks:
+  openclaw-net:
+    driver: bridge
+```
+
+#### 启动服务
+
+```bash
+# 后台启动
+docker compose up -d
+
+# 查看状态
+docker compose ps
+
+# 查看日志
+docker compose logs -f
+```
+
+#### 停止服务
+
+```bash
+# 停止
+docker compose down
+
+# 停止并删除数据卷
+docker compose down -v
+```
+
+---
+
+### 源码安装（开发者）
+
+#### 克隆仓库
+
+```bash
+# 使用 GitHub
+git clone https://github.com/openclaw/openclaw.git
+cd openclaw
+
+# 或使用 Gitee 镜像（国内加速）
+git clone https://gitee.com/openclaw/openclaw.git
+cd openclaw
+```
+
+#### 安装依赖
+
+```bash
+# 配置淘宝镜像
+npm config set registry https://registry.npmmirror.com
+
+# 安装依赖
+npm install
+
+# 开发模式安装（包含 devDependencies）
+npm install --also=dev
+```
+
+#### 构建
+
+```bash
+# 构建生产版本
+npm run build
+
+# 开发模式（热重载）
+npm run dev
+```
+
+#### 运行
+
+```bash
+# 开发模式
+npm run start:dev
+
+# 生产模式
+npm run start:prod
+
+# 测试模式
+npm run test
+```
+
+---
+
+### 离线安装方案
+
+#### 场景说明
+
+适用于：
+- 内网服务器（无外网访问）
+- 高安全环境（网络隔离）
+- 网络不稳定地区
+
+#### 步骤
+
+```bash
+# 1. 在有网络的机器上下载
+npm pack openclaw
+# 输出：openclaw-2026.3.12.tgz
+
+# 2. 下载依赖包
+npm install --pack openclaw
+
+# 3. 复制到离线机器
+scp openclaw-*.tgz user@offline-server:/tmp/
+
+# 4. 离线安装
+npm install -g /tmp/openclaw-2026.3.12.tgz
+```
+
+#### 完整离线包
+
+```bash
+# 创建完整离线包（包含所有依赖）
+npm pack --offline
+
+# 解压
+tar -xzf openclaw-2026.3.12.tgz
+
+# 查看内容
+ls package/
+```
+
+---
+
+### 生产环境部署
+
+#### 系统服务配置（systemd）
+
+```bash
+# 创建服务文件
+sudo vim /etc/systemd/system/openclaw.service
+```
+
+**服务文件内容**：
+
+```ini
+[Unit]
+Description=OpenClaw Gateway
+After=network.target
+
+[Service]
+Type=simple
+User=openclaw
+Group=openclaw
+WorkingDirectory=/opt/openclaw
+ExecStart=/usr/bin/openclaw start --daemon
+Restart=on-failure
+RestartSec=10
+Environment="OPENCLAW_LOG_LEVEL=info"
+Environment="DASHSCOPE_API_KEY=sk-xxx"
+
+# 安全加固
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+
+[Install]
+WantedBy=multi-user.target
+```
+
+#### 启用服务
+
+```bash
+# 重载 systemd
+sudo systemctl daemon-reload
+
+# 启用服务
+sudo systemctl enable openclaw
+
+# 启动服务
+sudo systemctl start openclaw
+
+# 查看状态
+sudo systemctl status openclaw
+```
+
+#### 日志管理
+
+```bash
+# 查看日志
+sudo journalctl -u openclaw -f
+
+# 最近 100 行
+sudo journalctl -u openclaw -n 100
+
+# 按时间过滤
+sudo journalctl -u openclaw --since "2026-03-23 00:00:00"
+```
+
+---
+
+## 第六部分：国内聊天渠道配置 ⭐
+
+### 飞书配置（原生支持）
+
+#### 前置准备
+
+1. 登录 [飞书开放平台](https://open.feishu.cn/)
+2. 创建企业应用
+3. 获取 App ID 和 App Secret
+
+#### 配置步骤
+
+```bash
+# 1. 编辑配置文件
+openclaw config edit
+
+# 2. 添加飞书渠道配置
+{
+  "channels": {
+    "feishu": {
+      "appId": "cli_xxxxxxxxxxxxx",
+      "appSecret": "xxxxxxxxxxxxxxxxx",
+      "encryptKey": "xxxxxxxxxxxxxxxxx",
+      "verificationToken": "xxxxxxxxxxxxxxxxx",
+      "requireMention": true,
+      "allowUsers": [],
+      "allowGroups": []
+    }
+  }
+}
+
+# 3. 验证配置
+openclaw config validate
+
+# 4. 重启服务
+openclaw restart
+```
+
+#### 飞书开放平台配置
+
+1. **事件订阅**
+   - 订阅地址：`https://your-domain.com/api/channels/feishu/webhook`
+   - 验证 Token：填写配置文件中的 `verificationToken`
+   - 加密 Key：填写配置文件中的 `encryptKey`
+
+2. **订阅事件**
+   - `im.message.receive_v1` - 接收消息
+   - `im.message.read_v1` - 消息已读（可选）
+
+3. **权限配置**
+   - 机器人发送消息
+   - 获取用户信息
+   - 加入群聊
+
+#### 测试
+
+```bash
+# 测试飞书渠道
+openclaw channel test feishu
+```
+
+---
+
+### 企业微信配置
+
+#### 安装插件
+
+```bash
+npm install -g @openclaw/channel-wecom
+```
+
+#### 配置步骤
+
+1. 登录 [企业微信管理后台](https://work.weixin.qq.com/)
+2. 创建自建应用
+3. 获取 Agent ID 和 Secret
+
+```json
+{
+  "channels": {
+    "wecom": {
+      "corpId": "wwxxxxxxxxxxxx",
+      "agentId": 1000001,
+      "secret": "xxxxxxxxxxxxxxxxx",
+      "token": "xxxxxxxxxxxxxxxxx",
+      "encodingAesKey": "xxxxxxxxxxxxxxxxx"
+    }
+  }
+}
+```
+
+---
+
+### 钉钉配置
+
+#### 安装插件
+
+```bash
+npm install -g @openclaw/channel-dingtalk
+```
+
+#### 配置步骤
+
+1. 登录 [钉钉开放平台](https://open-dev.dingtalk.com/)
+2. 创建机器人应用
+3. 获取 AppKey 和 AppSecret
+
+```json
+{
+  "channels": {
+    "dingtalk": {
+      "appKey": "xxxxxxxxxxxx",
+      "appSecret": "xxxxxxxxxxxxxxxxx",
+      "encryptKey": "xxxxxxxxxxxxxxxxx",
+      "verificationToken": "xxxxxxxxxxxxxxxxx"
+    }
+  }
+}
+```
+
+---
+
+### 微信配置（个人号/公众号）
+
+#### 安装插件
+
+```bash
+npm install -g @openclaw/channel-wechaty
+```
+
+#### 个人号配置（Wechaty）
+
+```json
+{
+  "channels": {
+    "wechat": {
+      "provider": "wechaty",
+      "puppet": "wechaty-puppet-wechat4u",
+      "head": true
+    }
+  }
+}
+```
+
+#### 公众号配置
+
+```json
+{
+  "channels": {
+    "wechat-official": {
+      "appId": "xxxxxxxxxxxx",
+      "appSecret": "xxxxxxxxxxxxxxxxx",
+      "token": "xxxxxxxxxxxxxxxxx",
+      "encodingAesKey": "xxxxxxxxxxxxxxxxx"
+    }
+  }
+}
+```
+
+---
+
+### QQ 配置
+
+#### 安装插件
+
+```bash
+npm install -g @openclaw/channel-qq
+```
+
+#### 配置（OneBot 协议）
+
+```json
+{
+  "channels": {
+    "qq": {
+      "protocol": "onebot",
+      "wsUrl": "ws://127.0.0.1:8080",
+      "accessToken": "xxxxxxxxxxxxxxxxx"
+    }
+  }
+}
+```
+
+---
+
+### Telegram 配置（备选）
+
+#### 创建 Bot
+
+1. 在 Telegram 搜索 `@BotFather`
+2. 发送 `/newbot` 创建机器人
+3. 获取 Bot Token
+
+#### 配置
+
+```json
+{
+  "channels": {
+    "telegram": {
+      "botToken": "123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11",
+      "webhookUrl": "https://your-domain.com/api/channels/telegram/webhook",
+      "allowUsers": [],
+      "allowGroups": []
+    }
+  }
+}
+```
+
+---
+
+## 第七部分：国内大模型配置 ⭐
+
+### 通义千问（阿里云）
+
+#### 获取 API Key
+
+1. 登录 [阿里云 DashScope](https://dashscope.console.aliyun.com/apiKey)
+2. 创建 API Key
+3. 复制 Key（`sk-` 开头）
+
+#### 配置
+
+```json
+{
+  "models": {
+    "providers": {
+      "dashscope": {
+        "apiKey": "sk-xxxxxxxxxxxxxxxxx",
+        "baseUrl": "https://dashscope.aliyuncs.com/api/v1"
+      }
+    },
+    "models": {
+      "qwen-max": {
+        "provider": "dashscope",
+        "model": "qwen-max",
+        "cost": 0.04
+      },
+      "qwen-plus": {
+        "provider": "dashscope",
+        "model": "qwen-plus",
+        "cost": 0.02
+      }
+    }
+  }
+}
+```
+
+---
+
+### 文心一言（百度）
+
+#### 获取 API Key
+
+1. 登录 [百度千帆](https://console.bce.baidu.com/qianfan/)
+2. 创建应用
+3. 获取 API Key 和 Secret Key
+
+#### 配置
+
+```json
+{
+  "models": {
+    "providers": {
+      "qianfan": {
+        "apiKey": "xxxxxxxxxxxxxxxxx",
+        "secretKey": "xxxxxxxxxxxxxxxxx"
+      }
+    },
+    "models": {
+      "ernie-4.0": {
+        "provider": "qianfan",
+        "model": "ernie-4.0",
+        "cost": 0.03
+      },
+      "ernie-3.5": {
+        "provider": "qianfan",
+        "model": "ernie-3.5",
+        "cost": 0.01
+      }
+    }
+  }
+}
+```
+
+---
+
+### 豆包（火山引擎）
+
+#### 获取 API Key
+
+1. 登录 [火山引擎](https://console.volcengine.com/iam/keymanage/)
+2. 创建 Access Key
+3. 获取 Access Key 和 Secret Key
+
+#### 配置
+
+```json
+{
+  "models": {
+    "providers": {
+      "volcengine": {
+        "accessKey": "xxxxxxxxxxxxxxxxx",
+        "secretKey": "xxxxxxxxxxxxxxxxx"
+      }
+    },
+    "models": {
+      "doubao-pro": {
+        "provider": "volcengine",
+        "model": "doubao-pro-4k",
+        "cost": 0.02
+      },
+      "doubao-lite": {
+        "provider": "volcengine",
+        "model": "doubao-lite",
+        "cost": 0.008
+      }
+    }
+  }
+}
+```
+
+---
+
+### 讯飞星火
+
+#### 获取 API Key
+
+1. 登录 [讯飞开放平台](https://www.xfyun.cn/)
+2. 创建应用
+3. 获取 APPID、API Key 和 Secret Key
+
+#### 配置
+
+```json
+{
+  "models": {
+    "providers": {
+      "iflytek": {
+        "appId": "xxxxxxxxxx",
+        "apiKey": "xxxxxxxxxxxxxxxxx",
+        "secretKey": "xxxxxxxxxxxxxxxxx"
+      }
+    },
+    "models": {
+      "spark-4.0": {
+        "provider": "iflytek",
+        "model": "spark-4.0",
+        "cost": 0.03
+      }
+    }
+  }
+}
+```
+
+---
+
+### Kimi（月之暗面）
+
+#### 获取 API Key
+
+1. 登录 [月之暗面开放平台](https://platform.moonshot.cn/)
+2. 创建 API Key
+
+#### 配置
+
+```json
+{
+  "models": {
+    "providers": {
+      "moonshot": {
+        "apiKey": "sk-xxxxxxxxxxxxxxxxx"
+      }
+    },
+    "models": {
+      "moonshot-v1-8k": {
+        "provider": "moonshot",
+        "model": "moonshot-v1-8k",
+        "cost": 0.012
+      },
+      "moonshot-v1-32k": {
+        "provider": "moonshot",
+        "model": "moonshot-v1-32k",
+        "cost": 0.024
+      }
+    }
+  }
+}
+```
+
+---
+
+### 智谱 GLM
+
+#### 获取 API Key
+
+1. 登录 [智谱开放平台](https://open.bigmodel.cn/)
+2. 创建 API Key
+
+#### 配置
+
+```json
+{
+  "models": {
+    "providers": {
+      "zhipu": {
+        "apiKey": "xxxxxxxxxxxxxxxxx"
+      }
+    },
+    "models": {
+      "glm-4": {
+        "provider": "zhipu",
+        "model": "glm-4",
+        "cost": 0.05
+      },
+      "glm-3-turbo": {
+        "provider": "zhipu",
+        "model": "glm-3-turbo",
+        "cost": 0.01
+      }
+    }
+  }
+}
+```
+
+---
+
+### 本地模型（Ollama）
+
+#### 安装 Ollama
+
+```bash
+# 下载安装
+curl -fsSL https://ollama.com/install.sh | sh
+
+# 或使用国内镜像
+curl -fsSL https://ollama.az.run/install.sh | sh
+```
+
+#### 下载模型
+
+```bash
+# Qwen2.5
+ollama pull qwen2.5:7b
+
+# Llama 3
+ollama pull llama3:8b
+
+# 查看已下载模型
+ollama list
+```
+
+#### 配置
+
+```json
+{
+  "models": {
+    "providers": {
+      "ollama": {
+        "baseUrl": "http://127.0.0.1:11434"
+      }
+    },
+    "models": {
+      "qwen2.5-7b": {
+        "provider": "ollama",
+        "model": "qwen2.5:7b",
+        "cost": 0
+      }
+    }
+  }
+}
+```
+
+---
+
+## 第八部分：渠道配置（国际）
+
+### 支持的渠道列表
+
+| 渠道 | 类型 | 状态 | 插件 |
+|------|------|------|------|
+| **Telegram** | 即时通讯 | ✅ 原生 | - |
+| **Discord** | 社区 | ✅ 原生 | - |
+| **Slack** | 企业协作 | ✅ 原生 | - |
+| **WhatsApp** | 即时通讯 | ⚠️ 社区 | @openclaw/channel-whatsapp |
+| **iMessage** | 即时通讯 | ⚠️ 实验 | @openclaw/channel-imessage |
+
+---
+
+### WhatsApp 配置
+
+#### 安装插件
+
+```bash
+npm install -g @openclaw/channel-whatsapp
+```
+
+#### 配置
+
+```json
+{
+  "channels": {
+    "whatsapp": {
+      "phoneNumber": "+1234567890",
+      "businessAccountId": "xxxxxxxxxxxx",
+      "accessToken": "xxxxxxxxxxxxxxxxx"
+    }
+  }
+}
+```
+
+---
+
+### Discord 配置
+
+#### 创建 Bot
+
+1. 登录 [Discord Developer Portal](https://discord.com/developers/applications)
+2. 创建应用
+3. 创建 Bot
+4. 复制 Token
+
+#### 配置
+
+```json
+{
+  "channels": {
+    "discord": {
+      "botToken": "xxxxxxxxxxxxxxxxx",
+      "clientId": "xxxxxxxxxxxx",
+      "guildId": "xxxxxxxxxxxx"
+    }
+  }
+}
+```
+
+---
+
+### iMessage 配置
+
+#### 安装插件
+
+```bash
+npm install -g @openclaw/channel-imessage
+```
+
+#### 配置（macOS）
+
+```json
+{
+  "channels": {
+    "imessage": {
+      "appleId": "your@apple.com",
+      "deviceId": "xxxxxxxxxxxx"
+    }
+  }
+}
+```
+
+---
+
+### 渠道路由规则
+
+#### 路由配置示例
+
+```json
+{
+  "routing": {
+    "defaultAgent": "default",
+    "rules": [
+      {
+        "name": "feishu-coding",
+        "channel": "feishu",
+        "pattern": ".*代码.*|.*编程.*",
+        "agent": "coding-agent",
+        "priority": 10
+      },
+      {
+        "name": "telegram-support",
+        "channel": "telegram",
+        "agent": "support-agent",
+        "priority": 5
+      },
+      {
+        "name": "vip-user",
+        "channel": "feishu",
+        "userId": "ou_xxxxxxxxxxxxx",
+        "agent": "vip-agent",
+        "priority": 20
+      }
+    ]
+  }
+}
+```
+
+---
+
+## 第九部分：核心概念
+
+### Gateway（网关）
+
+**定义**：OpenClaw 的核心服务进程，管理所有 Channel、Agent 和 Model 连接
+
+**职责**：
+- 启动和停止服务
+- 管理配置文件
+- 协调各组件通信
+- 提供 HTTP API 和 Dashboard
+
+---
+
+### Agent（智能体）
+
+**定义**：处理用户消息的 AI 助手实例
+
+**配置项**：
+- `model`: 使用的 AI 模型
+- `systemPrompt`: 系统提示词
+- `temperature`: 创造性参数（0-1）
+- `maxTokens`: 最大输出长度
+- `tools`: 可用的工具列表
+
+---
+
+### Session（会话）
+
+**定义**：用户与 Agent 的对话历史
+
+**数据结构**：
+```json
+{
+  "sessionId": "feishu:ou_xxx:oc_xxx:1711180800",
+  "messages": [
+    {"role": "user", "content": "..."},
+    {"role": "assistant", "content": "..."}
+  ]
+}
+```
+
+---
+
+### Memory（记忆）
+
+**定义**：长期存储和检索对话历史
+
+**类型**：
+- **短期记忆**：最近 N 条对话
+- **长期记忆**：向量数据库存储
+- **工作记忆**：当前会话上下文
+
+---
+
+### Workspace（工作区）
+
+**定义**：Agent 的文件系统和工具环境
+
+**包含**：
+- 配置文件
+- 工具脚本
+- 临时文件
+- 缓存数据
+
+---
+
+## 第十部分：Agent 与工具
+
+### Agent 工作区配置
+
+```json
+{
+  "agents": {
+    "coding-agent": {
+      "workspace": "/opt/openclaw/agents/coding",
+      "tools": ["code-interpreter", "file-reader"],
+      "environment": {
+        "PYTHONPATH": "/opt/openclaw/agents/coding/lib"
+      }
+    }
+  }
+}
+```
+
+---
+
+### 工具与插件系统
+
+#### 内置工具
+
+| 工具 | 功能 | 示例 |
+|------|------|------|
+| `search` | 网络搜索 | 查询最新信息 |
+| `calculator` | 数学计算 | 复杂运算 |
+| `calendar` | 日历管理 | 创建日程 |
+| `weather` | 天气查询 | 获取天气预报 |
+
+#### 自定义工具
+
+```javascript
+// tools/my-tool.js
+module.exports = {
+  name: 'my-tool',
+  description: '我的自定义工具',
+  async execute(params) {
+    // 工具逻辑
+    return result;
+  }
+};
+```
+
+---
+
+### MCP 协议集成
+
+**MCP**（Model Context Protocol）是 AI 模型与外部工具通信的标准协议
+
+#### 配置 MCP 服务器
+
+```json
+{
+  "mcp": {
+    "servers": [
+      {
+        "name": "filesystem",
+        "command": "npx",
+        "args": ["-y", "@modelcontextprotocol/server-filesystem", "/data"]
+      }
+    ]
+  }
+}
+```
+
+---
+
+### 定时任务与自动化
+
+#### 配置定时任务
+
+```json
+{
+  "cron": {
+    "jobs": [
+      {
+        "name": "daily-report",
+        "schedule": "0 8 * * *",
+        "agent": "report-agent",
+        "message": "生成日报"
+      }
+    ]
+  }
+}
+```
+
+---
+
+## 第十一部分：会话与记忆管理
+
+### 会话管理深度解析
+
+#### 会话生命周期
+
+```
+创建 → 活跃 → 休眠 → 归档 → 删除
+```
+
+#### 会话压缩
+
+当会话超过阈值时自动压缩：
+
+```json
+{
+  "memory": {
+    "compression": {
+      "enabled": true,
+      "threshold": 50,
+      "strategy": "summarize"
+    }
+  }
+}
+```
+
+---
+
+### 记忆系统架构
+
+#### 向量记忆
+
+```json
+{
+  "memory": {
+    "vectorStore": {
+      "provider": "chroma",
+      "collection": "openclaw-memory",
+      "dimensions": 768
+    }
+  }
+}
+```
+
+---
+
+### 会话压缩机制
+
+#### 压缩策略
+
+| 策略 | 说明 | 适用场景 |
+|------|------|---------|
+| `truncate` | 截断旧消息 | 简单对话 |
+| `summarize` | AI 总结 | 长对话 |
+| `hybrid` | 截断 + 总结 | 平衡性能 |
+
+---
+
+## 第十二部分：配置参考 ⭐
+
+### 配置文件结构
+
+```
+~/.openclaw/
+├── openclaw.json      # 主配置
+├── agents/            # Agent 配置
+│   └── default/
+│       └── config.json
+└── data/              # 数据目录
+    ├── sessions.db
+    └── memory/
+```
+
+---
+
+### 环境变量参考
+
+| 变量 | 说明 | 默认值 |
+|------|------|--------|
+| `OPENCLAW_PORT` | 服务端口 | 3000 |
+| `OPENCLAW_HOST` | 监听地址 | 0.0.0.0 |
+| `OPENCLAW_LOG_LEVEL` | 日志级别 | info |
+| `OPENCLAW_DATA_DIR` | 数据目录 | ~/.openclaw/data |
+
+---
+
+### 配置项详解
+
+#### Gateway 配置
+
+```json
+{
+  "gateway": {
+    "port": 3000,
+    "host": "0.0.0.0",
+    "logLevel": "info",
+    "dataDir": "~/.openclaw/data",
+    "maxConnections": 100,
+    "timeout": 30000
+  }
+}
+```
+
+---
+
+### 配置模板
+
+#### 最小配置
+
+```json
+{
+  "gateway": {
+    "port": 3000
+  },
+  "models": {
+    "default": "qwen-max",
+    "providers": {
+      "dashscope": {
+        "apiKey": "sk-xxx"
+      }
+    }
+  },
+  "channels": {
+    "feishu": {
+      "appId": "cli_xxx",
+      "appSecret": "xxx"
+    }
+  }
+}
+```
+
+---
+
+## 第十三部分：运维管理
+
+### Gateway 运维管理
+
+#### 健康检查
+
+```bash
+# HTTP 健康检查
+curl http://localhost:3000/health
+
+# 输出：{"status":"ok","uptime":86400}
+```
+
+---
+
+### 日志与调试
+
+#### 日志级别
+
+| 级别 | 说明 | 使用场景 |
+|------|------|---------|
+| `debug` | 调试信息 | 开发调试 |
+| `info` | 一般信息 | 生产环境 |
+| `warn` | 警告信息 | 问题排查 |
+| `error` | 错误信息 | 故障定位 |
+
+---
+
+### 监控与告警
+
+#### Prometheus 指标
+
+```bash
+# 暴露指标端点
+curl http://localhost:3000/metrics
+```
+
+---
+
+### 备份与恢复
+
+#### 备份配置
+
+```bash
+# 备份配置文件
+cp ~/.openclaw/openclaw.json ~/.openclaw/openclaw.json.bak
+
+# 备份数据
+tar -czf openclaw-backup.tar.gz ~/.openclaw/data/
+```
+
+---
+
+### 升级与迁移
+
+#### 版本升级
+
+```bash
+# npm 升级
+npm update -g openclaw
+
+# Docker 升级
+docker pull openclaw/openclaw:latest
+docker stop openclaw && docker rm openclaw
+docker run -d --name openclaw ...
+```
+
+---
+
+## 第十四部分：安全与优化
+
+### 安全配置
+
+#### API Key 保护
+
+```bash
+# 设置文件权限
+chmod 600 ~/.openclaw/openclaw.json
+
+# 使用环境变量
+export DASHSCOPE_API_KEY=sk-xxx
+```
+
+---
+
+### 性能优化
+
+#### 缓存配置
+
+```json
+{
+  "cache": {
+    "enabled": true,
+    "maxSize": 1000,
+    "ttl": 3600
+  }
+}
+```
+
+---
+
+### 高可用配置
+
+#### 负载均衡
+
+```nginx
+upstream openclaw {
+  server 192.168.1.10:3000;
+  server 192.168.1.11:3000;
+}
+
+server {
+  location / {
+    proxy_pass http://openclaw;
+  }
+}
+```
+
+---
+
+## 第十五部分：故障排查
+
+### 诊断命令速查
+
+```bash
+# 检查服务状态
+openclaw status
+
+# 诊断工具
+openclaw doctor
+
+# 查看日志
+openclaw logs --level error
+```
+
+---
+
+### 网络问题排查
+
+```bash
+# 测试 API 连接
+curl -I https://dashscope.aliyuncs.com/api/v1
+
+# 检查 DNS
+nslookup dashscope.aliyuncs.com
+```
+
+---
+
+### 高频问题解决方案
+
+| 问题 | 解决方案 |
+|------|---------|
+| 服务无法启动 | 检查端口占用：`netstat -tlnp | grep 3000` |
+| 渠道连接失败 | 检查 Webhook URL 是否可访问 |
+| 模型 API 报错 | 检查 API Key 是否有效 |
+| 内存占用高 | 调整 `maxSessions` 参数 |
+
+---
+
+## 附录 A：完整 CLI 命令参考
+
+| 命令 | 功能 | 示例 |
+|------|------|------|
+| `openclaw start` | 启动服务 | `openclaw start --daemon` |
+| `openclaw stop` | 停止服务 | `openclaw stop --force` |
+| `openclaw restart` | 重启服务 | `openclaw restart` |
+| `openclaw status` | 查看状态 | `openclaw status` |
+| `openclaw onboarding` | 配置向导 | `openclaw onboarding` |
+| `openclaw channel list` | 列出渠道 | `openclaw channel list` |
+| `openclaw channel add` | 添加渠道 | `openclaw channel add telegram` |
+| `openclaw channel test` | 测试渠道 | `openclaw channel test feishu` |
+| `openclaw model list` | 列出模型 | `openclaw model list` |
+| `openclaw model test` | 测试模型 | `openclaw model test qwen-max` |
+| `openclaw agent list` | 列出 Agent | `openclaw agent list` |
+| `openclaw config view` | 查看配置 | `openclaw config view` |
+| `openclaw logs` | 查看日志 | `openclaw logs --level error` |
+| `openclaw doctor` | 诊断工具 | `openclaw doctor` |
+| `openclaw dashboard` | 打开面板 | `openclaw dashboard` |
+
+---
+
+## 附录 B：环境变量完整参考
+
+### 核心环境变量
+
+| 变量名 | 说明 | 默认值 | 示例 |
+|--------|------|--------|------|
+| `OPENCLAW_PORT` | Gateway 端口 | 3000 | 3000 |
+| `OPENCLAW_HOST` | 监听地址 | 0.0.0.0 | 127.0.0.1 |
+| `OPENCLAW_LOG_LEVEL` | 日志级别 | info | debug |
+| `OPENCLAW_DATA_DIR` | 数据目录 | ~/.openclaw/data | /var/lib/openclaw |
+| `OPENCLAW_CONFIG_FILE` | 配置文件路径 | ~/.openclaw/openclaw.json | /etc/openclaw/config.json |
+
+### 模型 API Key
+
+| 变量名 | 提供商 | 获取方式 |
+|--------|--------|---------|
+| `DASHSCOPE_API_KEY` | 阿里云通义千问 | https://dashscope.console.aliyun.com/apiKey |
+| `QIANFAN_API_KEY` | 百度文心一言 | https://console.bce.baidu.com/qianfan/ |
+| `QIANFAN_SECRET_KEY` | 百度文心一言 | 同上 |
+| `VOLCENGINE_ACCESS_KEY` | 火山引擎豆包 | https://console.volcengine.com/iam/ |
+| `VOLCENGINE_SECRET_KEY` | 火山引擎豆包 | 同上 |
+| `OPENAI_API_KEY` | OpenAI | https://platform.openai.com/api-keys |
+| `ANTHROPIC_API_KEY` | Anthropic | https://console.anthropic.com/settings/keys |
+
+---
+
+## 附录 C：配置文件完整参考
+
+### 完整配置示例
+
+```json
+{
+  "gateway": {
+    "port": 3000,
+    "host": "0.0.0.0",
+    "logLevel": "info",
+    "dataDir": "~/.openclaw/data"
+  },
+  "channels": {
+    "feishu": {
+      "appId": "cli_xxx",
+      "appSecret": "xxx",
+      "encryptKey": "xxx",
+      "verificationToken": "xxx",
+      "allowUsers": [],
+      "allowGroups": [],
+      "requireMention": true
+    },
+    "telegram": {
+      "botToken": "123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11",
+      "allowUsers": [],
+      "allowGroups": []
+    }
+  },
+  "models": {
+    "default": "qwen-max",
+    "providers": {
+      "dashscope": {
+        "apiKey": "sk-xxx",
+        "baseUrl": "https://dashscope.aliyuncs.com/api/v1"
+      },
+      "qianfan": {
+        "apiKey": "xxx",
+        "secretKey": "xxx"
+      }
+    },
+    "fallbacks": [
+      {
+        "from": "qwen-max",
+        "to": ["qwen-plus", "ernie-4.0"]
+      }
+    ]
+  },
+  "agents": {
+    "default": {
+      "model": "qwen-max",
+      "systemPrompt": "你是一个有帮助的 AI 助手。",
+      "temperature": 0.7,
+      "maxTokens": 2048,
+      "tools": []
+    },
+    "coding-agent": {
+      "model": "qwen-max",
+      "systemPrompt": "你是一个专业的编程助手。",
+      "temperature": 0.3,
+      "maxTokens": 4096,
+      "tools": ["code-interpreter"]
+    }
+  },
+  "routing": {
+    "defaultAgent": "default",
+    "rules": [
+      {
+        "name": "coding",
+        "pattern": ".*代码.*|.*编程.*",
+        "agent": "coding-agent",
+        "priority": 10
+      }
+    ]
+  },
+  "memory": {
+    "enabled": true,
+    "maxSessions": 100,
+    "maxMessagesPerSession": 50,
+    "vectorStore": {
+      "provider": "local",
+      "dimensions": 768
+    }
+  }
+}
+```
+
+---
+
+## 附录 D：国内 API Key 获取指南
+
+### 阿里云 DashScope
+
+1. 访问 https://dashscope.console.aliyun.com/
+2. 登录阿里云账号
+3. 进入"API-KEY 管理"
+4. 创建新 API Key
+5. 复制并保存（仅显示一次）
+
+### 百度千帆
+
+1. 访问 https://console.bce.baidu.com/qianfan/
+2. 登录百度账号
+3. 进入"应用接入"
+4. 创建应用
+5. 获取 API Key 和 Secret Key
+
+### 火山引擎
+
+1. 访问 https://console.volcengine.com/
+2. 登录火山引擎账号
+3. 进入"IAM-访问密钥"
+4. 创建 Access Key
+5. 获取 Access Key 和 Secret Key
+
+---
+
+## 附录 E：架构决策记录
+
+### 为什么选择 Node.js？
+
+- **性能**：事件驱动、非阻塞 I/O
+- **生态**：丰富的 npm 包
+- **跨平台**：Windows/Linux/macOS 统一体验
+
+### 为什么支持多渠道？
+
+- **用户需求**：不同企业使用不同平台
+- **灵活性**：不绑定单一平台
+- **扩展性**：易于添加新渠道
+
+### 为什么自托管？
+
+- **数据隐私**：数据完全本地控制
+- **成本**：仅支付 API 费用
+- **定制**：可深度定制和扩展
+
+---
+
+**文档版本**: v6.0 完整版  
+**最后更新**: 2026-03-23  
+**官方文档**: https://docs.openclaw.ai/  
+**GitHub**: https://github.com/openclaw/openclaw
