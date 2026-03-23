@@ -392,22 +392,135 @@ choco install nodejs-lts
 
 ### 📦 macOS 安装 Node.js
 
-#### 方法一：Homebrew（推荐 ⭐⭐⭐⭐⭐）
+#### 方式一：脚本安装（推荐⭐⭐⭐⭐⭐）
 
+**优势**：自动化程度高、环境依赖自动管理、无需 sudo 权限、路径自动配置
+
+**安装脚本**：
 ```bash
-# 安装 Node.js
-brew install node@20
+# 下载安装脚本
+curl -fsSL https://openclaw.ai/install.sh -o install.sh
 
-# 验证
-node --version
-npm --version
+# 执行安装
+bash install.sh
 ```
 
-#### 方法二：官方安装包
+**脚本自动完成的工作**：
 
-1. 访问官网：https://nodejs.org/
-2. 下载 macOS 安装包（.pkg）
-3. 双击安装
+1. **依赖环境自动管理**
+   - ✅ 自动检测并安装 Homebrew（macOS 包管理器）
+   - ✅ 自动安装/升级 Node.js v22+（通过 Homebrew 安装 node@22）
+   - ✅ 自动检测并安装 Git（若缺失）
+   - ✅ 自动配置 pnpm（通过 Corepack 或 npm 全局安装）
+
+2. **权限与路径优化**
+   - ✅ 避免 sudo：配置 npm 用户全局目录（~/.npm-global）
+   - ✅ 自动配置 PATH：将 npm 全局 bin 目录添加到 ~/.zshrc
+   - ✅ Node.js 版本锁定：强制使用 Homebrew 安装的 v22+
+
+3. **后续配置**
+   - ✅ 自动执行 openclaw onboarding
+   - ✅ 创建配置文件目录 ~/.openclaw/
+   - ✅ 验证安装是否成功
+
+**验证安装**：
+```bash
+# 验证 Node.js 版本（应该是 v22+）
+node --version
+
+# 验证 npm 版本
+npm --version
+
+# 验证 OpenClaw 安装
+openclaw --version
+
+# 测试命令
+openclaw --help
+```
+
+---
+
+#### 方式二：Homebrew 安装（推荐⭐⭐⭐⭐）
+
+```bash
+# 安装 Homebrew（如果未安装）
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+# 安装 Node.js v22
+brew install node@22
+
+# 配置 PATH（添加到 ~/.zshrc）
+echo 'export PATH="/opt/homebrew/opt/node@22/bin:$PATH"' >> ~/.zshrc
+source ~/.zshrc
+
+# 全局安装 OpenClaw
+npm install -g openclaw
+
+# 启动 Onboarding
+openclaw onboarding
+```
+
+**验证**：
+```bash
+node --version
+npm --version
+openclaw --version
+```
+
+---
+
+#### 方式三：直接 npm 安装（不推荐⚠️）
+
+**⚠️ 注意**：此方式需要 sudo 权限，可能导致系统目录权限问题
+
+```bash
+# 使用 sudo 安装（不推荐）
+sudo npm install -g openclaw
+
+# 启动 Onboarding
+openclaw onboarding
+```
+
+**潜在问题**：
+- ❌ 使用 sudo 安装全局模块可能导致系统目录权限混乱
+- ❌ 后续更新或安装其他包时易报错
+- ❌ 需手动配置 npm 全局路径到 PATH
+- ❌ 新终端可能提示 command not found: openclaw
+
+---
+
+#### 方式四：手动安装（开发者）
+
+适合需要自定义配置或调试的开发者
+
+```bash
+# 1. 安装 Homebrew
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+# 2. 安装 Node.js v22+
+brew install node@22
+
+# 3. 配置 npm 用户全局目录（避免 sudo）
+mkdir -p ~/.npm-global
+npm config set prefix '~/.npm-global'
+
+# 4. 添加 PATH 到 ~/.zshrc
+echo 'export PATH=~/.npm-global/bin:$PATH' >> ~/.zshrc
+source ~/.zshrc
+
+# 5. 克隆源码
+git clone https://github.com/openclaw-ai/openclaw.git
+cd openclaw
+
+# 6. 安装依赖
+npm install
+
+# 7. 链接到全局
+npm link
+
+# 8. 验证
+openclaw --version
+```
 
 ---
 
