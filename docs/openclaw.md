@@ -2,7 +2,7 @@
 
 > **重要说明**：本文档基于 OpenClaw 官方文档整理，所有配置以官网为准  
 > **官方文档**: https://docs.openclaw.ai/  
-> **端口配置**: 使用 `--gateway-port <port>` 参数设置网关端口（默认 8080）
+> **端口配置**: 使用 `--port <port>` 参数设置网关端口（默认 8080）
 
 > **自托管 AI 网关 · 本土化深度适配 · 保留官方核心架构**  
 > **文档版本**: v6.0 完整版（2026-03-23）  
@@ -766,6 +766,7 @@ openclaw status
 ✓ Configuration loaded from ~/.openclaw/openclaw.json
 ✓ Channel 'feishu' connected
 ✓ Model 'qwen-max' ready
+Starting on http://0.0.0.0:18789
 ✓ Gateway running (internal port: 3000)
 ✓ Ready to accept messages from chat channels
 
@@ -1073,7 +1074,7 @@ openclaw restart
 ```json
 {
   "gateway": {
-    "port": 8080  // 网关端口，可通过 --gateway-port 修改
+    "port": 8080  // 网关端口，可通过 --port 修改
     "host": "0.0.0.0",
     "logLevel": "info",
     "dataDir": "~/.openclaw/data"
@@ -1912,7 +1913,7 @@ openclaw debug status
 ```bash
 openclaw dashboard
 # 输出：
-# Opening dashboard at `--gateway-port` 配置的端口
+# Opening dashboard at `--port` 配置的端口
 # (自动打开默认浏览器)
 ```
 
@@ -2571,7 +2572,7 @@ openclaw plugin uninstall @openclaw/channel-wecom --force
 openclaw dev mode
 
 # 指定端口
-openclaw dev mode --gateway-port 8081  # 自定义端口
+openclaw dev mode --port 18790  # 自定义端口
 
 # 启用详细日志
 openclaw dev mode --verbose
@@ -2920,7 +2921,7 @@ openclaw start --daemon
 openclaw start --config /path/to/config.json
 
 # 指定端口
-openclaw start --gateway-port 8081  # 自定义端口
+openclaw start --port 18790  # 自定义端口
 ```
 
 **常用参数**：
@@ -3705,7 +3706,7 @@ openclaw config view --json
 openclaw config edit
 
 # 编辑特定配置项
-openclaw config edit --key gateway.port --value 8081  # 自定义端口
+openclaw config edit --key gateway.port --value 18790  # 自定义端口
 ```
 
 ---
@@ -4122,7 +4123,7 @@ openclaw plugin uninstall @openclaw/channel-wecom --force
 openclaw dev mode
 
 # 指定端口
-openclaw dev mode --gateway-port 8081  # 自定义端口
+openclaw dev mode --port 18790  # 自定义端口
 
 # 启用详细日志
 openclaw dev mode --verbose
@@ -4346,7 +4347,7 @@ openclaw migrate rollback
 ```json
 {
   "gateway": {
-    "port": 8080,  // 默认网关端口
+    "port": 18789,  // 默认网关端口（官网确认）  // 默认网关端口
     "host": "0.0.0.0",
     "logLevel": "info",
     "dataDir": "~/.openclaw/data"
@@ -4777,7 +4778,7 @@ vim openclaw.json
 # 4. 启动容器
 docker run -d \
   --name openclaw \
-  -p 8080:8080  # 映射网关端口 \
+  -p 18789:18789  # 映射网关端口 \
   -v ~/.openclaw:/root/.openclaw \
   -e DASHSCOPE_API_KEY=sk-xxx \
   openclaw/openclaw:latest
@@ -4818,7 +4819,7 @@ services:
     container_name: openclaw
     restart: unless-stopped
     ports:
-      - "8080:8080"  # 网关端口
+      - "18789:18789"  # 网关端口
     volumes:
       - ./config:/root/.openclaw
       - ./data:/root/.openclaw/data
@@ -6023,7 +6024,7 @@ module.exports = {
 ```json
 {
   "gateway": {
-    "port": 8080,  // 默认网关端口
+    "port": 18789,  // 默认网关端口（官网确认）  // 默认网关端口
     "host": "0.0.0.0",
     "logLevel": "info",
     "dataDir": "~/.openclaw/data",
@@ -6071,7 +6072,7 @@ module.exports = {
 
 ```bash
 # HTTP 健康检查
-curl `--gateway-port` 配置的端口/health
+curl `--port` 配置的端口/health
 
 # 输出：{"status":"ok","uptime":86400}
 ```
@@ -6097,7 +6098,7 @@ curl `--gateway-port` 配置的端口/health
 
 ```bash
 # 暴露指标端点
-curl `--gateway-port` 配置的端口/metrics
+curl `--port` 配置的端口/metrics
 ```
 
 ---
