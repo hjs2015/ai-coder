@@ -1485,6 +1485,211 @@ pip config set global.index-url https://mirrors.aliyun.com/pypi/simple/
 
 ---
 
+
+
+---
+
+## Ubuntu 安装 Node.js ⭐⭐⭐
+
+### 方法一：推荐！通过 NodeSource 安装（稳定/最新版）
+
+**适用系统**: Ubuntu 20.04/22.04/24.04  
+**Node.js 版本**: 20.x LTS（长期支持版）或 22.x
+
+#### 步骤 1：更新系统包列表
+
+```bash
+sudo apt update
+sudo apt upgrade -y
+```
+
+#### 步骤 2：安装必要依赖
+
+```bash
+sudo apt install -y ca-certificates curl gnupg
+```
+
+#### 步骤 3：添加 NodeSource 官方源
+
+**安装 Node.js 20.x（推荐 LTS 版本）**:
+
+```bash
+# 下载并执行 NodeSource 安装脚本
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+```
+
+**如需安装其他版本**：
+- Node.js 22.x：将 `setup_20.x` 改为 `setup_22.x`
+- Node.js 18.x：将 `setup_20.x` 改为 `setup_18.x`
+
+#### 步骤 4：安装 Node.js 和 npm
+
+```bash
+sudo apt install -y nodejs
+```
+
+#### 步骤 5：验证安装
+
+```bash
+# 检查 Node.js 版本
+node --version
+# 输出：v20.x.x
+
+# 检查 npm 版本
+npm --version
+# 输出：10.x.x
+
+# 检查 npm 配置
+npm config list
+```
+
+---
+
+### 方法二：使用 Ubuntu 官方源（版本较旧）
+
+**适用场景**: 对版本要求不高的场景
+
+```bash
+# 直接从 Ubuntu 源安装
+sudo apt update
+sudo apt install -y nodejs npm
+
+# 验证
+node --version
+npm --version
+```
+
+**注意**: Ubuntu 官方源的 Node.js 版本可能较旧（如 v12.x），不推荐用于生产环境。
+
+---
+
+### 方法三：使用 NVM 管理多版本（开发者推荐）
+
+**适用场景**: 需要切换多个 Node.js 版本
+
+#### 1. 安装 NVM
+
+```bash
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+```
+
+#### 2. 加载 NVM
+
+```bash
+source ~/.bashrc
+# 或
+source ~/.profile
+```
+
+#### 3. 安装 Node.js
+
+```bash
+# 安装最新 LTS 版本
+nvm install --lts
+
+# 安装指定版本
+nvm install 20.11.0
+
+# 设为默认版本
+nvm alias default 20.11.0
+```
+
+#### 4. 切换版本
+
+```bash
+# 切换到 Node.js 20.x
+nvm use 20
+
+# 切换到 Node.js 18.x
+nvm use 18
+
+# 查看已安装版本
+nvm list
+```
+
+---
+
+### 常见问题解决方案
+
+#### 1. 权限问题
+
+```bash
+# 错误：EACCES: permission denied
+# 解决：修改 npm 全局目录权限
+
+mkdir ~/.npm-global
+npm config set prefix '~/.npm-global'
+echo 'export PATH=~/.npm-global/bin:$PATH' >> ~/.bashrc
+source ~/.bashrc
+```
+
+#### 2. 下载速度慢
+
+```bash
+# 配置淘宝镜像
+npm config set registry https://registry.npmmirror.com
+
+# 验证配置
+npm config get registry
+```
+
+#### 3. 版本冲突
+
+```bash
+# 清除缓存
+npm cache clean --force
+
+# 重新安装
+sudo apt remove nodejs npm
+sudo apt autoremove
+# 然后重新安装
+```
+
+#### 4. 验证安装是否成功
+
+```bash
+# 创建测试文件
+cat > test.js << 'EOF'
+console.log("Node.js 版本:", process.version);
+console.log("npm 版本:", process.versions.npm);
+EOF
+
+# 运行测试
+node test.js
+
+# 清理
+rm test.js
+```
+
+---
+
+### 版本选择建议
+
+| 版本 | 适用场景 | 支持周期 | 推荐度 |
+|------|----------|----------|--------|
+| **20.x LTS** | 生产环境（推荐） | 2026-04 | ⭐⭐⭐⭐⭐ |
+| **18.x LTS** | 旧项目兼容 | 2025-04 | ⭐⭐⭐ |
+| **22.x Current** | 尝鲜/测试 | 2025-10 | ⭐⭐ |
+| **<16.x** | 不推荐 | 已停止 | ❌ |
+
+---
+
+### 下一步：安装 OpenClaw
+
+Node.js 安装完成后，继续安装 OpenClaw：
+
+```bash
+# 配置淘宝镜像（加速下载）
+npm config set registry https://registry.npmmirror.com
+
+# 全局安装 OpenClaw
+npm install -g openclaw
+
+# 验证安装
+openclaw --version
+```
+
+---
 ## 高级部署 ⭐⭐
 
 ### Docker 容器化部署
