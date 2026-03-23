@@ -1483,6 +1483,112 @@ pip config set global.index-url https://mirrors.aliyun.com/pypi/simple/
 
 ## 第五部分：安装与部署
 
+---
+
+## 高级部署 ⭐⭐
+
+### Docker 容器化部署
+
+#### Dockerfile
+
+```dockerfile
+FROM node:20-alpine
+RUN apk add --no-cache git python3 make g++
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --only=production
+COPY . .
+EXPOSE 8088
+CMD ["npm", "start"]
+```
+
+#### docker-compose.yml
+
+```yaml
+version: '3.8'
+services:
+  openclaw:
+    build: .
+    container_name: openclaw
+    restart: unless-stopped
+    ports:
+      - "8088:8088"
+    volumes:
+      - ./config:/app/config
+      - ./data:/data/openclaw
+    environment:
+      - NODE_ENV=production
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+```
+
+#### 部署命令
+
+```bash
+docker-compose build
+docker-compose up -d
+docker-compose logs -f
+```
+
+---
+
+### 多实例部署
+
+#### Nginx 负载均衡
+
+```nginx
+upstream openclaw_backend {
+    least_conn;
+    server 127.0.0.1:8081;
+    server 127.0.0.1:8082;
+    server 127.0.0.1:8083;
+}
+
+server {
+    listen 80;
+    location / {
+        proxy_pass http://openclaw_backend;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+}
+```
+
+#### 启动多实例
+
+```bash
+OPENCLAW_PORT=8081 OPENCLAW_INSTANCE_ID=1 openclaw start --daemon
+OPENCLAW_PORT=8082 OPENCLAW_INSTANCE_ID=2 openclaw start --daemon
+OPENCLAW_PORT=8083 OPENCLAW_INSTANCE_ID=3 openclaw start --daemon
+```
+
+---
+
+### 远程网关部署
+
+```bash
+ssh user@vps.example.com
+curl -fsSL https://openclaw.ai/install.sh | bash
+sudo systemctl enable openclaw && sudo systemctl start openclaw
+sudo ufw allow 8088/tcp
+openclaw connect --host vps.example.com --port 8088
+```
+
+---
+
+### Tailscale 安全暴露
+
+```bash
+curl -fsSL https://tailscale.com/install.sh | sh
+sudo tailscale up --authkey=tskey-auth-xxx
+tailscale ip
+openclaw config set gateway.host=$(tailscale ip)
+openclaw connect --host 100.x.y.z --port 8088
+```
+
+---
+
+
 ### npm 安装（推荐）
 
 #### 前置要求
@@ -2274,6 +2380,80 @@ ollama list
 
 ## 第八部分：渠道配置（国际）
 
+---
+
+## 多通道详细配置 ⭐⭐⭐
+
+### Telegram 配置
+
+1. 打开 Telegram，搜索 `@BotFather`
+2. 发送 `/newbot` 命令
+3. 获取 Token
+
+```yaml
+channels:
+  - name: telegram
+    type: telegram
+    enabled: true
+    config:
+      bot_token: ${TELEGRAM_BOT_TOKEN}
+```
+
+---
+
+### Discord 配置
+
+1. 访问 https://discord.com/developers/applications
+2. 创建应用和 Bot
+3. 获取 Token
+
+```yaml
+channels:
+  - name: discord
+    type: discord
+    enabled: true
+    config:
+      bot_token: ${DISCORD_BOT_TOKEN}
+```
+
+---
+
+### Slack 配置
+
+1. 访问 https://api.slack.com/apps
+2. 创建应用
+3. 获取 Bot Token (xoxb-)
+
+```yaml
+channels:
+  - name: slack
+    type: slack
+    enabled: true
+    config:
+      bot_token: ${SLACK_BOT_TOKEN}
+```
+
+---
+
+### WhatsApp 配置
+
+1. 访问 https://developers.facebook.com
+2. 创建 Meta 应用
+3. 获取 Phone Number ID 和 Token
+
+```yaml
+channels:
+  - name: whatsapp
+    type: whatsapp
+    enabled: true
+    config:
+      phone_number_id: ${WHATSAPP_PHONE_ID}
+      access_token: ${WHATSAPP_ACCESS_TOKEN}
+```
+
+---
+
+
 ### 支持的渠道列表
 
 | 渠道 | 类型 | 状态 | 插件 |
@@ -2462,6 +2642,87 @@ npm install -g @openclaw/channel-imessage
 ---
 
 ## 第十部分：Agent 与工具
+
+---
+
+## 技能系统开发 ⭐⭐⭐
+
+### SKILL.md 规范
+
+```yaml
+name: my-skill
+version: 1.0.0
+description: 技能描述
+author: Your Name
+license: MIT
+
+triggers:
+  - keywords: ["关键词"]
+
+inputs:
+  - name: query
+    type: string
+    required: true
+
+outputs:
+  type: text
+
+dependencies:
+  - requests>=2.28.0
+
+env_vars:
+  - name: API_KEY
+    required: true
+
+permissions:
+  - network_access: true
+```
+
+---
+
+### 技能调用流程
+
+```
+用户消息 → Gateway → 意图识别 → 技能匹配 → 参数提取 → 技能执行 → 结果返回
+```
+
+#### 调用示例
+
+```python
+from copaw import SkillContext, SkillResponse
+
+async def execute(ctx: SkillContext) -> SkillResponse:
+    query = ctx.get_param("query")
+    api_key = ctx.get_env("API_KEY")
+    
+    try:
+        result = await call_api(query, api_key)
+        return SkillResponse(success=True, data=result)
+    except Exception as e:
+        return SkillResponse(success=False, error=str(e))
+```
+
+---
+
+### 完整示例：天气查询技能
+
+```python
+from copaw import SkillContext, SkillResponse
+import requests
+
+async def execute(ctx: SkillContext) -> SkillResponse:
+    city = ctx.get_param("city")
+    api_key = ctx.get_env("WEATHER_API_KEY")
+    
+    url = f"https://api.weather.com/conditions?city={city}"
+    resp = requests.get(url, headers={"Authorization": f"Bearer {api_key}"})
+    data = resp.json()
+    
+    return SkillResponse.success(f"# {city} 天气\n温度：{data['temp']}°C")
+```
+
+---
+
 
 ### Agent 工作区配置
 
@@ -2755,6 +3016,72 @@ docker run -d --name openclaw ...
 
 ## 第十四部分：安全与优化
 
+---
+
+## 安全与权限详解 ⭐⭐⭐
+
+### 沙箱模式
+
+```yaml
+security:
+  sandbox:
+    enabled: true
+    mode: strict  # strict | permissive | disabled
+    
+    filesystem:
+      allowed_paths: [/home/user/openclaw/data]
+      max_file_size: 10MB
+    
+    network:
+      allowed_hosts: [api.openai.com]
+      max_connections: 100
+```
+
+#### 模式对比
+
+| 模式 | 文件访问 | 网络访问 | 进程执行 | 适用场景 |
+|------|----------|----------|----------|----------|
+| strict | 只读指定目录 | 仅白名单 | 禁止 | 生产 |
+| permissive | 读写指定目录 | 白名单 + 本地 | 受限 | 开发 |
+| disabled | 无限制 | 无限制 | 无限制 | 测试 |
+
+---
+
+### DM 安全策略
+
+```yaml
+security:
+  dm_policy:
+    allowed_users: [user_123]
+    rate_limit:
+      messages_per_minute: 10
+    content_filter:
+      block_keywords: ["密码", "token"]
+```
+
+---
+
+### TCC 权限模型
+
+- **Trust**: admin/developer/user
+- **Capability**: 网络/文件/进程
+- **Context**: 时间/地点/设备
+
+---
+
+### 敏感操作防护
+
+```yaml
+security:
+  sensitive_ops:
+    require_2fa: [delete_channel, export_data]
+    audit_log:
+      enabled: true
+```
+
+---
+
+
 ### 安全配置
 
 #### API Key 保护
@@ -2841,6 +3168,91 @@ nslookup dashscope.aliyuncs.com
 | 渠道连接失败 | 检查 Webhook URL 是否可访问 |
 | 模型 API 报错 | 检查 API Key 是否有效 |
 | 内存占用高 | 调整 `maxSessions` 参数 |
+
+---
+
+
+---
+
+## 故障排查详解 ⭐⭐⭐
+
+### 日志分析
+
+#### 日志级别
+
+| 级别 | 说明 | 使用场景 |
+|------|------|----------|
+| DEBUG | 调试信息 | 开发 |
+| INFO | 一般信息 | 正常 |
+| WARN | 警告 | 潜在问题 |
+| ERROR | 错误 | 功能异常 |
+| CRITICAL | 严重错误 | 系统崩溃 |
+
+#### 查看日志
+
+```bash
+openclaw logs --follow        # 实时查看
+openclaw logs --level error   # 查看错误
+openclaw logs --lines 100     # 最近 100 行
+```
+
+---
+
+### 常见问题
+
+#### 1. 网关启动失败
+
+```bash
+netstat -tlnp | grep 8088
+openclaw logs --level debug | tail -50
+openclaw config validate
+```
+
+**解决**: 更换端口/杀掉进程/修复配置
+
+---
+
+#### 2. 通道连接异常
+
+```bash
+curl -I https://api.telegram.org
+openclaw config view --key channels.telegram.bot_token
+```
+
+**解决**: 更新 Token/配置代理
+
+---
+
+#### 3. 权限不足
+
+```bash
+openclaw user grant <user_id> <permission>
+```
+
+---
+
+#### 4. API 限流（429）
+
+**解决**: 启用缓存/调整速率/切换模型
+
+---
+
+#### 5. 内存溢出
+
+```bash
+openclaw cache clear --older-than 1d
+openclaw restart --graceful
+```
+
+---
+
+### 诊断工具
+
+```bash
+openclaw doctor
+openclaw doctor --check network
+openclaw doctor --check config
+```
 
 ---
 
