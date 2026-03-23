@@ -1359,172 +1359,6 @@ openclaw dashboard
 
 ---
 
-## 第四部分：国内本土化适配专区 ⭐
-### 国内网络环境适配
-
-#### 问题背景
-
-由于网络环境限制，中国大陆用户访问国际 AI 服务可能遇到：
-- API 连接超时
-- DNS 解析失败
-- HTTPS 证书验证错误
-- 响应速度慢
-
-#### 解决方案
-
-**方案 1：代理配置（推荐）**
-
-```bash
-# 系统级代理
-export http_proxy=http://127.0.0.1:7890
-export https_proxy=http://127.0.0.1:7890
-
-# OpenClaw 配置
-export OPENCLAW_PROXY_URL=http://127.0.0.1:7890
-```
-
-**方案 2：直连国内服务**
-
-- 使用国内大模型（通义/文心/豆包等）
-- 使用国内聊天平台（飞书/企微/钉钉）
-- 无需代理，稳定快速
-
-**方案 3：混合模式**
-
-- 国内服务直连
-- 国际服务代理
-- 自动路由选择
-
----
-
-### 国内大模型完整接入
-
-#### 支持的国内大模型
-
-| 厂商 | 模型 | 上下文 | 价格 |
-|------|------|--------|------|
-| 阿里云 | 通义千问 | 32k | ¥0.02/1k tokens |
-| 百度 | 文心一言 | 128k | ¥0.012/1k tokens |
-| 火山引擎 | 豆包 | 128k | ¥0.0008/1k tokens |
-| 讯飞 | 星火 | 128k | ¥0.003/1k tokens |
-| 月之暗面 | Kimi | 200k | ¥0.004/1k tokens |
-| 智谱 AI | GLM-4 | 128k | ¥0.08/1k tokens |
-
-#### 配置示例
-
-**通义千问**：
-```yaml
-models:
-  - name: qwen-max
-    provider: dashscope
-    api_key: ${DASHSCOPE_API_KEY}
-    model: qwen-max
-```
-
-**文心一言**：
-```yaml
-models:
-  - name: ernie-bot-4
-    provider: qianfan
-    api_key: ${QIANFAN_AK}
-    secret_key: ${QIANFAN_SK}
-    model: ernie-bot-4
-```
-
-**豆包**：
-```yaml
-models:
-  - name: doubao-pro-32k
-    provider: volcengine
-    access_key: ${VOLCENGINE_ACCESS_KEY}
-    secret_key: ${VOLCENGINE_SECRET_KEY}
-    model: doubao-pro-32k
-```
-
----
-
-### 国内聊天平台接入
-
-#### 支持的平台
-
-| 平台 | 支持类型 | 配置难度 |
-|------|----------|----------|
-| 飞书 | 机器人 | ⭐⭐ |
-| 企业微信 | 机器人 | ⭐⭐ |
-| 钉钉 | 机器人 | ⭐⭐ |
-| 微信 | 个人号/公众号 | ⭐⭐⭐⭐ |
-| QQ | 机器人 | ⭐⭐⭐ |
-
-#### 飞书配置步骤
-
-1. 创建飞书应用
-2. 获取 App ID 和 App Secret
-3. 配置事件订阅
-4. 添加机器人到群聊
-
-#### 企业微信配置
-
-1. 创建企业微信应用
-2. 获取 CorpID 和 Secret
-3. 配置可信域名
-4. 启用 API 接收消息
-
-#### 钉钉配置
-
-1. 创建钉钉机器人应用
-2. 获取 AppKey 和 AppSecret
-3. 配置消息接收地址
-4. 安装到企业
-
----
-
-### 国内镜像与加速方案
-
-#### npm 镜像
-
-```bash
-# 使用淘宝镜像
-npm config set registry https://registry.npmmirror.com
-
-# 或使用腾讯云镜像
-npm config set registry https://mirrors.cloud.tencent.com/npm/
-```
-
-#### Docker 镜像
-
-```json
-// /etc/docker/daemon.json
-{
-  "registry-mirrors": [
-    "https://docker.mirrors.ustc.edu.cn",
-    "https://registry.docker-cn.com"
-  ]
-}
-```
-
-#### GitHub 加速
-
-```bash
-# 使用代理
-git -c http.proxy=http://127.0.0.1:7890 clone https://github.com/openclaw/openclaw.git
-
-# 或使用 Gitee 镜像
-git clone https://gitee.com/mirror/openclaw.git
-```
-
-#### PyPI 镜像
-
-```bash
-# 使用清华镜像
-pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
-
-# 或使用阿里云镜像
-pip config set global.index-url https://mirrors.aliyun.com/pypi/simple/
-```
-
----
----
-
 ### 高级 CLI 命令 ⭐⭐⭐
 
 ### 会话管理命令
@@ -2633,6 +2467,174 @@ openclaw help session list --verbose
 }
 ```
 
+---
+
+
+
+## 第四部分：国内本土化适配专区 ⭐
+### 国内网络环境适配
+
+#### 问题背景
+
+由于网络环境限制，中国大陆用户访问国际 AI 服务可能遇到：
+- API 连接超时
+- DNS 解析失败
+- HTTPS 证书验证错误
+- 响应速度慢
+
+#### 解决方案
+
+**方案 1：代理配置（推荐）**
+
+```bash
+# 系统级代理
+export http_proxy=http://127.0.0.1:7890
+export https_proxy=http://127.0.0.1:7890
+
+# OpenClaw 配置
+export OPENCLAW_PROXY_URL=http://127.0.0.1:7890
+```
+
+**方案 2：直连国内服务**
+
+- 使用国内大模型（通义/文心/豆包等）
+- 使用国内聊天平台（飞书/企微/钉钉）
+- 无需代理，稳定快速
+
+**方案 3：混合模式**
+
+- 国内服务直连
+- 国际服务代理
+- 自动路由选择
+
+---
+
+### 国内大模型完整接入
+
+#### 支持的国内大模型
+
+| 厂商 | 模型 | 上下文 | 价格 |
+|------|------|--------|------|
+| 阿里云 | 通义千问 | 32k | ¥0.02/1k tokens |
+| 百度 | 文心一言 | 128k | ¥0.012/1k tokens |
+| 火山引擎 | 豆包 | 128k | ¥0.0008/1k tokens |
+| 讯飞 | 星火 | 128k | ¥0.003/1k tokens |
+| 月之暗面 | Kimi | 200k | ¥0.004/1k tokens |
+| 智谱 AI | GLM-4 | 128k | ¥0.08/1k tokens |
+
+#### 配置示例
+
+**通义千问**：
+```yaml
+models:
+  - name: qwen-max
+    provider: dashscope
+    api_key: ${DASHSCOPE_API_KEY}
+    model: qwen-max
+```
+
+**文心一言**：
+```yaml
+models:
+  - name: ernie-bot-4
+    provider: qianfan
+    api_key: ${QIANFAN_AK}
+    secret_key: ${QIANFAN_SK}
+    model: ernie-bot-4
+```
+
+**豆包**：
+```yaml
+models:
+  - name: doubao-pro-32k
+    provider: volcengine
+    access_key: ${VOLCENGINE_ACCESS_KEY}
+    secret_key: ${VOLCENGINE_SECRET_KEY}
+    model: doubao-pro-32k
+```
+
+---
+
+### 国内聊天平台接入
+
+#### 支持的平台
+
+| 平台 | 支持类型 | 配置难度 |
+|------|----------|----------|
+| 飞书 | 机器人 | ⭐⭐ |
+| 企业微信 | 机器人 | ⭐⭐ |
+| 钉钉 | 机器人 | ⭐⭐ |
+| 微信 | 个人号/公众号 | ⭐⭐⭐⭐ |
+| QQ | 机器人 | ⭐⭐⭐ |
+
+#### 飞书配置步骤
+
+1. 创建飞书应用
+2. 获取 App ID 和 App Secret
+3. 配置事件订阅
+4. 添加机器人到群聊
+
+#### 企业微信配置
+
+1. 创建企业微信应用
+2. 获取 CorpID 和 Secret
+3. 配置可信域名
+4. 启用 API 接收消息
+
+#### 钉钉配置
+
+1. 创建钉钉机器人应用
+2. 获取 AppKey 和 AppSecret
+3. 配置消息接收地址
+4. 安装到企业
+
+---
+
+### 国内镜像与加速方案
+
+#### npm 镜像
+
+```bash
+# 使用淘宝镜像
+npm config set registry https://registry.npmmirror.com
+
+# 或使用腾讯云镜像
+npm config set registry https://mirrors.cloud.tencent.com/npm/
+```
+
+#### Docker 镜像
+
+```json
+// /etc/docker/daemon.json
+{
+  "registry-mirrors": [
+    "https://docker.mirrors.ustc.edu.cn",
+    "https://registry.docker-cn.com"
+  ]
+}
+```
+
+#### GitHub 加速
+
+```bash
+# 使用代理
+git -c http.proxy=http://127.0.0.1:7890 clone https://github.com/openclaw/openclaw.git
+
+# 或使用 Gitee 镜像
+git clone https://gitee.com/mirror/openclaw.git
+```
+
+#### PyPI 镜像
+
+```bash
+# 使用清华镜像
+pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
+
+# 或使用阿里云镜像
+pip config set global.index-url https://mirrors.aliyun.com/pypi/simple/
+```
+
+---
 ---
 
 ## 第五部分：安装与部署
