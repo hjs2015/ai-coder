@@ -1394,109 +1394,775 @@ openclaw restart
 
 ## 第三部分：CLI 命令参考 ⭐
 
-### 基础命令
-
-#### openclaw --version
-
-查看 OpenClaw 版本
+### 全局选项
 
 ```bash
-openclaw --version
-# 输出：openclaw/2026.3.12 linux-x64 node-v20.11.0
+# 开发模式（隔离状态，端口 19001）
+openclaw --dev
+
+# 使用命名 profile（隔离配置）
+openclaw --profile <name>
+
+# 设置日志级别
+openclaw --log-level <level>
+# 可选值：silent|fatal|error|warn|info|debug|trace
+
+# 禁用颜色输出
+openclaw --no-color
+
+# 查看版本
+openclaw -V, --version
+
+# 查看帮助
+openclaw -h, --help
 ```
 
 ---
 
-#### openclaw --help
+### 完整命令列表（38 个）
 
-查看所有可用命令
+**带 * 的命令有子命令**，运行 `<command> --help` 查看详情。
+
+| 命令 | 说明 | 类别 |
+|------|------|------|
+| `acp *` | Agent Control Protocol 工具 | Agent |
+| `agent` | 通过 Gateway 运行单个 agent 轮次 | Agent |
+| `agents *` | 管理独立的 agents（工作空间、认证、路由） | Agent |
+| `approvals *` | 管理执行审批（gateway 或 node 主机） | 安全 |
+| `backup *` | 创建和验证 OpenClaw 状态备份 | 运维 |
+| `browser *` | 管理专用浏览器（Chrome/Chromium） | 工具 |
+| `channels *` | 管理连接的聊天渠道 | 渠道 |
+| `clawbot *` | 传统 clawbot 命令别名 | 兼容 |
+| `completion` | 生成 shell 自动补全脚本 | 工具 |
+| `config *` | 非交互式配置助手 | 配置 |
+| `configure` | 交互式配置（凭证、渠道、gateway、agent 默认值） | 配置 |
+| `cron *` | 通过 Gateway 调度器管理 cron 任务 | 调度 |
+| `daemon *` | Gateway 服务（传统别名） | 兼容 |
+| `dashboard` | 打开 Control UI | 界面 |
+| `devices *` | 设备配对 + Token 管理 | 安全 |
+| `directory *` | 查找联系人和群组 ID | 渠道 |
+| `dns *` | DNS 助手（Tailscale + CoreDNS） | 网络 |
+| `docs` | 搜索实时 OpenClaw 文档 | 帮助 |
+| `doctor` | 健康检查 + 快速修复 | 运维 |
+| `gateway *` | 运行、检查、查询 WebSocket Gateway | 核心 |
+| `health` | 从运行的 gateway 获取健康状态 | 运维 |
+| `help` | 显示命令帮助 | 帮助 |
+| `hooks *` | 管理内部 agent hooks | Agent |
+| `logs` | 通过 RPC 查看 gateway 文件日志 | 运维 |
+| `memory *` | 搜索和重新索引记忆文件 | 记忆 |
+| `message *` | 发送、读取、管理消息 | 消息 |
+| `models *` | 发现、扫描、配置模型 | 模型 |
+| `node *` | 运行和管理无节点主机服务 | 节点 |
+| `nodes *` | 管理 gateway 拥有的节点配对和命令 | 节点 |
+| `onboard` | 交互式 onboarding（gateway、workspace、skills） | 配置 |
+| `pairing *` | 安全 DM 配对（审批入站请求） | 安全 |
+| `plugins *` | 管理 OpenClaw 插件和扩展 | 插件 |
+| `qr` | 生成 iOS 配对 QR 码/设置码 | 安全 |
+| `reset` | 重置本地配置/状态（保留 CLI） | 运维 |
+| `sandbox *` | 管理 agent 隔离的沙箱容器 | 安全 |
+| `secrets *` | Secrets 运行时重载控制 | 安全 |
+| `security *` | 安全工具和本地配置审计 | 安全 |
+| `sessions *` | 列出存储的会话 | 会话 |
+| `setup` | 初始化本地配置和 agent 工作空间 | 配置 |
+| `skills *` | 列出和检查可用技能 | 技能 |
+| `status` | 显示渠道健康和最近的会话接收者 | 状态 |
+| `system *` | 系统事件、心跳、存在状态 | 系统 |
+| `tui` | 打开连接到 Gateway 的终端 UI | 界面 |
+| `uninstall` | 卸载 gateway 服务 + 本地数据（CLI 保留） | 运维 |
+| `update *` | 更新 OpenClaw 和检查更新通道状态 | 运维 |
+| `webhooks *` | Webhook 助手和集成 | 集成 |
+
+---
+
+### 常用命令示例
+
+#### 查看帮助和版本
 
 ```bash
+# 查看所有命令
 openclaw --help
-# 输出：
-# OpenClaw CLI - Self-hosted AI Gateway
-#
-# USAGE
-#   openclaw <command> [options]
-#
-# COMMANDS
-#   start          启动 Gateway 服务
-#   stop           停止 Gateway 服务
-#   restart        重启 Gateway 服务
-#   status         查看服务状态
-#   onboarding     首次配置向导
-#   channel        渠道管理
-#   model          模型管理
-#   agent          Agent 管理
-#   config         配置管理
-#   logs           查看日志
-#   dashboard      打开 Dashboard
-#   doctor         诊断工具
-#   --version      查看版本
-#   --help         查看帮助
+
+# 查看特定命令帮助
+openclaw models --help
+openclaw channels --help
+openclaw config --help
+
+# 查看版本
+openclaw --version
+```
+
+#### Gateway 管理
+
+```bash
+# 运行 Gateway（默认端口 18789）
+openclaw gateway
+
+# 指定端口
+openclaw gateway --port 18789
+
+# 强制启动（杀死占用端口的进程）
+openclaw gateway --force
+
+# 开发模式（隔离状态，端口 19001）
+openclaw --dev gateway
+```
+
+#### 渠道管理
+
+```bash
+# 链接渠道（显示 QR 码和连接日志）
+openclaw channels login --verbose
+
+# 发送消息
+openclaw message send --target +15555550123 --message "Hi" --json
+openclaw message send --channel telegram --target @mychat --message "Hi"
+```
+
+#### Agent 交互
+
+```bash
+# 与 agent 对话（可选发送 WhatsApp 回复）
+openclaw agent --to +15555550123 --message "Run summary" --deliver
+```
+
+#### 配置管理
+
+```bash
+# 启动引导式配置向导
+openclaw config
+
+# 交互式配置
+openclaw configure
+
+# 获取配置值
+openclaw config get tools.profile
+openclaw config get models
+openclaw config get gateway.port
+
+# 设置配置值
+openclaw config set tools.profile full
+openclaw config set models qwen-max
+openclaw config set gateway.port 19001
+
+# 验证配置
+openclaw config validate
+
+# 打印配置文件路径
+openclaw config file
+```
+
+#### 运维命令
+
+```bash
+# 健康检查
+openclaw health
+openclaw doctor
+
+# 查看日志
+openclaw logs
+
+# 创建备份
+openclaw backup create
+
+# 重置配置（保留 CLI）
+openclaw reset
+
+# 卸载服务
+openclaw uninstall
+```
+
+#### 文档搜索
+
+```bash
+# 搜索文档
+openclaw docs <关键词>
+```
+
+#### 开发模式
+
+```bash
+# 使用 dev profile（隔离状态）
+openclaw --dev
+
+# 使用自定义 profile
+openclaw --profile myprofile
+
+# 设置日志级别
+openclaw --log-level debug
 ```
 
 ---
 
-#### openclaw start
+### 命令详解
 
-启动 Gateway 服务
+#### openclaw gateway ⭐
+
+运行 WebSocket Gateway
 
 ```bash
-# 前台启动（开发调试）
-openclaw start
+# 基本用法
+openclaw gateway
 
-# 后台启动（生产环境）
-openclaw start --daemon
+# 指定端口
+openclaw gateway --port 18789
 
-# 指定配置文件
-openclaw start --config /path/to/openclaw.json
+# 强制启动
+openclaw gateway --force
+
+# 开发模式
+openclaw --dev gateway
+```
+
+**说明**：
+- Gateway 是 OpenClaw 的核心服务
+- 默认端口：18789
+- 开发模式端口：19001
+- 使用 `--force` 杀死占用端口的进程
+
+---
+
+#### openclaw config ⭐
+
+配置管理
+
+```bash
+# 启动引导式配置向导
+openclaw config
+
+# 交互式配置
+openclaw configure
+
+# 获取配置
+openclaw config get <配置键>
+
+# 设置配置
+openclaw config set <配置键> <值>
+
+# 验证配置
+openclaw config validate
+
+# 打印配置文件路径
+openclaw config file
+```
+
+**详细说明**：见 [Config 命令详解](#config-命令 -⭐)
+
+---
+
+#### openclaw models ⭐
+
+模型管理
+
+```bash
+# 查看帮助
+openclaw models --help
+
+# 扫描可用模型
+openclaw models scan
+
+# 配置模型
+openclaw models configure
+```
+
+---
+
+#### openclaw channels ⭐
+
+渠道管理
+
+```bash
+# 查看帮助
+openclaw channels --help
+
+# 登录渠道
+openclaw channels login --verbose
+
+# 列出渠道
+openclaw channels list
+
+# 测试渠道
+openclaw channels test
+```
+
+---
+
+#### openclaw message ⭐
+
+消息管理
+
+```bash
+# 发送消息
+openclaw message send --target <目标> --message "内容"
+
+# 通过特定渠道发送
+openclaw message send --channel telegram --target @mychat --message "Hi"
+
+# 查看消息
+openclaw message list
+
+# 读取消息
+openclaw message read <消息 ID>
+```
+
+---
+
+#### openclaw agent ⭐
+
+Agent 管理
+
+```bash
+# 运行 agent
+openclaw agent --to <目标> --message "内容"
+
+# 发送回复
+openclaw agent --to <目标> --message "内容" --deliver
+
+# 列出 agents
+openclaw agents list
+
+# 创建 agent
+openclaw agents create <名称>
+```
+
+---
+
+#### openclaw plugins ⭐
+
+插件管理
+
+```bash
+# 列出插件
+openclaw plugins list
+
+# 安装插件
+openclaw plugins install <插件名>
+
+# 更新插件
+openclaw plugins update
+
+# 卸载插件
+openclaw plugins uninstall <插件名>
+```
+
+---
+
+#### openclaw memory ⭐
+
+记忆管理
+
+```bash
+# 搜索记忆
+openclaw memory search <查询>
+
+# 重新索引
+openclaw memory reindex
+
+# 列出记忆文件
+openclaw memory list
+```
+
+---
+
+#### openclaw skills ⭐
+
+技能管理
+
+```bash
+# 列出技能
+openclaw skills list
+
+# 检查技能
+openclaw skills inspect <技能名>
+```
+
+---
+
+#### openclaw sessions ⭐
+
+会话管理
+
+```bash
+# 列出会话
+openclaw sessions list
+
+# 显示会话详情
+openclaw sessions show <会话 ID>
+
+# 清除会话
+openclaw sessions clear <会话 ID>
+
+# 导出会话
+openclaw sessions export <会话 ID>
+```
+
+---
+
+#### openclaw logs
+
+查看日志
+
+```bash
+# 查看 gateway 日志
+openclaw logs
 
 # 指定日志级别
-openclaw start --log-level debug
+openclaw logs --level debug
 ```
-
-**选项**：
-- `--daemon, -d`: 后台运行
-- `--config, -c`: 指定配置文件路径
-- `--log-level, -l`: 日志级别（debug/info/warn/error）
-- `--port, -p`: 覆盖默认端口
 
 ---
 
-#### openclaw stop
+#### openclaw doctor
 
-停止 Gateway 服务
+健康检查和修复
 
 ```bash
-# 优雅停止（等待当前请求完成）
-openclaw stop
+# 运行诊断
+openclaw doctor
 
-# 强制停止（立即终止）
-openclaw stop --force
+# 详细输出
+openclaw doctor --verbose
 ```
-
-**选项**：
-- `--force, -f`: 强制停止
 
 ---
 
-#### openclaw restart
+#### openclaw dashboard
 
-重启 Gateway 服务
+打开 Control UI
 
 ```bash
-openclaw restart
+openclaw dashboard
+# 默认打开 http://127.0.0.1:18789/
+```
 
-# 重启并更改日志级别
-openclaw restart --log-level debug
+---
+
+#### openclaw tui
+
+终端 UI
+
+```bash
+openclaw tui
+# 打开终端界面连接到 Gateway
 ```
 
 ---
 
 #### openclaw status
 
-查看服务状态
+查看状态
+
+```bash
+openclaw status
+# 显示渠道健康和最近的会话接收者
+```
+
+---
+
+#### openclaw health
+
+获取健康状态
+
+```bash
+openclaw health
+# 从运行的 gateway 获取健康状态
+```
+
+---
+
+#### openclaw setup
+
+初始化配置
+
+```bash
+openclaw setup
+# 初始化本地配置和 agent 工作空间
+```
+
+---
+
+#### openclaw onboard
+
+交互式 onboarding
+
+```bash
+openclaw onboard
+# 交互式 onboarding（gateway、workspace、skills）
+```
+
+---
+
+#### openclaw reset
+
+重置配置
+
+```bash
+openclaw reset
+# 重置本地配置/状态（保留 CLI）
+```
+
+---
+
+#### openclaw uninstall
+
+卸载服务
+
+```bash
+openclaw uninstall
+# 卸载 gateway 服务 + 本地数据（CLI 保留）
+```
+
+---
+
+#### openclaw update
+
+更新 OpenClaw
+
+```bash
+openclaw update
+
+# 检查更新状态
+openclaw update status
+```
+
+---
+
+#### openclaw backup
+
+备份管理
+
+```bash
+# 创建备份
+openclaw backup create
+
+# 验证备份
+openclaw backup verify <备份文件>
+
+# 列出备份
+openclaw backup list
+```
+
+---
+
+#### openclaw completion
+
+生成自动补全
+
+```bash
+# Bash
+openclaw completion bash >> ~/.bash_completion
+
+# Zsh
+openclaw completion zsh >> ~/.zshrc
+
+# Fish
+openclaw completion fish >> ~/.config/fish/completions/openclaw.fish
+```
+
+---
+
+#### openclaw docs
+
+搜索文档
+
+```bash
+openclaw docs <关键词>
+```
+
+---
+
+#### openclaw qr
+
+生成配对 QR 码
+
+```bash
+openclaw qr
+# 生成 iOS 配对 QR 码/设置码
+```
+
+---
+
+### 命令分类索引
+
+#### 核心命令（4 个）
+- `gateway *` - WebSocket Gateway
+- `agent` - 运行 agent
+- `config *` - 配置管理
+- `configure` - 交互式配置
+
+#### 渠道相关（4 个）
+- `channels *` - 渠道管理
+- `directory *` - 查找联系人/群组 ID
+- `message *` - 消息管理
+- `webhooks *` - Webhook 集成
+
+#### Agent 相关（4 个）
+- `acp *` - Agent Control Protocol
+- `agent` - 运行 agent
+- `agents *` - Agent 管理
+- `hooks *` - Agent hooks
+
+#### 模型相关（1 个）
+- `models *` - 模型管理
+
+#### 插件相关（1 个）
+- `plugins *` - 插件管理
+
+#### 技能相关（1 个）
+- `skills *` - 技能管理
+
+#### 记忆相关（1 个）
+- `memory *` - 记忆管理
+
+#### 会话相关（1 个）
+- `sessions *` - 会话管理
+
+#### 安全相关（6 个）
+- `approvals *` - 执行审批
+- `devices *` - 设备配对
+- `pairing *` - DM 配对
+- `qr` - 配对 QR 码
+- `sandbox *` - 沙箱容器
+- `secrets *` - Secrets 管理
+- `security *` - 安全审计
+
+#### 节点相关（2 个）
+- `node *` - 节点服务
+- `nodes *` - 节点管理
+
+#### 运维相关（8 个）
+- `backup *` - 备份管理
+- `doctor` - 健康检查
+- `health` - 健康状态
+- `logs` - 查看日志
+- `reset` - 重置配置
+- `status` - 查看状态
+- `uninstall` - 卸载服务
+- `update *` - 更新 OpenClaw
+
+#### 配置相关（3 个）
+- `config *` - 配置管理
+- `configure` - 交互式配置
+- `onboard` - Onboarding
+- `setup` - 初始化配置
+
+#### 系统相关（2 个）
+- `dns *` - DNS 助手
+- `system *` - 系统事件
+
+#### 界面相关（2 个）
+- `dashboard` - Control UI
+- `tui` - 终端 UI
+
+#### 工具相关（3 个）
+- `browser *` - 浏览器管理
+- `completion` - 自动补全
+- `docs` - 文档搜索
+
+#### 调度相关（1 个）
+- `cron *` - Cron 任务
+
+#### 兼容相关（2 个）
+- `clawbot *` - 传统别名
+- `daemon *` - Gateway 服务别名
+
+#### 帮助相关（1 个）
+- `help` - 显示帮助
+
+---
+
+### 使用示例
+
+#### 示例 1：首次安装配置
+
+```bash
+# 1. 初始化配置
+openclaw setup
+
+# 2. 运行 onboarding
+openclaw onboard
+
+# 3. 配置渠道
+openclaw channels login --verbose
+
+# 4. 配置模型
+openclaw models configure
+
+# 5. 启动 gateway
+openclaw gateway
+```
+
+---
+
+#### 示例 2：日常使用
+
+```bash
+# 1. 查看状态
+openclaw status
+
+# 2. 发送消息
+openclaw message send --channel telegram --target @mychat --message "Hi"
+
+# 3. 查看日志
+openclaw logs
+
+# 4. 健康检查
+openclaw health
+```
+
+---
+
+#### 示例 3：故障排查
+
+```bash
+# 1. 运行诊断
+openclaw doctor
+
+# 2. 查看详细日志
+openclaw logs --level debug
+
+# 3. 验证配置
+openclaw config validate
+
+# 4. 测试渠道
+openclaw channels test
+```
+
+---
+
+#### 示例 4：开发模式
+
+```bash
+# 1. 使用 dev profile 启动
+openclaw --dev gateway
+
+# 2. 设置调试日志
+openclaw --log-level debug
+
+# 3. 隔离配置
+openclaw --profile myprofile gateway
+```
+
+---
+
+#### 示例 5：备份与恢复
+
+```bash
+# 1. 创建备份
+openclaw backup create
+
+# 2. 列出备份
+openclaw backup list
+
+# 3. 验证备份
+openclaw backup verify backup-20260324.tar.gz
+
+# 4. 恢复备份（需要时）
+openclaw backup restore backup-20260324.tar.gz
+```
+
+---
+
+**文档参考**：docs.openclaw.ai/cli
 
 ```bash
 openclaw status
