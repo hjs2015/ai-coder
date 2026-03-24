@@ -1775,20 +1775,39 @@ openclaw agent remove coding-agent --force
 
 ### Config 命令 ⭐
 
-#### openclaw config view
+#### openclaw config（无子命令）
 
-查看当前配置
+启动引导式配置向导
 
 ```bash
-openclaw config view
-# 输出完整配置（隐藏敏感信息）
+openclaw config
+# 或指定配置部分
+openclaw config --section channel
+openclaw config --section model
+```
+
+**说明**：
+- 无子命令时启动交互式配置向导
+- 可通过 `--section` 指定配置部分
+- 适合新手首次配置
+
+---
+
+#### openclaw config file
+
+打印活动配置文件路径
+
+```bash
+openclaw config file
+# 输出示例：
+# /root/.openclaw/openclaw.json
 ```
 
 ---
 
 #### openclaw config get
 
-获取配置项的值
+获取配置项的值（通过点路径）
 
 **基本语法**：
 ```bash
@@ -1894,6 +1913,31 @@ openclaw config set security.dm_policy allow
 openclaw config set security.tcc.enabled true
 ```
 
+**高级用法**：
+
+**引用提供者模式**（推荐用于敏感信息）：
+```bash
+# 设置渠道 Token（从环境变量读取）
+openclaw config set channels.discord.token --ref-provider default --ref-source env --ref-id DISCORD_BOT_TOKEN
+
+# 设置密钥提供者
+openclaw config set secrets.providers.vault --provider-source file --provider-path /etc/openclaw/secrets.json --provider-mode json
+```
+
+**批量设置模式**：
+```bash
+# 从批量文件设置（先 dry-run 预览）
+openclaw config set --batch-file ./config-set.batch.json --dry-run
+
+# 实际执行
+openclaw config set --batch-file ./config-set.batch.json
+```
+
+**严格 JSON 模式**：
+```bash
+openclaw config set gateway.port 19001 --strict-json
+```
+
 **输出示例**：
 ```
 ✓ Configuration updated successfully
@@ -1903,19 +1947,22 @@ openclaw config set security.tcc.enabled true
 
 ---
 
-#### openclaw config edit
+#### openclaw config unset
 
-编辑配置文件
+移除配置项
 
 ```bash
-openclaw config edit
-# 打开默认编辑器（vim/nano）
+# 移除特定配置
+openclaw config unset tools.profile
+openclaw config unset models.default
+
+# 移除渠道配置
+openclaw config unset channels.telegram
 ```
 
 **说明**：
-- 直接在编辑器中修改 JSON 配置
-- 保存后自动验证配置
-- 如有错误会提示修复
+- 删除后该配置项恢复默认值或不存在
+- 敏感信息建议使用此命令清除
 
 ---
 
@@ -1937,73 +1984,6 @@ openclaw config validate
 - ✅ 所有渠道配置是否完整
 - ✅ 所有模型 API Key 是否有效
 - ✅ 所有 Agent 引用的模型是否存在
-
----
-
-#### openclaw config export
-
-导出配置
-
-```bash
-# 导出完整配置（不含密钥）
-openclaw config export
-
-# 导出完整配置（含密钥，注意保密）
-openclaw config export --include-secrets
-
-# 导出到文件
-openclaw config export --output backup.json
-```
-
-**输出示例**：
-```
-Configuration exported to backup.json
-⚠️  Warning: File contains sensitive information (API keys, tokens)
-⚠️  Keep this file secure and do not share it
-```
-
----
-
-#### openclaw config import
-
-导入配置
-
-```bash
-openclaw config import backup.json
-
-# 强制导入（覆盖现有配置）
-openclaw config import backup.json --force
-```
-
-**说明**：
-- 导入后自动验证配置
-- 如有冲突会提示是否覆盖
-- 导入成功后需重启网关服务
-
----
-
-#### openclaw config reset
-
-重置配置
-
-```bash
-# 重置所有配置为默认值
-openclaw config reset
-
-# 重置特定配置项
-openclaw config reset tools.profile
-openclaw config reset models.default
-
-# 重置渠道配置
-openclaw config reset channels
-```
-
-**警告**：
-```
-⚠️  Warning: This will reset all configurations to default values
-⚠️  Your API keys and tokens will be cleared
-? Are you sure you want to continue? (y/N)
-```
 
 ---
 
@@ -2087,13 +2067,19 @@ openclaw config get models.default
 
 ### 配置管理最佳实践
 
-#### 1. 修改前先备份
+#### 1. 查看配置文件路径
 ```bash
-# 导出当前配置
-openclaw config export --output backup-$(date +%Y%m%d).json
+openclaw config file
+# 输出：/root/.openclaw/openclaw.json
 ```
 
-#### 2. 修改后验证
+#### 2. 修改前先备份
+```bash
+# 手动备份配置文件
+cp ~/.openclaw/openclaw.json ~/.openclaw/openclaw.json.bak.$(date +%Y%m%d)
+```
+
+#### 3. 修改后验证
 ```bash
 # 验证配置
 openclaw config validate
@@ -2102,7 +2088,7 @@ openclaw config validate
 openclaw config get <配置键>
 ```
 
-#### 3. 需要重启的配置
+#### 4. 需要重启的配置
 以下配置修改后需要重启网关服务：
 - `gateway.port` - 网关端口
 - `channels.*` - 渠道配置
@@ -2117,15 +2103,20 @@ systemctl restart openclaw
 systemctl status openclaw
 ```
 
-#### 4. 敏感信息保护
+#### 5. 敏感信息保护
+使用引用提供者模式存储敏感信息：
 ```bash
-# 导出配置时不要包含密钥（除非必要）
-openclaw config export --output backup.json
+# 从环境变量读取 Token（推荐）
+openclaw config set channels.discord.token --ref-provider default --ref-source env --ref-id DISCORD_BOT_TOKEN
 
-# 如需包含密钥，注意文件权限
-openclaw config export --include-secrets --output backup-with-secrets.json
-chmod 600 backup-with-secrets.json
+# 从文件读取密钥
+openclaw config set secrets.api_key --ref-provider default --ref-source file --ref-path /etc/openclaw/secrets/api_key.txt
 ```
+
+**优势**：
+- ✅ 敏感信息不直接写入配置文件
+- ✅ 支持环境变量、文件、Vault 等多种来源
+- ✅ 配置文件可以安全分享和版本控制
 
 ---
 
