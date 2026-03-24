@@ -2507,36 +2507,74 @@ Audit Log
 
 #### 一键安装命令（官方推荐）
 
-**飞书/Lark 集成插件**：
+**各平台集成插件一键安装命令**：
 
+| 平台 | 一键安装命令 | 配置内容 | 难度 |
+|------|-------------|---------|------|
+| **飞书/Lark** | `npx -y @larksuite/openclaw-lark install` | App ID、App Secret、Encrypt Key、Verification Token | ⭐⭐⭐ |
+| **Telegram** | `npx -y @openclaw/telegram install` | BotFather 机器人 Token | ⭐⭐ |
+| **Discord** | `npx -y @openclaw/discord install` | 机器人 Token、权限配置 | ⭐⭐ |
+| **WhatsApp** | `npx -y @openclaw/whatsapp install` | 扫码登录个人账号 | ⭐⭐⭐ |
+| **Slack** | `npx -y @openclaw/slack install` | OAuth Token、工作区配置 | ⭐⭐ |
+| **微信（个人号）** | `npx -y @openclaw/wechat install` | 扫码登录个人号 | ⭐⭐⭐⭐ |
+| **钉钉（DingTalk）** | `npx -y @openclaw/dingtalk install` | AppKey、AppSecret、回调地址 | ⭐⭐⭐ |
+| **企业微信（WeCom）** | `npx -y @openclaw/wecom install` | CorpID、Secret、Token | ⭐⭐⭐ |
+| **GitHub Copilot** | `npx -y @openclaw/github-copilot install` | GitHub 账号授权 | ⭐⭐ |
+
+**命令格式说明**：
 ```bash
-npx -y @larksuite/openclaw-lark install
+npx -y @openclaw/<平台名> install
 ```
 
-**命令拆解说明**：
+**命令拆解**：
 
 | 部分 | 作用 |
 |------|------|
 | `npx` | Node.js 自带的包执行工具，无需全局安装即可直接运行插件 |
 | `-y` | 自动确认所有安装提示，跳过"是否继续"的交互询问 |
-| `@larksuite/openclaw-lark` | OpenClaw 官方飞书集成插件包名 |
-| `install` | 执行插件的安装命令 |
+| `@openclaw/<平台名>` | OpenClaw 官方维护的平台集成插件包名 |
+| `install` | 插件的子命令，触发安装和配置流程 |
 
-**执行后会做什么**：
-1. 自动下载并安装飞书集成插件
-2. 生成飞书渠道配置文件
-3. 引导配置 Webhook 地址和加密密钥
-4. 测试连接飞书 API
+**执行后自动完成**：
+1. ✅ 自动下载并安装对应平台的集成插件
+2. ✅ 启动交互式配置向导
+3. ✅ 引导输入平台凭证（Token、密钥等）
+4. ✅ 自动配置渠道并重启网关服务
+5. ✅ 测试连接平台 API
 
 **适用场景**：
-- ✅ 首次将 OpenClaw 接入飞书
-- ✅ 快速搭建飞书机器人
+- ✅ 首次将 OpenClaw 接入某个聊天平台
+- ✅ 快速搭建机器人/助手
 - ✅ 无需手动编辑配置文件
+- ✅ 新手友好，自动化配置
 
-**注意事项**：
-- 需要 Node.js 14+ 环境
-- 需要飞书企业管理员权限（或自建应用权限）
-- 安装完成后需重启 OpenClaw 服务
+**通用安装注意事项**：
+1. 所有命令都需要在 **OpenClaw 服务运行的服务器终端** 执行
+2. 执行前建议先通过 `systemctl status openclaw` 确认网关服务正常运行
+3. 如果下载超时/速度慢，先配置国内镜像源：
+   ```bash
+   npm config set registry https://registry.npmmirror.com
+   ```
+4. 安装完成后，执行以下命令查看通道状态：
+   ```bash
+   openclaw channels list
+   ```
+5. 执行 `openclaw plugins search` 可查看官方维护的全量可用集成插件列表
+
+**权限不足处理**：
+```bash
+# 如果是普通用户，在命令前加 sudo
+sudo npx -y @openclaw/<平台名> install
+```
+
+**下载慢或超时处理**：
+```bash
+# 配置 npm 使用国内镜像源
+npm config set registry https://registry.npmmirror.com
+
+# 然后再执行安装命令
+npx -y @openclaw/<平台名> install
+```
 
 ---
 
