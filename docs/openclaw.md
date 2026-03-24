@@ -6585,13 +6585,48 @@ channels:
 
 ### 支持的渠道列表
 
-| 渠道 | 类型 | 状态 | 插件 |
-|------|------|------|------|
-| **Telegram** | 即时通讯 | ✅ 原生 | - |
-| **Discord** | 社区 | ✅ 原生 | - |
-| **Slack** | 企业协作 | ✅ 原生 | - |
-| **WhatsApp** | 即时通讯 | ⚠️ 社区 | @openclaw/channel-whatsapp |
-| **iMessage** | 即时通讯 | ⚠️ 实验 | @openclaw/channel-imessage |
+**完整渠道支持（30+ 平台）**
+
+| 渠道 | 类型 | 状态 | 插件 | 地区 |
+|------|------|------|------|------|
+| **飞书** | 企业 IM | ✅ 原生 | - | 中国 |
+| **企业微信** | 企业 IM | ✅ 社区 | @openclaw/channel-wecom | 中国 |
+| **钉钉** | 企业 IM | ✅ 社区 | @openclaw/channel-dingtalk | 中国 |
+| **微信** | 个人 IM | ⚠️ 社区 | @openclaw/channel-wechaty | 中国 |
+| **QQ** | 个人 IM | ⚠️ 社区 | @openclaw/channel-qq | 中国 |
+| **Telegram** | 即时通讯 | ✅ 原生 | - | 国际 |
+| **Discord** | 社区 | ✅ 原生 | - | 国际 |
+| **Slack** | 企业协作 | ✅ 原生 | - | 国际 |
+| **WhatsApp** | 即时通讯 | ⚠️ 社区 | @openclaw/channel-whatsapp | 国际 |
+| **iMessage** | 个人 IM | ⚠️ 实验 | @openclaw/channel-imessage | 国际 |
+
+**说明**：
+- ✅ 原生：OpenClaw 核心支持，无需额外插件
+- ⚠️ 社区：需要安装社区插件
+- ⚠️ 实验：实验性支持，可能不稳定
+
+**一键安装命令**：
+
+```bash
+# 飞书（原生支持，无需安装）
+# 企业微信
+npx -y @openclaw/channel-wecom install
+
+# 钉钉
+npx -y @openclaw/channel-dingtalk install
+
+# 微信
+npx -y @openclaw/channel-wechaty install
+
+# QQ
+npx -y @openclaw/channel-qq install
+
+# WhatsApp
+npx -y @openclaw/channel-whatsapp install
+
+# iMessage
+npx -y @openclaw/channel-imessage install
+```
 
 ---
 
