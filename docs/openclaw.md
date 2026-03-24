@@ -2503,7 +2503,42 @@ Audit Log
 
 ---
 
-### 插件管理命令
+### 插件管理命令 ⭐
+
+#### 一键安装命令（官方推荐）
+
+**飞书/Lark 集成插件**：
+
+```bash
+npx -y @larksuite/openclaw-lark install
+```
+
+**命令拆解说明**：
+
+| 部分 | 作用 |
+|------|------|
+| `npx` | Node.js 自带的包执行工具，无需全局安装即可直接运行插件 |
+| `-y` | 自动确认所有安装提示，跳过"是否继续"的交互询问 |
+| `@larksuite/openclaw-lark` | OpenClaw 官方飞书集成插件包名 |
+| `install` | 执行插件的安装命令 |
+
+**执行后会做什么**：
+1. 自动下载并安装飞书集成插件
+2. 生成飞书渠道配置文件
+3. 引导配置 Webhook 地址和加密密钥
+4. 测试连接飞书 API
+
+**适用场景**：
+- ✅ 首次将 OpenClaw 接入飞书
+- ✅ 快速搭建飞书机器人
+- ✅ 无需手动编辑配置文件
+
+**注意事项**：
+- 需要 Node.js 14+ 环境
+- 需要飞书企业管理员权限（或自建应用权限）
+- 安装完成后需重启 OpenClaw 服务
+
+---
 
 #### openclaw plugin list
 
@@ -4547,12 +4582,58 @@ models:
 | 微信 | 个人号/公众号 | ⭐⭐⭐⭐ |
 | QQ | 机器人 | ⭐⭐⭐ |
 
-#### 飞书配置步骤
+#### 飞书配置步骤 ⭐⭐⭐
 
-1. 创建飞书应用
-2. 获取 App ID 和 App Secret
-3. 配置事件订阅
-4. 添加机器人到群聊
+**方式一：一键安装（推荐）**
+
+```bash
+npx -y @larksuite/openclaw-lark install
+```
+
+**优势**：
+- ✅ 自动化配置，无需手动编辑文件
+- ✅ 自动生成飞书应用凭证
+- ✅ 自动配置 Webhook 和加密密钥
+- ✅ 3 分钟完成全部配置
+
+**方式二：手动配置**
+
+1. **创建飞书应用**
+   - 访问飞书开发者平台：https://open.feishu.cn/
+   - 创建企业自建应用
+   - 获取 App ID 和 App Secret
+
+2. **获取 App ID 和 App Secret**
+   ```json
+   {
+     "app_id": "cli_a1b2c3d4e5f6",
+     "app_secret": "xxxxxxxxxxxxxxxxxxxx"
+   }
+   ```
+
+3. **配置事件订阅**
+   - 启用事件订阅功能
+   - 配置订阅地址（OpenClaw 的 Webhook URL）
+   - 配置加密密钥（Verification Token）
+
+4. **添加机器人到群聊**
+   - 在飞书开发者平台配置机器人
+   - 将机器人添加到需要使用的群聊
+   - 授予机器人发送和接收消息的权限
+
+**配置完成后测试**：
+```bash
+# 重启 OpenClaw 服务
+systemctl restart openclaw
+
+# 查看日志确认连接成功
+journalctl -u openclaw -f
+
+# 在飞书中发送消息测试
+# @机器人 发送任意消息
+```
+
+---
 
 #### 企业微信配置
 
@@ -4560,6 +4641,8 @@ models:
 2. 获取 CorpID 和 Secret
 3. 配置可信域名
 4. 启用 API 接收消息
+
+---
 
 #### 钉钉配置
 
