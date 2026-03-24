@@ -1,4 +1,4 @@
-# 飞书文档完整提炼：老男孩 AI 编程实战第一期 - Day1 龙虾机器人
+# 飞书文档完整提炼：OpenClaw 龙虾机器人 - Day1
 
 **文档链接**: https://my.feishu.cn/wiki/AlBuwnaeTidXVOkT96gcuavrn8b  
 **最新修改**: 2026-03-23  
