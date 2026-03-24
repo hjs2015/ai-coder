@@ -181,11 +181,11 @@ sudo apt install -y curl gnupg2 ca-certificates
 **步骤 3：添加 NodeSource 源（选择版本）**
 
 ```bash
-# Node.js 20.x（LTS 长期支持版，推荐）
-curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+# Node.js 22.x（最新版，官方推荐 ⭐）
+curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
 
-# 或 Node.js 22.x（最新版）
-# curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
+# 或 Node.js 20.x（LTS 长期支持版，稳定）
+# curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
 ```
 
 **步骤 4：安装 Node.js**
@@ -270,8 +270,8 @@ sudo apt install -y nodejs npm
 # 安装必要依赖
 sudo yum install -y curl gnupg2
 
-# 添加 NodeSource 源（Node.js 20.x）
-curl -fsSL https://rpm.nodesource.com/setup_20.x | sudo bash -
+# 添加 NodeSource 源（Node.js 22.x）
+curl -fsSL https://rpm.nodesource.com/setup_22.x | sudo bash -
 
 # 安装 Node.js
 sudo yum install -y nodejs
@@ -531,7 +531,7 @@ nvm alias default 20
 
 **前置检查**：
 ```bash
-# 1. 检查 Node.js 版本（需要 v18+，推荐 v20+）
+# 1. 检查 Node.js 版本（需要 v22.16+）
 node --version
 # 应该输出：v22.16+ 或更高
 
@@ -2752,7 +2752,7 @@ openclaw doctor
 # OpenClaw Doctor
 #
 # System
-# ✓ Node.js v20.11.0
+# ✓ Node.js v22.16+
 # ✓ npm 10.2.4
 # ✓ OS: Linux 5.15.0
 #
@@ -3662,7 +3662,7 @@ openclaw migrate rollback
 openclaw version
 # 输出：
 # OpenClaw v1.0.0
-# Node.js: v20.11.0
+# Node.js: v22.16+
 # OS: Linux 5.15.0-ubuntu
 # Build: 2026-03-20
 ```
@@ -3678,7 +3678,7 @@ openclaw info
 # 输出：
 # OpenClaw System Info
 # ├─ Version: 1.0.0
-# ├─ Node.js: v20.11.0
+# ├─ Node.js: v22.16+
 # ├─ npm: 10.2.4
 # ├─ OS: Linux 5.15.0-ubuntu
 # ├─ Arch: x64
@@ -3978,7 +3978,7 @@ openclaw version
 **输出示例**：
 ```
 OpenClaw v1.0.0
-Node.js: v20.11.0
+Node.js: v22.16+
 npm: 10.2.4
 OS: Linux 5.15.0-ubuntu
 Arch: x64
@@ -3999,7 +3999,7 @@ openclaw info
 ```
 OpenClaw System Info
 ├─ Version: 1.0.0
-├─ Node.js: v20.11.0
+├─ Node.js: v22.16+
 ├─ npm: 10.2.4
 ├─ OS: Linux 5.15.0-ubuntu
 ├─ Arch: x64
@@ -5743,7 +5743,7 @@ pnpm add -g openclaw
 
 # 3. 验证安装
 openclaw --version
-# 输出：openclaw/2026.3.12 linux-x64 node-v20.11.0
+# 输出：openclaw/2026.3.12 linux-x64 node-v22.16+
 ```
 
 #### 升级
