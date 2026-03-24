@@ -1820,7 +1820,7 @@ openclaw config get <配置键>
 openclaw config get tools.profile
 
 # 查看默认模型
-openclaw config get models.default
+openclaw config get models
 
 # 查看网关端口
 openclaw config get gateway.port
@@ -1829,7 +1829,7 @@ openclaw config get gateway.port
 openclaw config get channels.feishu
 
 # 查看 Agent 配置
-openclaw config get agents.default
+openclaw config get agents
 ```
 
 **输出示例**：
@@ -2060,7 +2060,7 @@ netstat -tlnp | grep openclaw
 openclaw config set models.default qwen-max
 
 # 查看当前默认模型
-openclaw config get models.default
+openclaw config get models
 ```
 
 ---
