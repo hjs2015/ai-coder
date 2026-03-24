@@ -1773,7 +1773,7 @@ openclaw agent remove coding-agent --force
 
 ---
 
-### Config 命令
+### Config 命令 ⭐
 
 #### openclaw config view
 
@@ -1786,6 +1786,123 @@ openclaw config view
 
 ---
 
+#### openclaw config get
+
+获取配置项的值
+
+**基本语法**：
+```bash
+openclaw config get <配置键>
+```
+
+**常用命令**：
+```bash
+# 查看工具权限配置
+openclaw config get tools.profile
+
+# 查看默认模型
+openclaw config get models.default
+
+# 查看网关端口
+openclaw config get gateway.port
+
+# 查看特定渠道配置
+openclaw config get channels.feishu
+
+# 查看 Agent 配置
+openclaw config get agents.default
+```
+
+**输出示例**：
+```
+tools.profile: messaging
+gateway.port: 18789
+models.default: qwen-max
+```
+
+---
+
+#### openclaw config set
+
+设置配置项的值
+
+**基本语法**：
+```bash
+openclaw config set <配置键> <值>
+```
+
+**常用命令**：
+
+**1. 解锁完整工具权限（重要）⭐⭐⭐**
+```bash
+# 解锁完整工具权限（允许执行命令、文件操作、代码运行等）
+openclaw config set tools.profile full
+
+# 仅开放消息相关权限（默认，只能聊天）
+openclaw config set tools.profile messaging
+
+# 自定义工具权限
+openclaw config set tools.profile custom
+```
+
+**2. 配置默认模型**
+```bash
+# 设置默认使用的 AI 模型
+openclaw config set models.default qwen-max
+
+# 设置为通义千问
+openclaw config set models.default qwen-max
+
+# 设置为文心一言
+openclaw config set models.default ernie-4.0
+
+# 设置为豆包
+openclaw config set models.default doubao-pro
+```
+
+**3. 配置网关端口**
+```bash
+# 设置网关端口（默认 18789）
+openclaw config set gateway.port 18789
+
+# 自定义端口
+openclaw config set gateway.port 19001
+```
+
+**4. 配置 Agent**
+```bash
+# 设置默认 Agent
+openclaw config set agents.default coding-agent
+
+# 配置 Agent 使用的模型
+openclaw config set agents.coding-agent.model qwen-max
+```
+
+**5. 配置渠道**
+```bash
+# 启用/禁用渠道
+openclaw config set channels.feishu.enabled true
+openclaw config set channels.telegram.enabled false
+```
+
+**6. 配置安全设置**
+```bash
+# 启用 DM（直接消息）策略
+openclaw config set security.dm_policy allow
+
+# 设置 TCC（工具调用控制）权限
+openclaw config set security.tcc.enabled true
+```
+
+**输出示例**：
+```
+✓ Configuration updated successfully
+✓ tools.profile: messaging → full
+✓ Gateway will restart to apply changes
+```
+
+---
+
 #### openclaw config edit
 
 编辑配置文件
@@ -1794,6 +1911,11 @@ openclaw config view
 openclaw config edit
 # 打开默认编辑器（vim/nano）
 ```
+
+**说明**：
+- 直接在编辑器中修改 JSON 配置
+- 保存后自动验证配置
+- 如有错误会提示修复
 
 ---
 
@@ -1809,6 +1931,12 @@ openclaw config validate
 # ✓ All models have valid API keys
 # ✓ All agents reference existing models
 ```
+
+**验证内容**：
+- ✅ 配置文件格式是否正确
+- ✅ 所有渠道配置是否完整
+- ✅ 所有模型 API Key 是否有效
+- ✅ 所有 Agent 引用的模型是否存在
 
 ---
 
@@ -1827,6 +1955,13 @@ openclaw config export --include-secrets
 openclaw config export --output backup.json
 ```
 
+**输出示例**：
+```
+Configuration exported to backup.json
+⚠️  Warning: File contains sensitive information (API keys, tokens)
+⚠️  Keep this file secure and do not share it
+```
+
 ---
 
 #### openclaw config import
@@ -1838,6 +1973,158 @@ openclaw config import backup.json
 
 # 强制导入（覆盖现有配置）
 openclaw config import backup.json --force
+```
+
+**说明**：
+- 导入后自动验证配置
+- 如有冲突会提示是否覆盖
+- 导入成功后需重启网关服务
+
+---
+
+#### openclaw config reset
+
+重置配置
+
+```bash
+# 重置所有配置为默认值
+openclaw config reset
+
+# 重置特定配置项
+openclaw config reset tools.profile
+openclaw config reset models.default
+
+# 重置渠道配置
+openclaw config reset channels
+```
+
+**警告**：
+```
+⚠️  Warning: This will reset all configurations to default values
+⚠️  Your API keys and tokens will be cleared
+? Are you sure you want to continue? (y/N)
+```
+
+---
+
+### 配置项详解
+
+#### tools.profile（工具权限配置）⭐⭐⭐
+
+**作用**：控制 Agent 可以使用的工具范围
+
+**可选值**：
+
+| 值 | 说明 | 权限范围 | 适用场景 |
+|----|------|---------|---------|
+| `messaging` | 消息模式（默认） | 仅开放消息相关权限，只能聊天 | 客服机器人、问答助手 |
+| `full` | 完整模式 | 所有已安装的 Skills 和工具（命令执行、文件操作、代码运行等） | 开发助手、自动化任务 |
+| `custom` | 自定义模式 | 仅允许配置中明确列出的工具 | 需要精细控制权限的场景 |
+
+**修改后生效**：
+```bash
+# 修改工具权限
+openclaw config set tools.profile full
+
+# 重启网关服务让配置生效
+systemctl restart openclaw
+
+# 验证配置已生效
+openclaw config get tools.profile
+```
+
+**解决的问题**：
+- OpenClaw 2026.3.2 及部分版本默认 `tools.profile` 为 `messaging`
+- 导致 Agent 只能聊天、无法执行实际操作
+- 修改为 `full` 后解锁完整功能
+
+---
+
+#### gateway.port（网关端口）
+
+**作用**：设置 OpenClaw 网关服务监听端口
+
+**默认值**：`18789`
+
+**示例**：
+```bash
+# 查看当前端口
+openclaw config get gateway.port
+
+# 修改端口
+openclaw config set gateway.port 19001
+
+# 重启服务
+systemctl restart openclaw
+
+# 验证新端口
+netstat -tlnp | grep openclaw
+```
+
+---
+
+#### models.default（默认模型）
+
+**作用**：设置默认使用的 AI 模型
+
+**常用模型**：
+- `qwen-max` - 通义千问（阿里云）
+- `ernie-4.0` - 文心一言（百度）
+- `doubao-pro` - 豆包（火山引擎）
+- `moonshot-v1` - Kimi（月之暗面）
+- `glm-4` - 智谱 AI
+
+**示例**：
+```bash
+# 设置默认模型
+openclaw config set models.default qwen-max
+
+# 查看当前默认模型
+openclaw config get models.default
+```
+
+---
+
+### 配置管理最佳实践
+
+#### 1. 修改前先备份
+```bash
+# 导出当前配置
+openclaw config export --output backup-$(date +%Y%m%d).json
+```
+
+#### 2. 修改后验证
+```bash
+# 验证配置
+openclaw config validate
+
+# 查看修改后的值
+openclaw config get <配置键>
+```
+
+#### 3. 需要重启的配置
+以下配置修改后需要重启网关服务：
+- `gateway.port` - 网关端口
+- `channels.*` - 渠道配置
+- `models.*` - 模型配置
+- `tools.profile` - 工具权限
+
+```bash
+# 重启网关服务
+systemctl restart openclaw
+
+# 查看服务状态
+systemctl status openclaw
+```
+
+#### 4. 敏感信息保护
+```bash
+# 导出配置时不要包含密钥（除非必要）
+openclaw config export --output backup.json
+
+# 如需包含密钥，注意文件权限
+openclaw config export --include-secrets --output backup-with-secrets.json
+chmod 600 backup-with-secrets.json
 ```
 
 ---
