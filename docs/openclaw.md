@@ -147,19 +147,7 @@
 #### 前置要求
 
 ```bash
-# 检查 Node.js 版本（需要 18+）
-node --version
-# 输出：v22.16+
-
-# 检查 npm
-npm --version
-# 输出：10.x.x
-```
-
-#### 前置要求
-
-```bash
-# 检查 Node.js 版本（需要 18+）
+# 检查 Node.js 版本（需要 22.16+）
 node --version
 # 输出：v22.16+
 
